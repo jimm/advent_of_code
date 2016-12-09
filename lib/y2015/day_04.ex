@@ -1,25 +1,29 @@
 defmodule Y2015.Day04 do
   @key "iwrupvqb"
 
-  def mine_coin do
+  def mine_coin(f, key \\ @key) do
     Stream.iterate(1, &(&1+1))
-    |> Stream.map(fn(i) -> {i, hash("#{@key}#{i}")} end)
-    |> Stream.drop_while(fn {_, h} -> bad_hash(h) end)
+    |> Stream.map(fn(i) ->
+      <<a, b, c, _ :: binary>> = :crypto.hash(:md5, "#{key}#{i}")
+      {i, {a, b, c}}
+    end)
+    |> Stream.filter(f)
     |> Enum.take(1)
   end
-
-  defp hash(s) do
-    :crypto.hash(:md5, s)
-  end
-
-  # three
-  # defp good_hash(<<0, 0, n>> <> _rest) when n < 16, do: true
-
-  # six
-  defp good_hash(<<0, 0, 0>> <> _rest), do: true
-  defp good_hash(_), do: false
-
-  defp bad_hash(bin), do: !good_hash(bin)
 end
 
-# Y2015.Day04.mine_coin
+# # five
+# Y2015.Day04.mine_coin(fn {_, {a, b, c}}
+#         when is_integer(a) and a == 0
+#          and is_integer(b) and b == 0
+#          and is_integer(c) and c < 16 -> true
+#       _ -> false
+#     end)
+
+# six
+# Y2015.Day04.mine_coin(fn {_, {a, b, c}}
+#         when is_integer(a) and a == 0
+#          and is_integer(b) and b == 0
+#          and is_integer(c) and c == 0 -> true
+#       _ -> false
+#     end)

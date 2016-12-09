@@ -1,20 +1,25 @@
 defmodule Y2015.Day01 do
-  @input_file "data/y2015/day_1.txt"
+  require Common.File, as: CF
 
   def destination_floor do
-    File.read!(@input_file)
-    |> String.codepoints
+    __MODULE__
+    |> CF.default_input_path
+    |> File.read!
+    |> String.split("", trim: true)
+    |> IO.inspect(label: "codepoints") # DEBUG
     |> Enum.reduce(0, fn(c, acc) -> acc + move(c) end)
   end
 
   def first_basement_index do
-    File.read!(@input_file)
+    __MODULE__
+    |> CF.default_input_path
+    |> File.read!
     |> String.codepoints
     |> first_negative_one(0, 0)
   end
 
-  defp move(c) when c == "(", do: 1
-  defp move(c) when c == ")", do: -1
+  defp move("("), do: 1
+  defp move(")"), do: -1
 
   defp first_negative_one(_, -1, index), do: index
   defp first_negative_one([], _, _), do: raise "not found"

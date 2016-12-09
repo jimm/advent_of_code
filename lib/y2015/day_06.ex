@@ -1,5 +1,6 @@
 defmodule Y2015.Day06 do
-  @input_file "data/y2015/day_6.txt"
+  require Common.File, as: CF
+
   @line_nums ~r{(turn on|turn off|toggle) (\d+),(\d+) through (\d+),(\d+)}
   @num_rows 1000
   @row_len 1000
@@ -26,7 +27,9 @@ defmodule Y2015.Day06 do
 
   def sum_after_applying(funcmap) do
     grid = List.duplicate(0, @num_rows * @row_len) |> Enum.chunk(@row_len)
-    File.stream!(@input_file)
+    __MODULE__
+    |> CF.default_input_path
+    |> File.stream!
     |> Enum.map(&(parse(&1, funcmap)))
     |> Enum.reduce(grid, fn(cmd, lights) -> execute(lights, cmd) end)
     |> Enum.map(&Enum.sum/1)
@@ -58,7 +61,7 @@ defmodule Y2015.Day06 do
 end
 
 # Y2015.Day06.count_lights
-# => 377891
+# => 569999
 
 # Y2015.Day06.total_brightness
-# # => 14110788
+# # => 17836115

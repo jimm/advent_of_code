@@ -1,5 +1,5 @@
 defmodule Y2015.Day07 do
-  @input_file "data/y2015/day_7.txt"
+  require Common.File, as: CF
 
   use Bitwise
 
@@ -8,7 +8,9 @@ defmodule Y2015.Day07 do
   def run2, do: run(&reset_and_rerun/1)
 
   defp run(modify) do
-    File.stream!(@input_file)
+    __MODULE__
+    |> CF.default_input_path
+    |> File.stream!
     |> tokenize
     |> reorder
     |> modify.()

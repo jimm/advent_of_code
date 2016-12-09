@@ -1,5 +1,5 @@
 defmodule Y2015.Day02 do
-  @input_file "data/y2015/day_2.txt"
+  require Common.File, as: CF
 
   def total_paper_area_needed do
     calculate_need(&paper_area_needed/1)
@@ -12,7 +12,9 @@ defmodule Y2015.Day02 do
   # ================ helpers ================
 
   defp calculate_need(f) do
-    File.stream!(@input_file)
+    __MODULE__
+    |> CF.default_input_path
+    |> CF.lines
     |> Enum.map(&parse/1)
     |> Enum.map(f)
     |> Enum.sum

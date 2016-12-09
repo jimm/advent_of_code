@@ -1,5 +1,5 @@
 defmodule Y2015.Day11 do
-  @start "hepxcrrq"
+  @start "cqjxjnds"
   @illegal_chars_regex ~r/[iol]/
   @two_pair_regex ~r/(.)\1.*(.)\2/
 
@@ -65,7 +65,7 @@ defmodule Y2015.Day11 do
 end
 
 # Y2015.Day11.next_good_password
-# # => hepxxyzz
+# # => cqjxxyzz
 
 # Y2015.Day11.next_good_password(2)
-# # => heqaabcc
+# # => cqkaabcc

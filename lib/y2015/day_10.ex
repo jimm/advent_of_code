@@ -1,5 +1,5 @@
-defmodule Y2015.Day010 do
-  @start "1113222113"
+defmodule Y2015.Day10 do
+  @start "3113322113"
 
   def look_and_say(iterations) do
     (1..iterations)
@@ -26,8 +26,8 @@ defmodule Y2015.Day010 do
   defp add_encoded(answer, n, c), do: "#{answer}#{n}#{<<c>>}"
 end
 
-# Y2015.Day010.look_and_say(40)
-# # => 252594
+# Y2015.Day10.look_and_say(40)
+# # => 329356
 
-# Y2015.Day010.look_and_say(50)
-# # => 3579328
+# Y2015.Day10.look_and_say(50)
+# # => 4666278

@@ -1,24 +1,30 @@
 defmodule Y2015.Day08 do
-  @input_file "data/y2015/day_8.txt"
+  require Common.File, as: CF
 
   def run1 do
-    {code_rep_len, char_count} = File.stream!(@input_file)
-    |> Enum.map(&String.strip/1)
-    |> Enum.reduce({0, 0}, fn(s, {crl, cc}) ->
-      {evalled_s, _} = Code.eval_string(s)
-      {crl + String.length(s), cc + String.length(evalled_s)}
-    end)
+    {code_rep_len, char_count} =
+      __MODULE__
+      |> CF.default_input_path
+      |> File.stream!
+      |> Enum.map(&String.strip/1)
+      |> Enum.reduce({0, 0}, fn(s, {crl, cc}) ->
+        {evalled_s, _} = Code.eval_string(s)
+        {crl + String.length(s), cc + String.length(evalled_s)}
+      end)
 
     code_rep_len - char_count
   end
 
   def run2 do
-    {code_rep_len, encoded_rep_len} = File.stream!(@input_file)
-    |> Enum.map(&String.strip/1)
-    |> Enum.reduce({0, 0}, fn(s, {crl, ecl}) ->
-      len = String.length(s)
-      {crl + len, ecl + len + escape_chars_count(s, 0) + 2}
-    end)
+    {code_rep_len, encoded_rep_len} =
+      __MODULE__
+      |> CF.default_input_path
+      |> File.stream!
+      |> Enum.map(&String.strip/1)
+      |> Enum.reduce({0, 0}, fn(s, {crl, ecl}) ->
+        len = String.length(s)
+        {crl + len, ecl + len + escape_chars_count(s, 0) + 2}
+      end)
 
     encoded_rep_len - code_rep_len
   end
@@ -37,7 +43,7 @@ defmodule Y2015.Day08 do
 end
 
 # Y2015.Day08.run1
-# # => 1333
+# # => 1350
 
 # Y2015.Day08.run2
-# # => 2046
+# # => 2085

@@ -1,19 +1,22 @@
 defmodule Y2015.Day09 do
-  @input_file "data/y2015/day_9.txt"
+  require Common.File, as: CF
 
   def shortest, do: run(&Enum.min/1)
 
   def longest, do: run(&Enum.max/1)
 
   defp run(f) do
-    distances = File.stream!(@input_file)
-    |> Enum.reduce(%{}, fn line, acc ->
-      [src, "to", dest, "=", num_str] = String.split(line)
-      dist = String.to_integer(num_str)
-      acc
-      |> add_distance(src, dest, dist)
-      |> add_distance(dest, src, dist)
-    end)
+    distances =
+      __MODULE__
+      |> CF.default_input_path
+      |> File.stream!
+      |> Enum.reduce(%{}, fn line, acc ->
+        [src, "to", dest, "=", num_str] = String.split(line)
+        dist = String.to_integer(num_str)
+        acc
+        |> add_distance(src, dest, dist)
+        |> add_distance(dest, src, dist)
+      end)
 
     f.(path_lengths(distances, permutations(Map.keys(distances)), []))
   end
@@ -47,7 +50,7 @@ defmodule Y2015.Day09 do
 end
 
 # Y2015.Day09.shortest
-# # => 251
+# # => 207
 
 # Y2015.Day09.longest
-# # => 898
+# # => 804

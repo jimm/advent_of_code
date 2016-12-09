@@ -1,5 +1,6 @@
 defmodule Y2015.Day05 do
-  @input_file "data/y2015/day_5.txt"
+  require Common.File, as: CF
+
   @forbidden ~r{(ab)|(cd)|(pq)|(xy)}
   @doubled ~r{(.)\1}
   @three_vowels ~r{[aeiou].*[aeiou].*[aeiou]}
@@ -7,7 +8,9 @@ defmodule Y2015.Day05 do
   @repeat_one_between ~r{(.).\1}
 
   def count_nice(f) do
-    File.stream!(@input_file)
+    __MODULE__
+    |> CF.default_input_path
+    |> CF.lines
     |> Stream.map(&String.strip/1)
     |> Stream.filter(fn(s) -> f.(s) end)
     |> Enum.to_list

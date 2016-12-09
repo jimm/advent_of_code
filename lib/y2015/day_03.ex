@@ -1,10 +1,11 @@
 defmodule Y2015.Day03 do
-  @input_file "data/y2015/day_3.txt"
-
+  require Common.File, as: CF
   require Integer
 
   def received_present_count do
-    File.read!(@input_file)
+    __MODULE__
+    |> CF.default_input_path
+    |> File.read!
     |> String.codepoints
     |> locs_and_counts
     |> Map.keys
@@ -12,7 +13,10 @@ defmodule Y2015.Day03 do
   end
 
   def santa_plus_robo_present_count do
-    directions_with_indexes = File.read!(@input_file)
+    directions_with_indexes =
+      __MODULE__
+      |> CF.default_input_path
+      |> File.read!
       |> String.codepoints
       |> Enum.with_index
 

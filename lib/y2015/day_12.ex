@@ -1,7 +1,6 @@
 defmodule Y2015.Day12 do
-  @input_file "data/y2015/day_12.txt"
-
-  
+  require Common.File, as: CF
+  use HTTPoison.Base
 
   def sum do
     sum(fn _ -> true end)
@@ -12,14 +11,18 @@ defmodule Y2015.Day12 do
   end
 
   defp sum(filter) do
-    File.read!(@input_file)
+    __MODULE__
+    |> CF.default_input_path
+    |> File.read!
     |> collect_numbers(filter)
     |> Enum.sum
   end
 
   defp collect_numbers(s, filter) do
-    {:ok, m} = HTTPoison.decode(s)
-    m |> filtered_numbers(filter) |> List.flatten
+    s
+    |> Poison.decode!
+    |> filtered_numbers(filter)
+    |> List.flatten
   end
 
   defp filtered_numbers(m, f) when is_map(m) do
