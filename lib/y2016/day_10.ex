@@ -3,16 +3,25 @@ defmodule Y2016.Day10 do
 
   require Common.File, as: CF
 
+  defmodule Factory do
+    defstruct bots: %{}, outputs: %{}
+  end
+
   # Factory is a map from bot number => bot
   # Bot is {low instruction, high instruction, val1, val2}
   # Instruction is either {:give, botnum} or {:output, binnum}
   def run1(file \\ nil, comp1 \\ 17, comp2 \\ 61) do
-    (file || CF.default_input_path(__MODULE__))
-    |> CF.lines
-    |> Enum.map(&String.split/1)
-    |> Enum.reduce(%{}, (fn cmd, factory -> init_bot(factory, cmd) end))
+    init_factory(file)
     |> run_bots_until(fn factory -> any_bot_holding?(factory, comp1, comp2) end)
     |> bot_holding(comp1, comp2)
+  end
+
+  def run2(file \\ nil) do
+    factory =
+      init_factory(file)
+      |> run_bots
+    os = factory.outputs
+    Map.get(os, 0) * Map.get(os, 1) * Map.get(os, 2)
   end
 
   # ================ running the factory ================
@@ -24,8 +33,15 @@ defmodule Y2016.Day10 do
     |> hd
   end
 
+  defp run_bots(factory) do
+    Stream.iterate(factory, &run_one_step/1)
+    |> Stream.drop_while(&(!done?(&1, fn _ -> false end)))
+    |> Enum.take(1)
+    |> hd
+  end
+
   defp run_one_step(factory) do
-    factory
+    factory.bots
     |> Enum.filter(fn {_bnum, bot} -> bot_ready?(bot) end)
     |> Enum.reduce(factory, fn {bnum, bot}, factory -> run_bot(factory, bnum, bot) end)
   end
@@ -34,16 +50,21 @@ defmodule Y2016.Day10 do
     factory
     |> run_instruction(i1, min(v1, v2))
     |> run_instruction(i2, max(v1, v2))
-    |> Map.put(bnum, {i1, i2, nil, nil})
+    |> empty_bot(bnum)
   end
 
-  defp run_instruction(factory, {:output, _onum}, _val) do
-    factory                     # ignore/throw away outputs
+  defp run_instruction(factory, {:output, onum}, val) do
+    %{factory | outputs: Map.put(factory.outputs, onum, val)}
   end
   defp run_instruction(factory, {:bot, bnum}, val) do
-    bot = Map.get(factory, bnum)
+    bot = Map.get(factory.bots, bnum)
     new_bot = bot_gets_value(bot, val)
-    Map.put(factory, bnum, new_bot)
+    %{factory | bots: Map.put(factory.bots, bnum, new_bot)}
+  end
+
+  defp empty_bot(factory, bnum) do
+    {i1, i2, _, _} = Map.get(factory.bots, bnum)
+    %{factory | bots: Map.put(factory.bots, bnum, {i1, i2, nil, nil})}
   end
 
   defp bot_ready?({_, _, v1, v2}) when v1 != nil and v2 != nil, do: true
@@ -53,14 +74,14 @@ defmodule Y2016.Day10 do
   defp bot_empty?(_), do: false
 
   defp done?(factory, stopping_func) do
-    Enum.all?(factory, fn {_, bot} -> bot_empty?(bot) end) || stopping_func.(factory)
+    Enum.all?(factory.bots, fn {_, bot} -> bot_empty?(bot) end) || stopping_func.(factory)
   end
 
   # ================ run1 helpers ================
 
   defp bot_holding(factory, v1, v2) do
     botlist =
-      factory
+      factory.bots
       |> Enum.drop_while(fn
         {_, {_, _, ^v1, ^v2}} -> false
         {_, {_, _, ^v2, ^v1}} -> false
@@ -78,6 +99,15 @@ defmodule Y2016.Day10 do
   end
 
   # ================ initialization ================
+
+  defp init_factory(file) do
+    bots =
+      (file || CF.default_input_path(__MODULE__))
+      |> CF.lines
+      |> Enum.map(&String.split/1)
+      |> Enum.reduce(%{}, (fn cmd, factory -> init_bot(factory, cmd) end))
+    %Factory{bots: bots}
+  end
 
   defp init_bot(factory, words) do
     case words do
