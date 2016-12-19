@@ -20,4 +20,5 @@ erl_crash.dump
 *.ez
 
 foo.txt
+foo.org
 test_input.txt
