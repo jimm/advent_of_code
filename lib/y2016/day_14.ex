@@ -21,20 +21,30 @@ defmodule Y2016.Day14 do
            Map.put(m, th, [index|past])
          end)
 
+    if length(threes) > 0 do    # DEBUG
+      IO.puts ""
+      IO.puts "index: #{index}"
+    end
+
     fives = fives_in(hash)
     if length(fives) > 0 do
       fives |> IO.inspect(label: "fives") # DEBUG
       last_seen_threes |> IO.inspect(label: "  last_seen_threes") # DEBUG
     end
-# FIXME add all eligible indexes for each five,
-#       remove those and all earlier from new_last_seen_threes
+    # add all eligible indexes for each five, remove those and all earlier
+    # from new_last_seen_threes
     [new_last_seen_threes, new_key_indexes] =
-      if length(fives) > 0 && Enum.any?(fives, fn five ->
-           Map.get(last_seen_threes, five, [])
-           |> Enum.any?(fn three_index -> index - three_index <= 1000 end)
+      new_indexes = 
+         Map.get(last_seen_threes, five, [])
+         |> Enum.filter(fn three_index -> index - three_index <= 1000 end)
+      if length(new_indexes) > 0 do
+        lst =
+          new_last_seen_threes
+          |> Enum.reduce(%{}, fn {k, vals}, m ->
+               new_vals = vals |> Enum.filter(fn v -> v >= index - 1000 end)
+               Map.put(m, k, new_vals)
           end)
-      do
-        [index | key_indexes]
+        [lst, new_indexes ++ indexes]
       else
         [new_last_seen_threes, key_indexes]
       end
