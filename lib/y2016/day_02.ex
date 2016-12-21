@@ -1,5 +1,7 @@
 defmodule Y2016.Day02 do
-  @input_file "data/y2016/day_02.txt"
+  require Common.File, as: CF
+
+  @input_file CF.default_input_path(__MODULE__)
   @keypad1 %{
     1 => %{"U" => nil, "D" => 4, "L" => nil, "R" => 2},
     2 => %{"U" => nil, "D" => 5, "L" => 1, "R" => 3},
@@ -45,11 +47,8 @@ defmodule Y2016.Day02 do
   end
 
   defp read_dirs(file) do
-    lines =
-      file
-      |> File.read!
-      |> String.split("\n", trim: true)
-    lines |> Enum.map(&(String.split(&1, "", trim: true)))
+    CF.lines(file)
+    |> Enum.map(&(String.split(&1, "", trim: true)))
   end
 
   defp next_digit(keypad, digit, dir) do

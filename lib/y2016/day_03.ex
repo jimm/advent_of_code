@@ -1,5 +1,7 @@
 defmodule Y2016.Day03 do
-  @input_file "data/y2016/day_03.txt"
+  require Common.File, as: CF
+
+  @input_file CF.default_input_path(__MODULE__)
 
   def run1(file \\ @input_file) do
     read_file(file) |> do_run
@@ -29,9 +31,7 @@ defmodule Y2016.Day03 do
   end
 
   defp read_file2(file) do
-    file
-    |> File.read!
-    |> String.split("\n", trim: true)
+    CF.lines(file)
     |> Enum.chunk(3)
     |> Enum.map(fn three ->
       [{a0, a1, a2},

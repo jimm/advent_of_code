@@ -1,6 +1,8 @@
 # Format of addr: {words-outside-brackets, words-inside-brackets}
 defmodule Y2016.Day07 do
-  @input_file "data/y2016/day_07.txt"
+  require Common.File, as: CF
+
+  @input_file CF.default_input_path(__MODULE__)
 
   def run1(file \\ @input_file) do
     count_addrs(file, &supports_tls?/1)
@@ -13,16 +15,10 @@ defmodule Y2016.Day07 do
   end
 
   def count_addrs(file, f) do
-    read_file(file)
+    CF.lines(file)
     |> Enum.map(&parse_addrs/1)
     |> Enum.filter(f)
     |> Enum.count
-  end
-
-  defp read_file(file) do
-    file
-    |> File.read!
-    |> String.split("\n", trim: true)
   end
 
   defp parse_addrs(line) do

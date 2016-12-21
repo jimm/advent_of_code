@@ -1,5 +1,7 @@
 defmodule Y2016.Day06 do
-  @input_file "data/y2016/day_06.txt"
+  require Common.File, as: CF
+
+  @input_file CF.default_input_path(__MODULE__)
 
   def run1(file \\ @input_file) do
     run(file, fn {_, freq} -> freq end)
@@ -10,7 +12,7 @@ defmodule Y2016.Day06 do
   end
 
   defp run(file, f) do
-    lines = read_lines(file)
+    lines = CF.lines(file)
     len = lines |> hd |> String.length
     (0..len-1)
     |> Enum.map(fn index ->
@@ -25,12 +27,6 @@ defmodule Y2016.Day06 do
     end)
     |> Enum.join("")
     |> IO.puts
-  end
-
-  defp read_lines(file) do
-    file
-    |> File.read!
-    |> String.split("\n", trim: true)
   end
 end
 

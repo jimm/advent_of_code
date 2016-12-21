@@ -1,6 +1,7 @@
 defmodule Y2016.Day01 do
+  require Common.File, as: CF
 
-  @input_file "data/y2016/day_01.txt"
+  @input_file CF.default_input_path(__MODULE__)
 
   def run1(file \\ @input_file) do
     read_dirs(file)
