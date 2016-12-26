@@ -1,25 +1,43 @@
 defmodule Y2016.Day14 do
   @input "ihaygndm"
   @num_additional_hashes 2016
+  @nth_key_desired 64
 
   use Bitwise
 
   def run1(input \\ @input) do
-    nth_key(input, 0, %{}, [], 64, 0)
+    nth_key(input, 0, %{}, [], 0, nibbles())
   end
 
   def run2(input \\ @input) do
-    nth_key(input, 0, %{}, [], 64, @num_additional_hashes)
+    nth_key(input, 0, %{}, [], @num_additional_hashes, nibbles())
   end
 
-  def nth_key(_, _, _, key_indexes, n, _) when length(key_indexes) == n, do: Enum.max(key_indexes)
-  def nth_key(input, index, last_seen_threes, key_indexes, n, num_additional_hashes) do
+  # TODO use this to speed things up
+  def nibbles do
+    (0..255) |> Enum.reduce(%{}, fn i, m ->
+      s = Integer.to_string(i, 16)
+      val = if i < 16, do: "0" <> s, else: s
+      Map.put(m, i, String.downcase(val))
+    end)
+  end
+
+  def nth_key(_, _, _, key_indexes, _, _) when length(key_indexes) == @nth_key_desired, do: Enum.max(key_indexes)
+  # DEBUG
+  def nth_key(_, 25000, _, _, _, _) do
+    raise "index 25000 is too high"
+  end
+  def nth_key(input, index, last_seen_threes, key_indexes, num_additional_hashes, nibbles) do
+    if Integer.mod(index, 1000) == 0 do
+      IO.puts "*** index #{index}"
+    end
     hash =
       "#{input}#{index}"
-      |> hash(1+num_additional_hashes)
+      |> hash(1+num_additional_hashes, nibbles)
       |> String.split("", trim: true)
     triplet_char = first_triplet_in(hash)
     new_last_seen_threes = if triplet_char do
+      # IO.puts "index #{index}: #{triplet_char}" # DEBUG
       past = Map.get(last_seen_threes, triplet_char, [])
       Map.put(last_seen_threes, triplet_char, [index|past])
     else
@@ -27,15 +45,26 @@ defmodule Y2016.Day14 do
     end
 
     fives = fives_in(hash)
+    
+    # DEBUG
+    unless Enum.empty?(fives) do
+      fives |> IO.inspect(label: "  fives") # DEBUG
+    end
 
-    # add all eligible indexes for each five, remove those and all earlier
-    # from new_last_seen_threes
+    # Add all eligible indexes for each five, remove those and all earlier
+    # from new_last_seen_threes.
     new_indexes = 
       fives
       |> Enum.flat_map(fn five ->
            Map.get(last_seen_threes, five, [])
            |> Enum.filter(fn three_index -> index - three_index <= 1000 end)
       end)
+                             
+unless Enum.empty?(new_indexes) do
+  new_indexes |> IO.inspect(label: "  new_indexes") # DEBUG
+  length(new_indexes ++ key_indexes) |> IO.inspect(label: "total keys including new") # DEBUG
+end
+
     [new_last_seen_threes, new_key_indexes] =
       if length(new_indexes) > 0 do
         lst =
@@ -44,28 +73,29 @@ defmodule Y2016.Day14 do
                new_vals = vals |> Enum.filter(fn v -> v >= index - 1000 end)
                Map.put(m, k, new_vals)
           end)
-        [lst, new_indexes ++ key_indexes]
+        all_keys =
+          (key_indexes ++ Enum.reverse(new_indexes)) # we'll ignore highest extras
+          |> Enum.take(@nth_key_desired)
+        [lst, all_keys]
       else
         [new_last_seen_threes, key_indexes]
       end
 
-    nth_key(input, index+1, new_last_seen_threes, new_key_indexes, n, num_additional_hashes)
+    nth_key(input, index+1, new_last_seen_threes, new_key_indexes,
+      num_additional_hashes, nibbles)
   end
 
-  def hash(s, 0), do: s
-  def hash(s, num_additional_hashes) do
+  def hash(s, 0, _), do: s
+  def hash(s, num_additional_hashes, nibbles) do
     :crypto.hash(:md5, s)
-    |> to_nibbles([])
+    |> to_nibbles([], nibbles)
     |> Enum.join
-    |> String.downcase
-    |> hash(num_additional_hashes - 1)
+    |> hash(num_additional_hashes - 1, nibbles)
   end
 
-  def to_nibbles(<<>>, nibbles), do: Enum.reverse(nibbles)
-  def to_nibbles(<<a, rest :: binary>>, nibbles) do
-    s = Integer.to_string(a, 16)
-    new_nibbles = if a < 16, do: [s | ["0" | nibbles]], else: [s | nibbles]
-    to_nibbles(rest, new_nibbles)
+  def to_nibbles(<<>>, nibbles, _), do: Enum.reverse(nibbles)
+  def to_nibbles(<<a, rest :: binary>>, nibbles, nibble_map) do
+    to_nibbles(rest, [Map.get(nibble_map, a) | nibbles], nibble_map)
   end
 
   def first_triplet_in(nibbles) when length(nibbles) < 3, do: nil
@@ -87,4 +117,4 @@ end
 # # => 15035
 
 # Y2016.Day14.run2
-# # => 
+# # => (20076 is too high)
