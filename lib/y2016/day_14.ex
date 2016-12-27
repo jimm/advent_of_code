@@ -29,10 +29,6 @@ defmodule Y2016.Day14 do
     |> Enum.reverse
     |> hd
   end
-  # DEBUG
-  def nth_key(_, 25000, _, _, _, _) do
-    raise "index 25000 is too high"
-  end
   def nth_key(input, index, last_seen_threes, key_indexes, num_additional_hashes, nibbles) do
     if Integer.mod(index, 1000) == 0 do
       IO.puts "*** index #{index}"
@@ -43,7 +39,6 @@ defmodule Y2016.Day14 do
       |> String.split("", trim: true)
     triplet_char = first_triplet_in(hash)
     new_last_seen_threes = if triplet_char do
-      # IO.puts "index #{index}: #{triplet_char}" # DEBUG
       past = Map.get(last_seen_threes, triplet_char, [])
       Map.put(last_seen_threes, triplet_char, [index|past])
     else
@@ -52,11 +47,6 @@ defmodule Y2016.Day14 do
 
     fives = fives_in(hash)
     
-    # DEBUG
-    unless Enum.empty?(fives) do
-      fives |> IO.inspect(label: "  fives") # DEBUG
-    end
-
     # Add all eligible indexes for each five, remove those and all earlier
     # from new_last_seen_threes.
     new_indexes = 
@@ -66,11 +56,6 @@ defmodule Y2016.Day14 do
            |> Enum.filter(fn three_index -> index - three_index <= 1000 end)
       end)
                              
-unless Enum.empty?(new_indexes) do
-  new_indexes |> IO.inspect(label: "  new_indexes") # DEBUG
-  length(new_indexes ++ key_indexes) |> IO.inspect(label: "total keys including new") # DEBUG
-end
-
     [new_last_seen_threes, new_key_indexes] =
       if length(new_indexes) > 0 do
         lst =
