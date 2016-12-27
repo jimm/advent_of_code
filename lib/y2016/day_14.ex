@@ -22,7 +22,13 @@ defmodule Y2016.Day14 do
     end)
   end
 
-  def nth_key(_, _, _, key_indexes, _, _) when length(key_indexes) == @nth_key_desired, do: Enum.max(key_indexes)
+  def nth_key(_, _, _, key_indexes, _, _) when length(key_indexes) >= @nth_key_desired do
+    key_indexes
+    |> Enum.sort
+    |> Enum.take(@nth_key_desired)
+    |> Enum.reverse
+    |> hd
+  end
   # DEBUG
   def nth_key(_, 25000, _, _, _, _) do
     raise "index 25000 is too high"
@@ -73,10 +79,7 @@ end
                new_vals = vals |> Enum.filter(fn v -> v >= index - 1000 end)
                Map.put(m, k, new_vals)
           end)
-        all_keys =
-          (key_indexes ++ Enum.reverse(new_indexes)) # we'll ignore highest extras
-          |> Enum.take(@nth_key_desired)
-        [lst, all_keys]
+        [lst, new_indexes ++ key_indexes]
       else
         [new_last_seen_threes, key_indexes]
       end
@@ -117,4 +120,5 @@ end
 # # => 15035
 
 # Y2016.Day14.run2
-# # => (20076 is too high)
+# # => 19968
+
