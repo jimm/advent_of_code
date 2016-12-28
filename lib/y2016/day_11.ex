@@ -2,18 +2,20 @@ defmodule Y2016.Day11 do
 
   require Common.Set, as: CS
 
+  @too_many_steps 999_999_999
+
   # This comes from reading the input file. I could write the code to read
   # it, but it's not worth it.
   @floors [
-    [{:gen, :t}, {:chip, :t}, {:gen, :p}, {:gen, :s}],  # floor 1
-    [{:gen, :p}, {:chip, :s}],                          # floor 2
-    [{:gen, :o}, {:chip, :o}, {:gen, :r}, {:chip, :r}], # floor 3
-    []]                                                 # floor 4
+    [{:t, :gen}, {:t, :mchip}, {:p, :gen}, {:s, :gen}],   # floor 1
+    [{:p, :gen}, {:s, :mchip}],                           # floor 2
+    [{:o, :gen}, {:o, :mchip}, {:r, :gen}, {:r, :mchip}], # floor 3
+    []]                                                   # floor 4
 
   @test_floors [
-    [{:chip, :h}, {:chip, :l}],
-    [{:gen, :h}],
-    [{:gen, :l}],
+    [{:h, :mchip}, {:l, :mchip}],
+    [{:h, :gen}],
+    [{:l, :gen}],
     []]
     
   def test_floors, do: @test_floors
@@ -25,25 +27,33 @@ defmodule Y2016.Day11 do
 
   def num_steps_to_solve(_, _, _, steps) when steps >= 32 do
     # This is a sanity check that depends on an incorrect previous solution
-    raise "too many steps"
+    32
+    # raise "too many steps"
   end
   def num_steps_to_solve(floors, elevator_floor, moves, steps) do
     IO.puts "\nnum_steps_to_solve, step #{steps}" # DEBUG
-    print_floors(floors, elevator_floor)
+    # print_floors(floors, elevator_floor)
     if solved?(floors, elevator_floor) do
       steps
     else
-      possible_moves(floors, elevator_floor, moves)
-      |> Enum.map(fn {new_floors, new_elevator_floor} = move ->
-        num_steps_to_solve(new_floors, new_elevator_floor,
-          [{new_floors, new_elevator_floor}|moves], steps+1)
-         end)
+      ms = possible_moves(floors, elevator_floor, moves)
+      if Enum.empty?(ms) do
+        @too_many_steps
+      else
+        ms
+        |> Enum.map(fn {new_floors, new_elevator_floor} ->
+            {new_floors, new_elevator_floor} |> IO.inspect(label: "next") # DEBUG
+            num_steps_to_solve(new_floors, new_elevator_floor,
+              [{new_floors, new_elevator_floor}|moves], steps+1)
+           end)
+        |> Enum.min
+      end
     end
   end
 
   defp possible_moves(floors, elevator_floor, moves) do
     floor = floor_contents(floors, elevator_floor)
-    loadings = CS.combinations(floor, 1) ++ CS.combinations(floor, 2)
+    loadings = CS.combinations(floor, 2) ++ CS.combinations(floor, 1)
     |> IO.inspect(label: "loadings elev floor #{elevator_floor}") # DEBUG
     next_floors = adjacent_floors(elevator_floor)
     for loading <- loadings,
@@ -85,11 +95,11 @@ defmodule Y2016.Day11 do
     end
   end
 
-  defp chip?({:chip, _}), do: true
+  defp chip?({_, :mchip}), do: true
   defp chip?(_), do: false
 
-  defp has_generator?(floor, {:chip, element}) do
-    Enum.member?(floor, {:gen, element})
+  defp has_generator?(floor, {element, :mchip}) do
+    Enum.member?(floor, {element, :gen})
   end
 
   defp make_move(floors, elevator_floor, {loading, next_floor}) do
@@ -115,8 +125,8 @@ defmodule Y2016.Day11 do
     |> Enum.each(fn i ->
       floor = floor_contents(floors, i)
       e = if i == elevator_floor, do: "E ", else: "  "
-      things = floor |> Enum.map(fn {type, elem} ->
-        t = if type == :chip, do: "M", else: "G"
+      things = floor |> Enum.map(fn {elem, type} ->
+        t = if type == :mchip, do: "M", else: "G"
         "#{elem |> to_string |> String.upcase}#{t}"
       end)
       IO.puts "F#{i}: #{e} #{Enum.join(things, " ")}"
