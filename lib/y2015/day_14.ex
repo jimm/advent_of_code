@@ -1,4 +1,6 @@
 defmodule Y2015.Day14 do
+  require Common.File, as: CF
+
   # @input_file "test.txt"
   @input_file "data/y2015/day_14.txt"
   @parse_regex ~r{(\w+) can fly (\d+) km/s for (\d+) seconds, but then must rest for (\d+) seconds\.}
@@ -21,7 +23,8 @@ defmodule Y2015.Day14 do
   end
 
   defp read_reindeer do
-    File.stream!(@input_file)
+    CF.default_input_path(__MODULE__)
+    |> CF.lines
     |> Enum.reduce([], fn line, acc ->
       [name, speed, dur, rest] = parse(line)
       [%Y2015.Day14{name: name,
@@ -103,7 +106,7 @@ defmodule Y2015.Day14 do
 end
 
 # Y2015.Day14.max_dist
-# # => 2640
+# # => 2653 WRONG
 
 # Y2015.Day14.winning_points
 # # => 1102, 1635 is too high, 519 too low
