@@ -1,5 +1,5 @@
 defmodule Y2015.Day03 do
-  require Common.File, as: CF
+  alias Common.File, as: CF
   require Integer
 
   def received_present_count do

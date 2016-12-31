@@ -1,5 +1,5 @@
 defmodule Y2016.Day18 do
-  require Common.File, as: CF
+  alias Common.File, as: CF
 
   @safe "."
   @trap "^"

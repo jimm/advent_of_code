@@ -1,6 +1,6 @@
 defmodule Y2016.Day11 do
 
-  require Common.Set, as: CS
+  alias Common.Set, as: CS
 
   @too_many_steps 999_999_999
 

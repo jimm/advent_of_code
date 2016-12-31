@@ -1,5 +1,5 @@
 defmodule Y2016.Day09 do
-  require Common.File, as: CF
+  alias Common.File, as: CF
 
   def run1(file \\ nil) do
     run(file, &uncomp_len_alg1/1)

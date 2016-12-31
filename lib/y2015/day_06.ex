@@ -1,5 +1,5 @@
 defmodule Y2015.Day06 do
-  require Common.File, as: CF
+  alias Common.File, as: CF
 
   @line_nums ~r{(turn on|turn off|toggle) (\d+),(\d+) through (\d+),(\d+)}
   @num_rows 1000

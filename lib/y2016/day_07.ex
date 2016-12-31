@@ -1,6 +1,6 @@
 # Format of addr: {words-outside-brackets, words-inside-brackets}
 defmodule Y2016.Day07 do
-  require Common.File, as: CF
+  alias Common.File, as: CF
 
   @input_file CF.default_input_path(__MODULE__)
 

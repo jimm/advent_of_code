@@ -2,7 +2,7 @@ defmodule Y2015.Day17 do
   @liters 150
   @input_file "data/y2015/day_17.txt"
 
-  require Common.Set
+  alias Common.Set
 
   def run(liters \\ @liters, input_file \\ @input_file) do
     containers = File.stream!(input_file)

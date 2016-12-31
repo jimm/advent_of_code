@@ -1,5 +1,5 @@
 defmodule Y2015.Day12 do
-  require Common.File, as: CF
+  alias Common.File, as: CF
 
   def sum do
     sum(fn _ -> true end)

@@ -1,5 +1,5 @@
 defmodule Y2016.Day15 do
-  require Common.File, as: CF
+  alias Common.File, as: CF
 
   @input_file CF.default_input_path(__MODULE__)
   @input_regex ~r{Disc #\d+ has (\d+) positions; at time=0, it is at position (\d+)\.}

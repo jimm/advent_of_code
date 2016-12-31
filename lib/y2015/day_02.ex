@@ -1,5 +1,5 @@
 defmodule Y2015.Day02 do
-  require Common.File, as: CF
+  alias Common.File, as: CF
 
   def total_paper_area_needed do
     calculate_need(&paper_area_needed/1)

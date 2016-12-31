@@ -1,5 +1,5 @@
 defmodule Y2015.Day07 do
-  require Common.File, as: CF
+  alias Common.File, as: CF
 
   use Bitwise
 

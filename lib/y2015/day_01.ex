@@ -1,5 +1,5 @@
 defmodule Y2015.Day01 do
-  require Common.File, as: CF
+  alias Common.File, as: CF
 
   def destination_floor do
     __MODULE__

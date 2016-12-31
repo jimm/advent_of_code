@@ -1,5 +1,5 @@
 defmodule Y2015.Day05 do
-  require Common.File, as: CF
+  alias Common.File, as: CF
 
   @forbidden ~r{(ab)|(cd)|(pq)|(xy)}
   @doubled ~r{(.)\1}

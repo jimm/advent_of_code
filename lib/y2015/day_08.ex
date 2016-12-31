@@ -1,5 +1,5 @@
 defmodule Y2015.Day08 do
-  require Common.File, as: CF
+  alias Common.File, as: CF
 
   def run1 do
     {code_rep_len, char_count} =

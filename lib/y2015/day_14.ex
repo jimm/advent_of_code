@@ -1,5 +1,5 @@
 defmodule Y2015.Day14 do
-  require Common.File, as: CF
+  alias Common.File, as: CF
 
   # @input_file "test.txt"
   @input_file "data/y2015/day_14.txt"

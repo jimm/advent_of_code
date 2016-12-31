@@ -1,5 +1,5 @@
 defmodule Y2016.Day03 do
-  require Common.File, as: CF
+  alias Common.File, as: CF
 
   @input_file CF.default_input_path(__MODULE__)
 

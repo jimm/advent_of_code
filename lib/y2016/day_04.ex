@@ -2,7 +2,7 @@
 
 # Rooms stored as {name, sector, checksum}
 defmodule Y2016.Day04 do
-  require Common.File, as: CF
+  alias Common.File, as: CF
 
   @input_file CF.default_input_path(__MODULE__)
   @room_regex ~r/^(([a-z]+-)+)(\d+)\[([a-z]+)\]$/

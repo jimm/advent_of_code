@@ -1,5 +1,5 @@
 defmodule Y2015.Day09 do
-  require Common.File, as: CF
+  alias Common.File, as: CF
 
   def shortest, do: run(&Enum.min/1)
 

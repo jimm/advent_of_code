@@ -1,7 +1,7 @@
 defmodule Y2016.Day10 do
   @empty_bot {nil, nil, nil, nil}
 
-  require Common.File, as: CF
+  alias Common.File, as: CF
 
   defmodule Factory do
     defstruct bots: %{}, outputs: %{}

@@ -4,7 +4,7 @@ defmodule Y2016.Day08 do
   @off " "
   @on "#"
 
-  require Common.File, as: CF
+  alias Common.File, as: CF
 
   def run1(file \\ nil) do
     generate_display(file)
