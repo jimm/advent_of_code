@@ -16,11 +16,10 @@ defmodule Common.File do
       mod
       |> to_string
       |> String.downcase
-      |> String.replace(".day", ".day_")
       |> String.split(".")
       |> tl
       |> Enum.join("/")
-    "data/#{path}str}.txt"
+    "data/#{path}.txt"
   end
 
   def default_input_path(mod, part) do
