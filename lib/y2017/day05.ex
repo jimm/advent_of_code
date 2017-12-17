@@ -36,24 +36,4 @@ defmodule Y2017.Day05 do
     new_m = Map.replace(m, idx, f.(offset))
     do_steps_until_out_of_bounds(new_m, len, new_idx, steps+1, f)
   end
-
-  # defp steps_until_out_of_bounds(f) do
-  #   nums =
-  #     __MODULE__
-  #     |> CF.default_input_path
-  #     |> CF.lines
-  #     |> Enum.map(&String.to_integer/1)
-  #   do_steps_until_out_of_bounds(nums, 0, 0, 0, f)
-  # end
-
-  # defp do_steps_until_out_of_bounds(nums, idx, _, steps, _)
-  # when idx < 0 or idx >= length(nums) do
-  #   steps
-  # end
-  # defp do_steps_until_out_of_bounds(nums, idx, offset, steps, f) do
-  #   offset = Enum.at(nums, idx)
-  #   new_idx = idx + offset
-  #   new_nums = List.replace_at(nums, idx, f.(offset))
-  #   do_steps_until_out_of_bounds(new_nums, new_idx, offset, steps+1, f)
-  # end
 end
