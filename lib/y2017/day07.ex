@@ -16,23 +16,19 @@ defmodule Y2017.Day07 do
   # 6457 is too high
   def part2 do
     root = read_tree() |> set_subtree_weights
-    debug_print_tree(root)
     misfit = find_misfit(root)
     correct_weight_for(misfit, root)
   end
 
   # ================ part 2 ================
 
-  defp debug_print_tree(node) do
-  end
-
-  defp set_subtree_weights(node) do
+  def set_subtree_weights(node) do
     %{node |
       subtree_weight: subtree_weight(node),
       children: node.children |> Enum.map(&set_subtree_weights/1)}
   end
 
-  defp subtree_weight(node) do
+  def subtree_weight(node) do
     node.weight + (
       node.children
       |> Enum.map(&subtree_weight/1)
@@ -40,10 +36,10 @@ defmodule Y2017.Day07 do
     )
   end
 
-  defp find_misfit(node = %Node{children: []}) do
+  def find_misfit(%Node{children: []}) do
     nil
   end
-  defp find_misfit(node) do
+  def find_misfit(node) do
     child_weights = Enum.map(node.children, &(&1.subtree_weight))
     if balanced?(child_weights) do
       node
@@ -56,14 +52,14 @@ defmodule Y2017.Day07 do
       different_weight =
         weight_freqs
         |> Map.keys
-        |> Enum.find(fn(k) -> Map.get(weight_freqs, k) == 1 end)
+        |> Enum.find(&(Map.get(weight_freqs, &1) == 1))
       node.children
-      |> Enum.find(fn(ch) -> ch.subtree_weight == different_weight end)
+      |> Enum.find(&(&1.subtree_weight == different_weight))
       |> find_misfit
     end
   end
 
-  defp correct_weight_for(node, root) do
+  def correct_weight_for(node, root) do
     ideal_weight = any_sibling(node, root).subtree_weight
     sum_child_weights =
       node.children
@@ -72,63 +68,57 @@ defmodule Y2017.Day07 do
     ideal_weight - sum_child_weights
   end
 
-  defp any_sibling(node, root) do
+  def any_sibling(node, root) do
     parent = find_node_named(node.parent_name, root)
-    parent.children |> Enum.find(fn(ch) -> ch != node end)
+    parent.children |> Enum.find(&(&1 != node))
   end
 
-  defp find_node_named(name, node = %Node{name: name}) do
+  def find_node_named(name, node = %Node{name: name}) do
     node
   end
-  defp find_node_named(name, node) do
+  def find_node_named(name, node) do
     node.children
-    |> Enum.find(fn(ch) -> find_node_named(name, ch) end)
+    |> Enum.find_value(&(find_node_named(name, &1)))
   end
 
-  defp balanced?([]), do: true
-  defp balanced?([_]), do: true
-  defp balanced?(weights) do
+  def balanced?([]), do: true
+  def balanced?([_]), do: true
+  def balanced?(weights) do
     (weights |> Enum.sort |> Enum.uniq |> length) == 1
   end
 
   # ================ helpers ================
 
   # Returns root node
-  defp read_tree do
-    tree_map = read_tree_map()
-    root = tree_map |> Map.values |> Enum.find(fn(node) -> node.parent_name == "" end)
-    install_child_nodes(root, tree_map)
+  def read_tree do
+    node_map =
+      __MODULE__
+      |> CF.default_input_path
+      |> CF.lines
+      |> Enum.map(&parse_line/1)
+      |> Enum.reduce(%{}, fn(n, m) -> Map.put(m, n.name, n) end)
+    root_name =
+      node_map
+      |> Map.keys
+      |> Enum.find(fn(name) -> !has_parent?(name, Map.values(node_map)) end)
+    build_tree(root_name, nil, node_map)
   end
 
-  # During this process, a node's children are names (map keys), not nodes.
-  defp read_tree_map do
-    __MODULE__
-    |> CF.default_input_path
-    |> CF.lines
-    |> Enum.map(&parse_line/1)
-    |> Enum.reduce(%{}, fn(node, tree) ->
-         existing_entry = tree[node.name]
-         node_to_insert = if existing_entry, do: %{node | parent_name: existing_entry}, else: node
-         tree = Map.put(tree, node.name, node_to_insert)
-
-         # For each child, add this name as the parent of that child.
-         # We end up with a modified tree.
-         node.children
-         |> Enum.reduce(tree, fn(n, tree) -> set_parent_name(n, node.name, tree) end)
-       end)
+  def has_parent?(_, []) do
+    false
+  end
+  def has_parent?(name, [%Node{children: kid_names} | t]) do
+    if Enum.member?(kid_names, name), do: true, else: has_parent?(name, t)
   end
 
-  # Set parent_name of n and return modified tree
-  defp set_parent_name(n, parent_name, tree) do
-    child_node = tree[n]
-    if child_node do
-      Map.put(tree, n, %{child_node | parent_name: parent_name})
-    else
-      Map.put(tree, n, parent_name)
-    end
+  def build_tree(name, parent_name, node_map) do
+    n = node_map[name]
+    %{n |
+      parent_name: parent_name,
+      children: n.children |> Enum.map(&(build_tree(&1, n.name, node_map)))}
   end
 
-  defp parse_line(line) do
+  def parse_line(line) do
     [name, weight_in_parens | remainder] = String.split(line)
     weight =
       weight_in_parens
@@ -143,18 +133,5 @@ defmodule Y2017.Day07 do
     else
       %Node{name: name, weight: weight}
     end
-  end
-
-  defp install_child_nodes(node = %Node{children: []}, _) do
-    node
-  end
-  defp install_child_nodes(node, tree_map) do
-    child_nodes =
-      node.children
-      |> Enum.map(fn(child_name) ->
-           child_node = tree_map[child_name]
-           install_child_nodes(child_node, tree_map)
-         end)
-    %{node | children: child_nodes }
   end
 end
