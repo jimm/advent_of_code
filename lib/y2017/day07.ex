@@ -22,13 +22,13 @@ defmodule Y2017.Day07 do
 
   # ================ part 2 ================
 
-  def set_subtree_weights(node) do
+  defp set_subtree_weights(node) do
     %{node |
       subtree_weight: subtree_weight(node),
       children: node.children |> Enum.map(&set_subtree_weights/1)}
   end
 
-  def subtree_weight(node) do
+  defp subtree_weight(node) do
     node.weight + (
       node.children
       |> Enum.map(&subtree_weight/1)
@@ -36,10 +36,10 @@ defmodule Y2017.Day07 do
     )
   end
 
-  def find_misfit(%Node{children: []}) do
+  defp find_misfit(%Node{children: []}) do
     nil
   end
-  def find_misfit(node) do
+  defp find_misfit(node) do
     child_weights = Enum.map(node.children, &(&1.subtree_weight))
     if balanced?(child_weights) do
       node
@@ -59,7 +59,7 @@ defmodule Y2017.Day07 do
     end
   end
 
-  def correct_weight_for(node, root) do
+  defp correct_weight_for(node, root) do
     ideal_weight = any_sibling(node, root).subtree_weight
     sum_child_weights =
       node.children
@@ -68,29 +68,29 @@ defmodule Y2017.Day07 do
     ideal_weight - sum_child_weights
   end
 
-  def any_sibling(node, root) do
+  defp any_sibling(node, root) do
     parent = find_node_named(node.parent_name, root)
     parent.children |> Enum.find(&(&1 != node))
   end
 
-  def find_node_named(name, node = %Node{name: name}) do
+  defp find_node_named(name, node = %Node{name: name}) do
     node
   end
-  def find_node_named(name, node) do
+  defp find_node_named(name, node) do
     node.children
     |> Enum.find_value(&(find_node_named(name, &1)))
   end
 
-  def balanced?([]), do: true
-  def balanced?([_]), do: true
-  def balanced?(weights) do
+  defp balanced?([]), do: true
+  defp balanced?([_]), do: true
+  defp balanced?(weights) do
     (weights |> Enum.sort |> Enum.uniq |> length) == 1
   end
 
   # ================ helpers ================
 
   # Returns root node
-  def read_tree do
+  defp read_tree do
     node_map =
       __MODULE__
       |> CF.default_input_path
@@ -104,21 +104,21 @@ defmodule Y2017.Day07 do
     build_tree(root_name, nil, node_map)
   end
 
-  def has_parent?(_, []) do
+  defp has_parent?(_, []) do
     false
   end
-  def has_parent?(name, [%Node{children: kid_names} | t]) do
+  defp has_parent?(name, [%Node{children: kid_names} | t]) do
     if Enum.member?(kid_names, name), do: true, else: has_parent?(name, t)
   end
 
-  def build_tree(name, parent_name, node_map) do
+  defp build_tree(name, parent_name, node_map) do
     n = node_map[name]
     %{n |
       parent_name: parent_name,
       children: n.children |> Enum.map(&(build_tree(&1, n.name, node_map)))}
   end
 
-  def parse_line(line) do
+  defp parse_line(line) do
     [name, weight_in_parens | remainder] = String.split(line)
     weight =
       weight_in_parens
