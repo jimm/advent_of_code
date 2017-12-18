@@ -3,21 +3,38 @@
 defmodule Y2017.Day08 do
   alias Common.File, as: CF
 
+  defmodule Registers do
+    defstruct regs: %{}, max_seen: -0x7fffffff
+  end
+
   defmodule Instruction do
     defstruct [:reg, :op, :const, :if]
   end
 
   def part1 do
+    regs = run()
+    regs.regs |> Map.values |> Enum.max
+  end
+
+  def part2 do
+    regs = run()
+    regs.max_seen
+  end
+
+  defp run do
     __MODULE__
     |> CF.default_input_path
     |> CF.lines
     |> Enum.map(&parse_line/1)
-    |> Enum.reduce(%{}, fn(instr, regs) -> run_instruction(instr, regs) end)
-    |> Map.values
-    |> Enum.max
+    |> Enum.reduce(%Registers{}, fn(instr, regs) -> run_instruction(instr, regs) end)
   end
 
-  defp val(reg, regs), do: Map.get(regs, reg, 0)
+  defp read(reg, %Registers{regs: regs}), do: Map.get(regs, reg, 0)
+
+  defp write(reg, val, regs) do
+    %{regs | regs: Map.put(regs.regs, reg, val),
+      max_seen: (if val > regs.max_seen, do: val, else: regs.max_seen)}
+  end
 
   defp run_instruction(inst, regs) do
     if eval(inst.if, regs) do
@@ -28,28 +45,28 @@ defmodule Y2017.Day08 do
   end
 
   defp eval(%Instruction{reg: reg, op: :==,   const: const}, regs) do
-    val(reg, regs) == const
+    read(reg, regs) == const
   end
   defp eval(%Instruction{reg: reg, op: :!=,   const: const}, regs) do
-    val(reg, regs) != const
+    read(reg, regs) != const
   end
   defp eval(%Instruction{reg: reg, op: :>,   const: const}, regs) do
-    val(reg, regs) > const
+    read(reg, regs) > const
   end
   defp eval(%Instruction{reg: reg, op: :>=,  const: const}, regs) do
-    val(reg, regs) >= const
+    read(reg, regs) >= const
   end
   defp eval(%Instruction{reg: reg, op: :<,   const: const}, regs) do
-    val(reg, regs) < const
+    read(reg, regs) < const
   end
   defp eval(%Instruction{reg: reg, op: :<=,  const: const}, regs) do
-    val(reg, regs) <= const
+    read(reg, regs) <= const
   end
   defp eval(%Instruction{reg: reg, op: :dec, const: const}, regs) do
-    Map.put(regs, reg, val(reg, regs) - const)
+    write(reg, read(reg, regs) - const, regs)
   end
   defp eval(%Instruction{reg: reg, op: :inc, const: const}, regs) do
-    Map.put(regs, reg, val(reg, regs) + const)
+    write(reg, read(reg, regs) + const, regs)
   end
 
   defp parse_line(line) do
