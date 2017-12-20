@@ -1,10 +1,10 @@
 defmodule Y2015.Day08 do
-  alias Common.File, as: CF
+
+  use Common.File
 
   def run1 do
     {code_rep_len, char_count} =
-      __MODULE__
-      |> CF.default_input_path
+      default_input_path()
       |> File.stream!
       |> Enum.map(&String.strip/1)
       |> Enum.reduce({0, 0}, fn(s, {crl, cc}) ->
@@ -17,8 +17,7 @@ defmodule Y2015.Day08 do
 
   def run2 do
     {code_rep_len, encoded_rep_len} =
-      __MODULE__
-      |> CF.default_input_path
+      default_input_path()
       |> File.stream!
       |> Enum.map(&String.strip/1)
       |> Enum.reduce({0, 0}, fn(s, {crl, ecl}) ->

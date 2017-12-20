@@ -1,5 +1,6 @@
 defmodule Y2016.Day12 do
-  alias Common.File, as: CF
+
+  use Common.File
 
   def run1(file \\ nil) do
     run(file, [0, 0, 0, 0])
@@ -10,9 +11,7 @@ defmodule Y2016.Day12 do
   end
 
   defp run(file, registers) do
-    instructions =
-      (file || CF.default_input_path(__MODULE__))
-      |> CF.lines
+    instructions = (file || default_input_path()) |> input_lines
     run_simulator(instructions, 0, registers)
     |> hd                       # register 1
   end

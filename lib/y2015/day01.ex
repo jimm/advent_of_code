@@ -1,9 +1,9 @@
 defmodule Y2015.Day01 do
-  alias Common.File, as: CF
+
+  use Common.File
 
   def destination_floor do
-    __MODULE__
-    |> CF.default_input_path
+    default_input_path()
     |> File.read!
     |> String.split("", trim: true)
     |> IO.inspect(label: "codepoints") # DEBUG
@@ -11,8 +11,7 @@ defmodule Y2015.Day01 do
   end
 
   def first_basement_index do
-    __MODULE__
-    |> CF.default_input_path
+    default_input_path()
     |> File.read!
     |> String.codepoints
     |> first_negative_one(0, 0)

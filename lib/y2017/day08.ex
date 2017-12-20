@@ -1,7 +1,8 @@
 # I Heard You Like Registers
 
 defmodule Y2017.Day08 do
-  alias Common.File, as: CF
+
+  use Common.File
 
   defmodule Registers do
     defstruct regs: %{}, max_seen: -0x7fffffff
@@ -22,9 +23,7 @@ defmodule Y2017.Day08 do
   end
 
   defp run do
-    __MODULE__
-    |> CF.default_input_path
-    |> CF.lines
+    input_lines()
     |> Enum.map(&parse_line/1)
     |> Enum.reduce(%Registers{}, fn(instr, regs) -> run_instruction(instr, regs) end)
   end

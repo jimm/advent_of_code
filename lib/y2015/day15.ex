@@ -1,5 +1,8 @@
 defmodule Y2015.Day15 do
-  @input_file "data/y2015/day_15.txt"
+
+  use Common.File
+
+  @input_file default_input_path()
   @parse_regex ~r{(\w+): capacity (-?\d+), durability (-?\d+), flavor (-?\d+), texture (-?\d+), calories (-?\d+)}
 
   defstruct [:name, :capacity, :durability, :flavor, :texture, :calories]

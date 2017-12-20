@@ -1,7 +1,8 @@
 defmodule Y2016.Day15 do
-  alias Common.File, as: CF
 
-  @input_file CF.default_input_path(__MODULE__)
+  use Common.File
+
+  @input_file default_input_path()
   @input_regex ~r{Disc #\d+ has (\d+) positions; at time=0, it is at position (\d+)\.}
 
   def run1(file \\ @input_file) do
@@ -23,7 +24,7 @@ defmodule Y2016.Day15 do
   # Assumes discs are in order in the file, starting at number 1.
   # Returns a list of {num_positions, start_positions} tuples.
   defp read_file(file) do
-    CF.lines(file)
+    input_lines(file)
     |> Enum.map(fn line ->
       [_, num_pos, start_pos] = Regex.run(@input_regex, line)
       {String.to_integer(num_pos), String.to_integer(start_pos)}

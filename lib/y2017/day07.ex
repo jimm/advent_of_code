@@ -5,7 +5,8 @@ defmodule Y2017.Day07.Node do
 end
 
 defmodule Y2017.Day07 do
-  alias Common.File, as: CF
+
+  use Common.File
   alias Y2017.Day07.Node
 
   def part1 do
@@ -92,9 +93,7 @@ defmodule Y2017.Day07 do
   # Returns root node
   defp read_tree do
     node_map =
-      __MODULE__
-      |> CF.default_input_path
-      |> CF.lines
+      input_lines()
       |> Enum.map(&parse_line/1)
       |> Enum.reduce(%{}, fn(n, m) -> Map.put(m, n.name, n) end)
     root_name =

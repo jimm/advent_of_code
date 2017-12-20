@@ -1,7 +1,7 @@
 defmodule Y2016.Day10 do
   @empty_bot {nil, nil, nil, nil}
 
-  alias Common.File, as: CF
+  use Common.File
 
   defmodule Factory do
     defstruct bots: %{}, outputs: %{}
@@ -102,8 +102,8 @@ defmodule Y2016.Day10 do
 
   defp init_factory(file) do
     bots =
-      (file || CF.default_input_path(__MODULE__))
-      |> CF.lines
+      (file || default_input_path())
+      |> input_lines
       |> Enum.map(&String.split/1)
       |> Enum.reduce(%{}, (fn cmd, factory -> init_bot(factory, cmd) end))
     %Factory{bots: bots}

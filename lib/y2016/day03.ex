@@ -1,7 +1,8 @@
 defmodule Y2016.Day03 do
-  alias Common.File, as: CF
 
-  @input_file CF.default_input_path(__MODULE__)
+  use Common.File
+
+  @input_file default_input_path()
 
   def run1(file \\ @input_file) do
     read_file(file) |> do_run
@@ -31,7 +32,7 @@ defmodule Y2016.Day03 do
   end
 
   defp read_file2(file) do
-    CF.lines(file)
+    input_lines(file)
     |> Enum.chunk(3)
     |> Enum.map(fn three ->
       [{a0, a1, a2},

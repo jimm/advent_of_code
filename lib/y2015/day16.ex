@@ -1,5 +1,8 @@
 defmodule Y2015.Day16 do
-  @input_file "data/y2015/day_16.txt"
+
+  use Common.File
+
+  @input_file default_input_path()
   @parse_regex ~r{Sue (\d+): (\w+): (\d+), (\w+): (\d+), (\w+): (\d+)}
   @analysis %{
     children: 3,

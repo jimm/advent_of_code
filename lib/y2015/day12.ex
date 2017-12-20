@@ -1,5 +1,6 @@
 defmodule Y2015.Day12 do
-  alias Common.File, as: CF
+
+  use Common.File
 
   def sum do
     sum(fn _ -> true end)
@@ -10,8 +11,7 @@ defmodule Y2015.Day12 do
   end
 
   defp sum(filter) do
-    __MODULE__
-    |> CF.default_input_path
+    default_input_path()
     |> File.read!
     |> collect_numbers(filter)
     |> Enum.sum

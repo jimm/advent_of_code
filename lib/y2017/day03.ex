@@ -1,8 +1,8 @@
 # Spiral Memory
 
 defmodule Y2017.Day03 do
+
   import Bitwise
-  alias Common.File, as: CF
 
   @start_location 368078
 

@@ -1,5 +1,8 @@
 defmodule Y2015.Day19 do
-  @input_file "data/y2015/day_19.txt"
+
+  use Common.File
+
+  @input_file default_input_path()
 
   def single_sub_uniq_count(input_file \\ @input_file) do
     {replacements, start} = parse(input_file)

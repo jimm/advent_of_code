@@ -1,6 +1,6 @@
 defmodule Y2017.Day12 do
 
-  alias Common.File, as: CF
+  use Common.File
 
   def part1 do
     read_network()
@@ -77,9 +77,7 @@ defmodule Y2017.Day12 do
 
   defp read_network do
     one_way =
-      __MODULE__
-      |> CF.default_input_path
-      |> CF.lines
+      input_lines()
       |> Enum.map(&parse_line/1)
       |> Map.new
     reverse_connections(one_way)

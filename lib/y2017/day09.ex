@@ -2,7 +2,7 @@
 
 defmodule Y2017.Day09 do
 
-  alias Common.File, as: CF
+  use Common.File
 
   defmodule State do
     defstruct state: :group, score: 0, scores: [], comment_char_count: 0
@@ -44,8 +44,7 @@ defmodule Y2017.Day09 do
   end
 
   defp read_stream() do
-    __MODULE__
-    |> CF.default_input_path
+    default_input_path()
     |> File.read!
     |> String.to_charlist
   end

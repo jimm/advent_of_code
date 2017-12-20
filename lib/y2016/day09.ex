@@ -1,5 +1,6 @@
 defmodule Y2016.Day09 do
-  alias Common.File, as: CF
+
+  use Common.File
 
   def run1(file \\ nil) do
     run(file, &uncomp_len_alg1/1)
@@ -11,7 +12,7 @@ defmodule Y2016.Day09 do
 
   defp run(file, f) do
     input =
-      (file || CF.default_input_path(__MODULE__))
+      (file || default_input_path())
       |> File.read!
       |> String.replace(~r/[ \t\n]/, "")
     f.(input)

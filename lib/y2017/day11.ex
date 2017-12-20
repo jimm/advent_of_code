@@ -4,7 +4,7 @@
 
 defmodule Y2017.Day11 do
 
-  alias Common.File, as: CF
+  use Common.File
 
   def part1 do
     {dest, _} = travel()
@@ -60,9 +60,7 @@ defmodule Y2017.Day11 do
   end
 
   defp read_steps do
-    __MODULE__
-    |> CF.default_input_path
-    |> CF.lines
+    input_lines()
     |> hd
     |> String.split(",")
     |> Enum.map(&String.to_atom/1)

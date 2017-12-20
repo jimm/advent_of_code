@@ -4,7 +4,7 @@ defmodule Y2016.Day08 do
   @off " "
   @on "#"
 
-  alias Common.File, as: CF
+  use Common.File
 
   def run1(file \\ nil) do
     generate_display(file)
@@ -18,7 +18,7 @@ defmodule Y2016.Day08 do
   end
 
   defp generate_display(file) do
-    lines = (file || CF.default_input_path(__MODULE__)) |> CF.lines
+    lines = (file || default_input_path()) |> input_lines
     lines
     |> Enum.reduce(init_display(), fn(command, display) ->
       run_command(command, display)

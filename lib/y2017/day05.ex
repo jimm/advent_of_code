@@ -1,7 +1,8 @@
 # A Maze of Twisty Trampolines, All Alike
 
 defmodule Y2017.Day05 do
-  alias Common.File, as: CF
+
+  use Common.File
 
   def part1 do
     steps_until_out_of_bounds(fn(offset) -> offset + 1 end)
@@ -18,9 +19,7 @@ defmodule Y2017.Day05 do
   defp steps_until_out_of_bounds(f) do
     indices = Stream.iterate(0, &(&1+1))
     nums =
-      __MODULE__
-      |> CF.default_input_path
-      |> CF.lines
+      input_lines()
       |> Enum.map(&String.to_integer/1)
     m = Map.new(Enum.zip(indices, nums))
     do_steps_until_out_of_bounds(m, length(nums), 0, 0, f)

@@ -1,21 +1,18 @@
 # Corruption Checksum
 
 defmodule Y2017.Day02 do
-  alias Common.File, as: CF
+
+  use Common.File
   alias Common.Set
 
   def part1 do
-    __MODULE__
-    |> CF.default_input_path
-    |> CF.lines
+    input_lines()
     |> Enum.map(&minmax_diff_line/1)
     |> Enum.sum
   end
 
   def part2 do
-    __MODULE__
-    |> CF.default_input_path
-    |> CF.lines
+    input_lines()
     |> Enum.map(&find_integer_divisor_line/1)
     |> Enum.sum
   end

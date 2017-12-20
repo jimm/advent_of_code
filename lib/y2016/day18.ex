@@ -1,15 +1,16 @@
 defmodule Y2016.Day18 do
-  alias Common.File, as: CF
+
+  use Common.File
 
   @safe "."
   @trap "^"
-  @input_file CF.default_input_path(__MODULE__)
+  @input_file default_input_path()
   @run1_rows 40
 
   def run(num_rows \\ @run1_rows, file \\ @input_file) do
     row =
       file
-      |> CF.lines
+      |> input_lines
       |> hd
       |> String.split("", trim: true)
     total_safe(row, num_rows-1, count_safe(row))

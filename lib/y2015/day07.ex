@@ -1,6 +1,6 @@
 defmodule Y2015.Day07 do
-  alias Common.File, as: CF
 
+  use Common.File
   use Bitwise
 
   def run, do: run(&(&1))
@@ -8,8 +8,7 @@ defmodule Y2015.Day07 do
   def run2, do: run(&reset_and_rerun/1)
 
   defp run(modify) do
-    __MODULE__
-    |> CF.default_input_path
+    default_input_path()
     |> File.stream!
     |> tokenize
     |> reorder

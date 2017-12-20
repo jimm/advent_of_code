@@ -1,4 +1,17 @@
 defmodule Common.File do
+
+  defmacro __using__(_) do
+    quote do
+      import Common.File
+    end
+  end
+
+  defmacro default_input_path do
+    quote do
+      default_input_path(__MODULE__)
+    end
+  end
+
   @doc """
   Given a module atom or string, return a path to the default input file for
   that module, relative to the root of the project.
@@ -28,7 +41,13 @@ defmodule Common.File do
     path |> String.replace(".txt", "#{part_str}.txt")
   end
 
-  def lines(file) do
+  defmacro input_lines() do
+    quote do
+      __MODULE__ |> default_input_path |> input_lines
+    end
+  end
+
+  def input_lines(file) do
     file
     |> File.read!
     |> String.split("\n", trim: true)

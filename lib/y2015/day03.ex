@@ -1,10 +1,10 @@
 defmodule Y2015.Day03 do
-  alias Common.File, as: CF
+
+  use Common.File
   require Integer
 
   def received_present_count do
-    __MODULE__
-    |> CF.default_input_path
+    default_input_path()
     |> File.read!
     |> String.codepoints
     |> locs_and_counts
@@ -14,8 +14,7 @@ defmodule Y2015.Day03 do
 
   def santa_plus_robo_present_count do
     directions_with_indexes =
-      __MODULE__
-      |> CF.default_input_path
+      default_input_path()
       |> File.read!
       |> String.codepoints
       |> Enum.with_index

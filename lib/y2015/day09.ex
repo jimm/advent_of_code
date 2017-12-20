@@ -1,5 +1,6 @@
 defmodule Y2015.Day09 do
-  alias Common.File, as: CF
+
+  use Common.File
 
   def shortest, do: run(&Enum.min/1)
 
@@ -7,8 +8,7 @@ defmodule Y2015.Day09 do
 
   defp run(f) do
     distances =
-      __MODULE__
-      |> CF.default_input_path
+      default_input_path()
       |> File.stream!
       |> Enum.reduce(%{}, fn line, acc ->
         [src, "to", dest, "=", num_str] = String.split(line)

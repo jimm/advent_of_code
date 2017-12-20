@@ -1,5 +1,6 @@
 defmodule Y2015.Day02 do
-  alias Common.File, as: CF
+
+  use Common.File
 
   def total_paper_area_needed do
     calculate_need(&paper_area_needed/1)
@@ -12,9 +13,7 @@ defmodule Y2015.Day02 do
   # ================ helpers ================
 
   defp calculate_need(f) do
-    __MODULE__
-    |> CF.default_input_path
-    |> CF.lines
+    input_lines()
     |> Enum.map(&parse/1)
     |> Enum.map(f)
     |> Enum.sum

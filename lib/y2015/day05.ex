@@ -1,5 +1,6 @@
 defmodule Y2015.Day05 do
-  alias Common.File, as: CF
+
+  use Common.File
 
   @forbidden ~r{(ab)|(cd)|(pq)|(xy)}
   @doubled ~r{(.)\1}
@@ -8,9 +9,7 @@ defmodule Y2015.Day05 do
   @repeat_one_between ~r{(.).\1}
 
   def count_nice(f) do
-    __MODULE__
-    |> CF.default_input_path
-    |> CF.lines
+    input_lines()
     |> Stream.map(&String.strip/1)
     |> Stream.filter(fn(s) -> f.(s) end)
     |> Enum.to_list

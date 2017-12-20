@@ -1,7 +1,8 @@
 # Memory Reallocation
 
 defmodule Y2017.Day06 do
-  alias Common.File, as: CF
+
+  use Common.File
 
   def part1 do
     banks = read_banks()
@@ -38,9 +39,7 @@ defmodule Y2017.Day06 do
     # DEBUG test data
     # [0, 2, 7, 0]
 
-    __MODULE__
-    |> CF.default_input_path
-    |> CF.lines
+    input_lines()
     |> hd
     |> String.split
     |> Enum.map(&String.to_integer/1)

@@ -1,7 +1,8 @@
 defmodule Y2016.Day01 do
-  alias Common.File, as: CF
 
-  @input_file CF.default_input_path(__MODULE__)
+  use Common.File
+
+  @input_file default_input_path()
 
   def run1(file \\ @input_file) do
     read_dirs(file)

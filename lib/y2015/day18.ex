@@ -1,5 +1,8 @@
 defmodule Y2015.Day18 do
-  @input_file "data/y2015/day_18.txt"
+
+  use Common.File
+
+  @input_file default_input_path()
   @on ?#
   @off ?.
 

@@ -1,8 +1,9 @@
 # Format of addr: {words-outside-brackets, words-inside-brackets}
 defmodule Y2016.Day07 do
-  alias Common.File, as: CF
 
-  @input_file CF.default_input_path(__MODULE__)
+  use Common.File
+
+  @input_file default_input_path()
 
   def run1(file \\ @input_file) do
     count_addrs(file, &supports_tls?/1)
@@ -15,7 +16,7 @@ defmodule Y2016.Day07 do
   end
 
   def count_addrs(file, f) do
-    CF.lines(file)
+    input_lines(file)
     |> Enum.map(&parse_addrs/1)
     |> Enum.filter(f)
     |> Enum.count

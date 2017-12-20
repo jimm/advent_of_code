@@ -1,5 +1,6 @@
 defmodule Y2015.Day06 do
-  alias Common.File, as: CF
+
+  use Common.File
 
   @line_nums ~r{(turn on|turn off|toggle) (\d+),(\d+) through (\d+),(\d+)}
   @num_rows 1000
@@ -27,8 +28,7 @@ defmodule Y2015.Day06 do
 
   def sum_after_applying(funcmap) do
     grid = List.duplicate(0, @num_rows * @row_len) |> Enum.chunk(@row_len)
-    __MODULE__
-    |> CF.default_input_path
+    default_input_path()
     |> File.stream!
     |> Enum.map(&(parse(&1, funcmap)))
     |> Enum.reduce(grid, fn(cmd, lights) -> execute(lights, cmd) end)

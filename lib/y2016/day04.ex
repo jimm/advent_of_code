@@ -2,9 +2,10 @@
 
 # Rooms stored as {name, sector, checksum}
 defmodule Y2016.Day04 do
-  alias Common.File, as: CF
 
-  @input_file CF.default_input_path(__MODULE__)
+  use Common.File
+
+  @input_file default_input_path()
   @room_regex ~r/^(([a-z]+-)+)(\d+)\[([a-z]+)\]$/
 
   def run1(file \\ @input_file) do
@@ -27,7 +28,7 @@ defmodule Y2016.Day04 do
   end
 
   defp read_file(file) do
-    CF.lines(file)
+    input_lines(file)
     |> Enum.map(&parse_room/1)
   end
 

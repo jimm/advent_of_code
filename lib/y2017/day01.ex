@@ -1,7 +1,8 @@
 # Inverse Captcha
 
 defmodule Y2017.Day01 do
-  alias Common.File, as: CF
+
+  use Common.File
 
   def part1 do
     digits = puzzle_digits()
@@ -16,9 +17,7 @@ defmodule Y2017.Day01 do
   end
 
   defp puzzle_digits do
-    __MODULE__
-    |> CF.default_input_path
-    |> CF.lines
+    input_lines()
     |> hd
     |> String.to_integer
     |> Integer.digits

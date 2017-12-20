@@ -1,5 +1,8 @@
 defmodule Y2015.Day13 do
-  @input_file "data/y2015/day_13.txt"
+
+  use Common.File
+
+  @input_file default_input_path()
   @parse_regex ~r{(\w+) would (\w+) (\d+) happiness units by sitting next to (\w+)\.}
 
   def happiest do

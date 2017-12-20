@@ -1,7 +1,8 @@
 defmodule Y2016.Day06 do
-  alias Common.File, as: CF
 
-  @input_file CF.default_input_path(__MODULE__)
+  use Common.File
+
+  @input_file default_input_path()
 
   def run1(file \\ @input_file) do
     run(file, fn {_, freq} -> freq end)
@@ -12,7 +13,7 @@ defmodule Y2016.Day06 do
   end
 
   defp run(file, f) do
-    lines = CF.lines(file)
+    lines = input_lines(file)
     len = lines |> hd |> String.length
     (0..len-1)
     |> Enum.map(fn index ->

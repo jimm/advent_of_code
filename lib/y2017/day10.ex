@@ -2,7 +2,7 @@
 
 defmodule Y2017.Day10 do
 
-  alias Common.File, as: CF
+  use Common.File
   use Bitwise
 
   @rope_len 256
@@ -40,9 +40,7 @@ defmodule Y2017.Day10 do
   # ================ part 1 ================
 
   defp read_input_lengths do
-    __MODULE__
-    |> CF.default_input_path
-    |> CF.lines
+    input_lines()
     |> hd
     |> String.split(",")
     |> Enum.map(&String.to_integer/1)
@@ -51,9 +49,7 @@ defmodule Y2017.Day10 do
   # ================ part 2 ================
 
   defp read_input_chars do
-    __MODULE__
-    |> CF.default_input_path
-    |> CF.lines
+    input_lines()
     |> hd
     |> String.to_charlist
   end

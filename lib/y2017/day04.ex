@@ -1,7 +1,8 @@
 # High-Entropy Passphrases
 
 defmodule Y2017.Day04 do
-  alias Common.File, as: CF
+
+  use Common.File
 
   def part1 do
     count_valid(&words_valid?/1)
@@ -44,9 +45,7 @@ defmodule Y2017.Day04 do
   # ================ helpers ================
 
   defp count_valid(f) do
-    __MODULE__
-    |> CF.default_input_path
-    |> CF.lines
+    input_lines()
     |> Enum.count(f)
   end
 end

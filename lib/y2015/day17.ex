@@ -1,6 +1,9 @@
 defmodule Y2015.Day17 do
+
+  use Common.File
+
   @liters 150
-  @input_file "data/y2015/day_17.txt"
+  @input_file default_input_path()
 
   alias Common.Set
 
