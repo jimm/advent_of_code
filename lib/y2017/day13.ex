@@ -1,7 +1,6 @@
 # Packet Scanners
 
 defmodule Y2017.Day13 do
-
   use Common.File
 
   @moduledoc """
@@ -43,16 +42,20 @@ defmodule Y2017.Day13 do
     def step(l = %Layer{range: nil}) do
       l
     end
+
     def step(l = %Layer{range: range, loc: loc, direction: :down})
-    when loc == range - 2 do
+        when loc == range - 2 do
       %{l | loc: range - 1, direction: :up}
     end
+
     def step(l = %Layer{loc: loc, direction: :down}) do
       %{l | loc: loc + 1}
     end
+
     def step(l = %Layer{loc: 1, direction: :up}) do
       %{l | loc: 0, direction: :down}
     end
+
     def step(l = %Layer{loc: loc, direction: :up}) do
       %{l | loc: loc - 1}
     end
@@ -69,12 +72,14 @@ defmodule Y2017.Day13 do
   def part1 do
     firewall = read_firewall()
     len = length(Map.keys(firewall))
+
     {_, cost} =
-      (0..len-1)
-      |> Enum.reduce({firewall, 0}, fn(i, {firewall, cost}) ->
+      0..(len - 1)
+      |> Enum.reduce({firewall, 0}, fn i, {firewall, cost} ->
         new_cost = cost + Layer.hit_check_cost(firewall[i])
         {step_firewall(firewall), new_cost}
       end)
+
     cost
   end
 
@@ -85,19 +90,21 @@ defmodule Y2017.Day13 do
     max_depth = length(Map.keys(firewall))
 
     # assumes step 0 is not the answer
-    Stream.iterate({cache, 0, -99}, fn({cache, prev_delay, _prev_cost}) ->
+    Stream.iterate({cache, 0, -99}, fn {cache, prev_delay, _prev_cost} ->
       delay = prev_delay + 1
       {firewall, cache} = find_or_create(firewall, delay, cache)
+
       {_, cache, cost} =
-        (0..max_depth-1)
-        |> Enum.reduce({firewall, cache, 0}, fn(i, {fwall, cache, cost}) ->
+        0..(max_depth - 1)
+        |> Enum.reduce({firewall, cache, 0}, fn i, {fwall, cache, cost} ->
           new_cost = cost + Layer.hit_check_cost(fwall[i])
-          {new_fwall, new_cache} = find_or_create(fwall, delay+i+1, cache)
+          {new_fwall, new_cache} = find_or_create(fwall, delay + i + 1, cache)
           {new_fwall, new_cache, new_cost}
         end)
+
       {cache, delay, cost}
     end)
-    |> Enum.find(fn({_, _, cost}) -> cost == 0 end)
+    |> Enum.find(fn {_, _, cost} -> cost == 0 end)
     |> elem(1)
   end
 
@@ -107,10 +114,11 @@ defmodule Y2017.Day13 do
   # step, possibly modified cache}.
   defp find_or_create(firewall, step, cache) do
     f = cache[step]
+
     if f do
       {f, cache}
     else
-      {prev_f, cache} = find_or_create(firewall, step-1, cache)
+      {prev_f, cache} = find_or_create(firewall, step - 1, cache)
       f = step_firewall(prev_f)
       {f, Map.put(cache, step, f)}
     end
@@ -118,7 +126,9 @@ defmodule Y2017.Day13 do
 
   defp step_firewall(firewall) do
     len = length(Map.keys(firewall))
-    (0..len-1) |> Enum.reduce(firewall, fn(i, firewall) ->
+
+    0..(len - 1)
+    |> Enum.reduce(firewall, fn i, firewall ->
       Map.replace(firewall, i, Layer.step(firewall[i]))
     end)
   end
@@ -126,13 +136,15 @@ defmodule Y2017.Day13 do
   defp read_firewall() do
     input_lines()
     |> Enum.map(&parse_line/1)
-    |> Enum.reduce(%{}, fn(layer, m) -> Map.put(m, layer.depth, layer) end)
+    |> Enum.reduce(%{}, fn layer, m -> Map.put(m, layer.depth, layer) end)
     |> fill_in_missing_depths
   end
 
   defp fill_in_missing_depths(m) do
     max_depth = Enum.max(Map.keys(m))
-    (0..max_depth-1) |> Enum.reduce(m, fn(i, m) ->
+
+    0..(max_depth - 1)
+    |> Enum.reduce(m, fn i, m ->
       Map.put_new(m, i, %Layer{depth: i})
     end)
   end
@@ -143,6 +155,7 @@ defmodule Y2017.Day13 do
       |> String.split(": ")
       |> Enum.map(&String.trim/1)
       |> Enum.map(&String.to_integer/1)
+
     %Layer{depth: depth, range: range, loc: 0, direction: :down}
   end
 end

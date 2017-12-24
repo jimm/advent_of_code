@@ -1,5 +1,4 @@
 defmodule Y2016.Day09 do
-
   use Common.File
 
   def run1(file \\ nil) do
@@ -13,15 +12,17 @@ defmodule Y2016.Day09 do
   defp run(file, f) do
     input =
       (file || default_input_path())
-      |> File.read!
+      |> File.read!()
       |> String.replace(~r/[ \t\n]/, "")
+
     f.(input)
   end
 
   def uncomp_len_alg1(s), do: do_uncomp_len_alg1(s, 0)
 
   defp do_uncomp_len_alg1("", len), do: len
-  defp do_uncomp_len_alg1(<<?(, _ :: binary>> = s, len) do
+
+  defp do_uncomp_len_alg1(<<?(, _::binary>> = s, len) do
     [match, num_chars, repeats] = Regex.run(~r{\((\d+)x(\d+)\)}, s)
     num_chars = String.to_integer(num_chars)
     repeats = String.to_integer(repeats)
@@ -29,15 +30,16 @@ defmodule Y2016.Day09 do
     {_, rest} = split_at(s, match_len + num_chars)
     do_uncomp_len_alg1(rest, len + repeats * num_chars)
   end
-  defp do_uncomp_len_alg1(<<_, rest :: binary>>, len) do
+
+  defp do_uncomp_len_alg1(<<_, rest::binary>>, len) do
     do_uncomp_len_alg1(rest, len + 1)
   end
-
 
   def uncomp_len_alg2(s), do: do_uncomp_len_alg2(s, 0)
 
   defp do_uncomp_len_alg2("", len), do: len
-  defp do_uncomp_len_alg2(<<?(, _ :: binary>> = s, len) do
+
+  defp do_uncomp_len_alg2(<<?(, _::binary>> = s, len) do
     [match, num_chars, repeats] = Regex.run(~r{\((\d+)x(\d+)\)}, s)
     num_chars = String.to_integer(num_chars)
     repeats = String.to_integer(repeats)
@@ -49,14 +51,16 @@ defmodule Y2016.Day09 do
 
     do_uncomp_len_alg2(rest, len + section_len)
   end
-  defp do_uncomp_len_alg2(<<_, rest :: binary>>, len) do
-    do_uncomp_len_alg2(rest, len+1)
+
+  defp do_uncomp_len_alg2(<<_, rest::binary>>, len) do
+    do_uncomp_len_alg2(rest, len + 1)
   end
 
   def split_at(s, n), do: do_split_at(s, String.length(s), n)
 
   defp do_split_at(s, _slen, 0), do: {"", s}
   defp do_split_at(s, slen, slen), do: {s, ""}
+
   defp do_split_at(s, _slen, n) do
     <<first::binary-size(n), rest::binary>> = s
     {first, rest}

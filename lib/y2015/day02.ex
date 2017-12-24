@@ -1,5 +1,4 @@
 defmodule Y2015.Day02 do
-
   use Common.File
 
   def total_paper_area_needed do
@@ -16,12 +15,12 @@ defmodule Y2015.Day02 do
     input_lines()
     |> Enum.map(&parse/1)
     |> Enum.map(f)
-    |> Enum.sum
+    |> Enum.sum()
   end
 
   defp parse(s) do
     s
-    |> String.strip
+    |> String.strip()
     |> String.split("x")
     |> Enum.map(&String.to_integer/1)
   end
@@ -32,11 +31,11 @@ defmodule Y2015.Day02 do
     surface_area(l, w, h) + smallest_side_area(l, w, h)
   end
 
-  defp surface_area(l, w, h), do: 2*l*w + 2*w*h + 2*h*l
+  defp surface_area(l, w, h), do: 2 * l * w + 2 * w * h + 2 * h * l
 
   defp smallest_side_area(l, w, h) do
-    [l*w, l*h, w*h]
-    |> Enum.min
+    [l * w, l * h, w * h]
+    |> Enum.min()
   end
 
   # ================ ribbon length ================
@@ -46,8 +45,10 @@ defmodule Y2015.Day02 do
   end
 
   def smallest_perimeter(l, w, h) do
-    smallest_half_perim = [l+w, l+h, w+h]
-    |> Enum.min
+    smallest_half_perim =
+      [l + w, l + h, w + h]
+      |> Enum.min()
+
     smallest_half_perim * 2
   end
 

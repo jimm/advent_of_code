@@ -1,5 +1,4 @@
 defmodule Y2015.Day05 do
-
   use Common.File
 
   @forbidden ~r{(ab)|(cd)|(pq)|(xy)}
@@ -11,20 +10,17 @@ defmodule Y2015.Day05 do
   def count_nice(f) do
     input_lines()
     |> Stream.map(&String.strip/1)
-    |> Stream.filter(fn(s) -> f.(s) end)
-    |> Enum.to_list
+    |> Stream.filter(fn s -> f.(s) end)
+    |> Enum.to_list()
     |> length
   end
 
   def nice1(s) do
-    !Regex.match?(@forbidden, s) &&
-      Regex.match?(@doubled, s) &&
-      Regex.match?(@three_vowels, s)
+    !Regex.match?(@forbidden, s) && Regex.match?(@doubled, s) && Regex.match?(@three_vowels, s)
   end
 
   def nice2(s) do
-    Regex.match?(@pairs_doubled, s) &&
-      Regex.match?(@repeat_one_between, s)
+    Regex.match?(@pairs_doubled, s) && Regex.match?(@repeat_one_between, s)
   end
 end
 

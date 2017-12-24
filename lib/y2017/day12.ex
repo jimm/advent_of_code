@@ -1,5 +1,4 @@
 defmodule Y2017.Day12 do
-
   use Common.File
 
   def part1 do
@@ -34,9 +33,10 @@ defmodule Y2017.Day12 do
   defp do_group_members(m, group_members) do
     new_group_members =
       group_members
-      |> Enum.flat_map(fn(memb) -> m[memb] end)
+      |> Enum.flat_map(fn memb -> m[memb] end)
       |> Enum.concat(group_members)
-      |> MapSet.new
+      |> MapSet.new()
+
     if Enum.count(new_group_members) == Enum.count(group_members) do
       MapSet.to_list(group_members)
     else
@@ -52,9 +52,11 @@ defmodule Y2017.Day12 do
 
   def groups(m, groups) do
     all_other_group_members = List.flatten(groups)
+
     non_group_member =
       Map.keys(m)
-      |> Enum.find(fn(k) -> !Enum.member?(all_other_group_members, k) end)
+      |> Enum.find(fn k -> !Enum.member?(all_other_group_members, k) end)
+
     if non_group_member == nil do
       groups
     else
@@ -66,10 +68,18 @@ defmodule Y2017.Day12 do
 
   defp test_network do
     one_way =
-      ["0 <-> 2", "1 <-> 1", "2 <-> 0, 3, 4", "3 <-> 2, 4", "4 <-> 2, 3, 6",
-       "5 <-> 6", "6 <-> 4, 5"]
+      [
+        "0 <-> 2",
+        "1 <-> 1",
+        "2 <-> 0, 3, 4",
+        "3 <-> 2, 4",
+        "4 <-> 2, 3, 6",
+        "5 <-> 6",
+        "6 <-> 4, 5"
+      ]
       |> Enum.map(&parse_line/1)
-      |> Map.new
+      |> Map.new()
+
     reverse_connections(one_way)
   end
 
@@ -79,26 +89,27 @@ defmodule Y2017.Day12 do
     one_way =
       input_lines()
       |> Enum.map(&parse_line/1)
-      |> Map.new
+      |> Map.new()
+
     reverse_connections(one_way)
   end
 
   defp reverse_connections(one_way) do
-    Enum.reduce(Map.keys(one_way), one_way, fn(key, m) ->
+    Enum.reduce(Map.keys(one_way), one_way, fn key, m ->
       vals = m[key]
-      Enum.reduce(vals, m, fn(v, m) -> reverse_connection(m, v, key) end)
+      Enum.reduce(vals, m, fn v, m -> reverse_connection(m, v, key) end)
     end)
   end
 
   defp reverse_connection(m, v, k) do
     curr = m[v]
+
     if Enum.member?(curr, k) do
       m
     else
       Map.put(m, v, [k | curr])
     end
   end
-
 
   defp parse_line(line) do
     [node_str, others] = String.split(line, "<->") |> Enum.map(&String.trim/1)

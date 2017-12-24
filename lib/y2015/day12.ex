@@ -1,5 +1,4 @@
 defmodule Y2015.Day12 do
-
   use Common.File
 
   def sum do
@@ -12,29 +11,32 @@ defmodule Y2015.Day12 do
 
   defp sum(filter) do
     default_input_path()
-    |> File.read!
+    |> File.read!()
     |> collect_numbers(filter)
-    |> Enum.sum
+    |> Enum.sum()
   end
 
   defp collect_numbers(s, filter) do
     s
-    |> Poison.decode!
+    |> Poison.decode!()
     |> filtered_numbers(filter)
-    |> List.flatten
+    |> List.flatten()
   end
 
   defp filtered_numbers(m, f) when is_map(m) do
     vals = Map.values(m)
+
     if f.(vals) do
-      vals |> Enum.map(&(filtered_numbers(&1, f)))
+      vals |> Enum.map(&filtered_numbers(&1, f))
     else
       []
     end
   end
+
   defp filtered_numbers(l, f) when is_list(l) do
-    l |> Enum.map(&(filtered_numbers(&1, f)))
+    l |> Enum.map(&filtered_numbers(&1, f))
   end
+
   defp filtered_numbers(val, _) when is_integer(val), do: val
   defp filtered_numbers(_, _), do: []
 end

@@ -1,5 +1,4 @@
 defmodule Y2015.Day16 do
-
   use Common.File
 
   @input_file default_input_path()
@@ -14,7 +13,7 @@ defmodule Y2015.Day16 do
     goldfish: 5,
     trees: 3,
     cars: 2,
-    perfumes: 1,
+    perfumes: 1
   }
 
   def run(matcher) do
@@ -28,35 +27,38 @@ defmodule Y2015.Day16 do
 
   defp parse(line) do
     [nstr | attrs] = Regex.run(@parse_regex, line) |> tl
-    Enum.reduce(attrs |> Enum.chunk(2),
-      %{num: String.to_integer(nstr)},
-      fn([attr, nstr], acc) -> Map.put(acc, String.to_atom(attr), String.to_integer(nstr)) end)
+
+    Enum.reduce(attrs |> Enum.chunk(2), %{num: String.to_integer(nstr)}, fn [attr, nstr], acc ->
+      Map.put(acc, String.to_atom(attr), String.to_integer(nstr))
+    end)
   end
 
   def match1(sue) do
-    num_matches = sue
-    |> Map.keys
-    |> Enum.drop_while(fn
-      :num -> true
-      k -> Map.get(@analysis, k) == Map.get(sue, k)
-    end)
-    |> length
+    num_matches =
+      sue
+      |> Map.keys()
+      |> Enum.drop_while(fn
+        :num -> true
+        k -> Map.get(@analysis, k) == Map.get(sue, k)
+      end)
+      |> length
 
     num_matches == 0
   end
 
   def updated_retroencabulator_match(sue) do
-    num_matches = sue
-    |> Map.keys
-    |> Enum.drop_while(fn
-      :num -> true
-      :cats -> Map.get(@analysis, :cats) < Map.get(sue, :cats)
-      :trees -> Map.get(@analysis, :trees) < Map.get(sue, :trees)
-      :pomeranians -> Map.get(@analysis, :pomeranians) > Map.get(sue, :pomeranians)
-      :goldfish -> Map.get(@analysis, :goldfish) > Map.get(sue, :goldfish)
-      k -> Map.get(@analysis, k) == Map.get(sue, k)
-    end)
-    |> length
+    num_matches =
+      sue
+      |> Map.keys()
+      |> Enum.drop_while(fn
+        :num -> true
+        :cats -> Map.get(@analysis, :cats) < Map.get(sue, :cats)
+        :trees -> Map.get(@analysis, :trees) < Map.get(sue, :trees)
+        :pomeranians -> Map.get(@analysis, :pomeranians) > Map.get(sue, :pomeranians)
+        :goldfish -> Map.get(@analysis, :goldfish) > Map.get(sue, :goldfish)
+        k -> Map.get(@analysis, k) == Map.get(sue, k)
+      end)
+      |> length
 
     num_matches == 0
   end

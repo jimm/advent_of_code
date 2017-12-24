@@ -1,5 +1,4 @@
 defmodule Y2016.Day02 do
-
   use Common.File
 
   @input_file default_input_path()
@@ -12,7 +11,7 @@ defmodule Y2016.Day02 do
     6 => %{"U" => 3, "D" => 9, "L" => 5, "R" => nil},
     7 => %{"U" => 4, "D" => nil, "L" => nil, "R" => 8},
     8 => %{"U" => 5, "D" => nil, "L" => 7, "R" => 9},
-    9 => %{"U" => 6, "D" => nil, "L" => 8, "R" => nil},
+    9 => %{"U" => 6, "D" => nil, "L" => 8, "R" => nil}
   }
   @keypad2 %{
     1 => %{"U" => nil, "D" => 3, "L" => nil, "R" => nil},
@@ -27,29 +26,34 @@ defmodule Y2016.Day02 do
     "A" => %{"U" => 6, "D" => nil, "L" => nil, "R" => "B"},
     "B" => %{"U" => 7, "D" => "D", "L" => "A", "R" => "C"},
     "C" => %{"U" => 8, "D" => nil, "L" => "B", "R" => nil},
-    "D" => %{"U" => "B", "D" => nil, "L" => nil, "R" => nil},
+    "D" => %{"U" => "B", "D" => nil, "L" => nil, "R" => nil}
   }
 
   def run1(keypad, file \\ @input_file)
   def run1(1, file), do: run1(@keypad1, file)
   def run1(2, file), do: run1(@keypad2, file)
+
   def run1(keypad, file) do
     {_, digits} =
       read_dirs(file)
-      |> Enum.reduce({5, []}, fn (dirs, {start, digits}) ->
-        new_digit = dirs |> Enum.reduce(start, fn (dir, digit) ->
-          next_digit(keypad, digit, dir)
-        end)
+      |> Enum.reduce({5, []}, fn dirs, {start, digits} ->
+        new_digit =
+          dirs
+          |> Enum.reduce(start, fn dir, digit ->
+            next_digit(keypad, digit, dir)
+          end)
+
         {new_digit, [new_digit | digits]}
       end)
-      Enum.reverse(digits)
-      |> Enum.join("")
-      |> IO.puts
+
+    Enum.reverse(digits)
+    |> Enum.join("")
+    |> IO.puts()
   end
 
   defp read_dirs(file) do
     input_lines(file)
-    |> Enum.map(&(String.split(&1, "", trim: true)))
+    |> Enum.map(&String.split(&1, "", trim: true))
   end
 
   defp next_digit(keypad, digit, dir) do

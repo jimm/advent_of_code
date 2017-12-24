@@ -14,10 +14,10 @@ defmodule Y2016.Day16 do
       |> hd
 
     Stream.iterate(bits |> Enum.take(disk_len), &checksum/1)
-    |> Stream.drop_while(fn csum -> csum |> length |> Integer.is_even end)
+    |> Stream.drop_while(fn csum -> csum |> length |> Integer.is_even() end)
     |> Enum.take(1)
     |> hd
-    |> Enum.join
+    |> Enum.join()
   end
 
   def to_bits(s) do
@@ -27,17 +27,17 @@ defmodule Y2016.Day16 do
   end
 
   def next_gen(bits) do
-    bits ++ [0] ++ (bits |> Enum.reverse |> flip_bits([]))
+    bits ++ [0] ++ (bits |> Enum.reverse() |> flip_bits([]))
   end
 
   def flip_bits([], flipped), do: Enum.reverse(flipped)
-  def flip_bits([1|rest], flipped), do: flip_bits(rest, [0|flipped])
-  def flip_bits([0|rest], flipped), do: flip_bits(rest, [1|flipped])
+  def flip_bits([1 | rest], flipped), do: flip_bits(rest, [0 | flipped])
+  def flip_bits([0 | rest], flipped), do: flip_bits(rest, [1 | flipped])
 
-  def checksum(bits) when bits |> length |> Integer.is_even, do: checksum(bits, [])
+  def checksum(bits) when bits |> length |> Integer.is_even(), do: checksum(bits, [])
   def checksum(bits), do: bits
 
-  def checksum([], csum), do: csum |> Enum.reverse
+  def checksum([], csum), do: csum |> Enum.reverse()
   def checksum([b | [b | rest]], csum), do: checksum(rest, [1 | csum])
   def checksum([_ | [_ | rest]], csum), do: checksum(rest, [0 | csum])
 end

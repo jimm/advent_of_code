@@ -1,25 +1,24 @@
 # Format of addr: {words-outside-brackets, words-inside-brackets}
 defmodule Y2016.Day07 do
-
   use Common.File
 
   @input_file default_input_path()
 
   def run1(file \\ @input_file) do
     count_addrs(file, &supports_tls?/1)
-    |> IO.puts
+    |> IO.puts()
   end
 
   def run2(file \\ @input_file) do
     count_addrs(file, &supports_ssl?/1)
-    |> IO.puts
+    |> IO.puts()
   end
 
   def count_addrs(file, f) do
     input_lines(file)
     |> Enum.map(&parse_addrs/1)
     |> Enum.filter(f)
-    |> Enum.count
+    |> Enum.count()
   end
 
   defp parse_addrs(line) do
@@ -27,9 +26,9 @@ defmodule Y2016.Day07 do
     |> String.split(~r{[\[\]]}, trim: true)
     |> Enum.chunk(2, 2, [nil])
     |> Enum.reduce({[], []}, fn [w1, w2], {outies, innies} ->
-         new_innies = if w2, do: [w2 | innies], else: innies
-         {[w1 | outies], new_innies}
-       end)
+      new_innies = if w2, do: [w2 | innies], else: innies
+      {[w1 | outies], new_innies}
+    end)
   end
 
   # ================ run1 helpers ================
@@ -51,10 +50,12 @@ defmodule Y2016.Day07 do
   defp supports_ssl?({outies, innies}) do
     abas = outies |> Enum.flat_map(&abas/1)
     babs = innies |> Enum.flat_map(&abas/1)
-    length(abas) > 0 && Enum.any?(babs, fn bab ->
-      [b, a, b] = bab
-      Enum.member?(abas, [a, b, a])
-    end)
+
+    length(abas) > 0 &&
+      Enum.any?(babs, fn bab ->
+        [b, a, b] = bab
+        Enum.member?(abas, [a, b, a])
+      end)
   end
 
   defp abas(word) do

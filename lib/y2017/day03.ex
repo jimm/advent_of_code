@@ -1,10 +1,9 @@
 # Spiral Memory
 
 defmodule Y2017.Day03 do
-
   import Bitwise
 
-  @start_location 368078
+  @start_location 368_078
 
   def part1 do
     manhattan_distance_to_start()
@@ -28,6 +27,7 @@ defmodule Y2017.Day03 do
   defp stress_test_value(i, state) do
     coord = coord_of(i)
     val = sum_of_surounding(coord, state)
+
     if val > @start_location do
       val
     else
@@ -37,14 +37,9 @@ defmodule Y2017.Day03 do
   end
 
   defp sum_of_surounding({x, y}, state) do
-    at(  x-1, y+1, state) +
-      at(x,   y+1, state) +
-      at(x+1, y+1, state) +
-      at(x-1, y,   state) +
-      at(x+1, y,   state) +
-      at(x-1, y-1, state) +
-      at(x,   y-1, state) +
-      at(x+1, y-1, state)
+    at(x - 1, y + 1, state) + at(x, y + 1, state) + at(x + 1, y + 1, state) + at(x - 1, y, state) +
+      at(x + 1, y, state) + at(x - 1, y - 1, state) + at(x, y - 1, state) +
+      at(x + 1, y - 1, state)
   end
 
   defp at(x, y, state) do
@@ -55,10 +50,11 @@ defmodule Y2017.Day03 do
 
   defp sqrt_of_bottom_corner_containing(i) do
     isqrt = trunc(:math.sqrt(i))
+
     if band(isqrt, 1) == 1 do
-      if isqrt * isqrt == i, do: isqrt, else: isqrt+2
+      if isqrt * isqrt == i, do: isqrt, else: isqrt + 2
     else
-      isqrt+1
+      isqrt + 1
     end
   end
 
@@ -68,28 +64,31 @@ defmodule Y2017.Day03 do
     find_coord(i, bot_right, sqrt, max_coord(sqrt))
   end
 
-  defp find_coord(i, bot_right, sqrt, mc) when i >= bot_right - (sqrt-1) do
+  defp find_coord(i, bot_right, sqrt, mc) when i >= bot_right - (sqrt - 1) do
     # bottom row
     x = mc - (bot_right - i)
     y = -mc
     {x, y}
   end
-  defp find_coord(i, bot_right, sqrt, mc) when i >= bot_right - (sqrt-1) * 2 do
+
+  defp find_coord(i, bot_right, sqrt, mc) when i >= bot_right - (sqrt - 1) * 2 do
     # left row
     x = -mc
-    y = -max_coord(sqrt) + ((bot_right - (sqrt-1)) - i)
+    y = -max_coord(sqrt) + (bot_right - (sqrt - 1) - i)
     {x, y}
   end
-  defp find_coord(i, bot_right, sqrt, mc) when i >= bot_right - (sqrt-1) * 3 do
+
+  defp find_coord(i, bot_right, sqrt, mc) when i >= bot_right - (sqrt - 1) * 3 do
     # top row
-    x = -mc + ((bot_right - (sqrt-1) * 2) - i)
+    x = -mc + (bot_right - (sqrt - 1) * 2 - i)
     y = mc
     {x, y}
   end
+
   defp find_coord(i, bot_right, sqrt, mc) do
     # right row
     x = mc
-    y = mc - ((bot_right - (sqrt-1) * 3) - i)
+    y = mc - (bot_right - (sqrt - 1) * 3 - i)
     {x, y}
   end
 

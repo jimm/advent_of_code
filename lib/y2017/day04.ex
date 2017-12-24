@@ -1,7 +1,6 @@
 # High-Entropy Passphrases
 
 defmodule Y2017.Day04 do
-
   use Common.File
 
   def part1 do
@@ -18,8 +17,9 @@ defmodule Y2017.Day04 do
     # Need to sort for Enum.dedup
     sorted_words =
       line
-      |> String.split
-      |> Enum.sort
+      |> String.split()
+      |> Enum.sort()
+
     length(sorted_words) == length(Enum.dedup(sorted_words))
   end
 
@@ -29,17 +29,18 @@ defmodule Y2017.Day04 do
     # Need to sort for Enum.dedup
     sorted_dorsw =
       line
-      |> String.split
+      |> String.split()
       |> Enum.map(&sort_letters/1)
-      |> Enum.sort
+      |> Enum.sort()
+
     length(sorted_dorsw) == length(Enum.dedup(sorted_dorsw))
   end
 
   defp sort_letters(word) do
     word
     |> String.split("", trim: true)
-    |> Enum.sort
-    |> Enum.join
+    |> Enum.sort()
+    |> Enum.join()
   end
 
   # ================ helpers ================

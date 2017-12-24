@@ -20,6 +20,7 @@ defmodule Y2016.Day10 do
     factory =
       init_factory(file)
       |> run_bots
+
     os = factory.outputs
     Map.get(os, 0) * Map.get(os, 1) * Map.get(os, 2)
   end
@@ -56,6 +57,7 @@ defmodule Y2016.Day10 do
   defp run_instruction(factory, {:output, onum}, val) do
     %{factory | outputs: Map.put(factory.outputs, onum, val)}
   end
+
   defp run_instruction(factory, {:bot, bnum}, val) do
     bot = Map.get(factory.bots, bnum)
     new_bot = bot_gets_value(bot, val)
@@ -88,9 +90,10 @@ defmodule Y2016.Day10 do
         _ -> true
       end)
       |> Enum.take(1)
+
     case botlist do
       [] -> nil
-      [bot|_] -> bot
+      [bot | _] -> bot
     end
   end
 
@@ -105,16 +108,18 @@ defmodule Y2016.Day10 do
       (file || default_input_path())
       |> input_lines
       |> Enum.map(&String.split/1)
-      |> Enum.reduce(%{}, (fn cmd, factory -> init_bot(factory, cmd) end))
+      |> Enum.reduce(%{}, fn cmd, factory -> init_bot(factory, cmd) end)
+
     %Factory{bots: bots}
   end
 
   defp init_bot(factory, words) do
     case words do
       ["value", v, "goes", "to", "bot", b] ->
-        update_bot(factory, b, &(bot_gets_value(&1, String.to_integer(v))))
+        update_bot(factory, b, &bot_gets_value(&1, String.to_integer(v)))
+
       ["bot", b, "gives", "low", "to", ldest, lnum, "and", "high", "to", hdest, hnum] ->
-        update_bot(factory, b, &(bot_gives(&1, ldest, lnum, hdest, hnum)))
+        update_bot(factory, b, &bot_gives(&1, ldest, lnum, hdest, hnum))
     end
   end
 
@@ -133,13 +138,14 @@ defmodule Y2016.Day10 do
   end
 
   defp bot_gives({_, _, v1, v2}, ldest, lnum, rdest, rnum) do
-    {{String.to_atom(ldest), String.to_integer(lnum)},
-     {String.to_atom(rdest), String.to_integer(rnum)},
-     v1, v2}
+    {
+      {String.to_atom(ldest), String.to_integer(lnum)},
+      {String.to_atom(rdest), String.to_integer(rnum)},
+      v1,
+      v2
+    }
   end
 end
 
 # Y2016.Day10.run1
 # # => 47
-
-

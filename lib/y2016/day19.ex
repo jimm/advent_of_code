@@ -1,5 +1,5 @@
 defmodule Y2016.Day19 do
-  @input 3001330
+  @input 3_001_330
 
   defmodule Elf do
     use GenServer

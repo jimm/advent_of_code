@@ -1,5 +1,4 @@
 defmodule Y2015.Day09 do
-
   use Common.File
 
   def shortest, do: run(&Enum.min/1)
@@ -9,10 +8,11 @@ defmodule Y2015.Day09 do
   defp run(f) do
     distances =
       default_input_path()
-      |> File.stream!
+      |> File.stream!()
       |> Enum.reduce(%{}, fn line, acc ->
         [src, "to", dest, "=", num_str] = String.split(line)
         dist = String.to_integer(num_str)
+
         acc
         |> add_distance(src, dest, dist)
         |> add_distance(dest, src, dist)
@@ -29,6 +29,7 @@ defmodule Y2015.Day09 do
   defp permutations([]), do: []
   defp permutations([x]), do: [x]
   defp permutations([x, y]), do: [[x, y], [y, x]]
+
   defp permutations(xs) do
     for x <- xs,
         y <- permutations(List.delete(xs, x)) do
@@ -37,6 +38,7 @@ defmodule Y2015.Day09 do
   end
 
   defp path_lengths(_, [], lengths), do: lengths
+
   defp path_lengths(distances, [path | paths], lengths) do
     path_lengths(distances, paths, [path_length(distances, path) | lengths])
   end
@@ -45,7 +47,7 @@ defmodule Y2015.Day09 do
     path
     |> Enum.chunk(2, 1)
     |> Enum.map(fn [src, dest] -> distances[src][dest] end)
-    |> Enum.sum
+    |> Enum.sum()
   end
 end
 

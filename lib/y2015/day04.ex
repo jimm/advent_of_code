@@ -2,9 +2,9 @@ defmodule Y2015.Day04 do
   @key "iwrupvqb"
 
   def mine_coin(f, key \\ @key) do
-    Stream.iterate(1, &(&1+1))
-    |> Stream.map(fn(i) ->
-      <<a, b, c, _ :: binary>> = :crypto.hash(:md5, "#{key}#{i}")
+    Stream.iterate(1, &(&1 + 1))
+    |> Stream.map(fn i ->
+      <<a, b, c, _::binary>> = :crypto.hash(:md5, "#{key}#{i}")
       {i, {a, b, c}}
     end)
     |> Stream.filter(f)

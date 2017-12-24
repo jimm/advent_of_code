@@ -1,5 +1,4 @@
 defmodule Y2015.Day13 do
-
   use Common.File
 
   @input_file default_input_path()
@@ -18,7 +17,9 @@ defmodule Y2015.Day13 do
     File.stream!(@input_file)
     |> Enum.reduce(%{}, fn line, acc ->
       [src, dest, dist] = parse(line)
-      acc |> add_distance(src, dest, dist)
+
+      acc
+      |> add_distance(src, dest, dist)
       |> add_distance(src, "me", 0)
       |> add_distance("me", src, 0)
     end)
@@ -26,9 +27,11 @@ defmodule Y2015.Day13 do
   end
 
   defp max_distance(distances) do
-    circular_permutations = Map.keys(distances)
-    |> permutations
-    |> Enum.map(fn perm -> [List.last(perm) | perm] end)
+    circular_permutations =
+      Map.keys(distances)
+      |> permutations
+      |> Enum.map(fn perm -> [List.last(perm) | perm] end)
+
     Enum.max(path_lengths(distances, circular_permutations, []))
   end
 
@@ -47,6 +50,7 @@ defmodule Y2015.Day13 do
   defp permutations([]), do: []
   defp permutations([x]), do: [x]
   defp permutations([x, y]), do: [[x, y], [y, x]]
+
   defp permutations(xs) do
     for x <- xs,
         y <- permutations(List.delete(xs, x)) do
@@ -55,6 +59,7 @@ defmodule Y2015.Day13 do
   end
 
   defp path_lengths(_, [], lengths), do: lengths
+
   defp path_lengths(distances, [path | paths], lengths) do
     path_lengths(distances, paths, [path_length(distances, path) | lengths])
   end
@@ -63,7 +68,7 @@ defmodule Y2015.Day13 do
     path
     |> Enum.chunk(2, 1)
     |> Enum.map(fn [src, dest] -> distances[src][dest] + distances[dest][src] end)
-    |> Enum.sum
+    |> Enum.sum()
   end
 end
 

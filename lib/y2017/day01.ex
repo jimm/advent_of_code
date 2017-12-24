@@ -1,7 +1,6 @@
 # Inverse Captcha
 
 defmodule Y2017.Day01 do
-
   use Common.File
 
   def part1 do
@@ -19,16 +18,18 @@ defmodule Y2017.Day01 do
   defp puzzle_digits do
     input_lines()
     |> hd
-    |> String.to_integer
-    |> Integer.digits
+    |> String.to_integer()
+    |> Integer.digits()
   end
 
   defp sum_next_matchers([_], sum) do
     sum
   end
+
   defp sum_next_matchers([h | [h | t]], sum) do
-    sum_next_matchers([h|t], sum + h)
+    sum_next_matchers([h | t], sum + h)
   end
+
   defp sum_next_matchers([_ | t], sum) do
     sum_next_matchers(t, sum)
   end
@@ -36,9 +37,11 @@ defmodule Y2017.Day01 do
   defp sum_mid_matchers([], [], sum) do
     sum * 2
   end
+
   defp sum_mid_matchers([h | t1], [h | t2], sum) do
     sum_mid_matchers(t1, t2, sum + h)
   end
+
   defp sum_mid_matchers([_ | t1], [_ | t2], sum) do
     sum_mid_matchers(t1, t2, sum)
   end

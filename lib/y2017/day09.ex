@@ -1,7 +1,6 @@
 # Stream Processing
 
 defmodule Y2017.Day09 do
-
   use Common.File
 
   defmodule State do
@@ -22,57 +21,67 @@ defmodule Y2017.Day09 do
   def part1 do
     state =
       read_stream()
-      |> Enum.reduce(%State{}, fn(ch, s) -> process(ch, s) end)
+      |> Enum.reduce(%State{}, fn ch, s -> process(ch, s) end)
+
     Enum.sum(state.scores)
   end
 
   # 8187 too high
   def part2 do
     chars = read_stream()
-    state = chars |> Enum.reduce(%State{}, fn(ch, s) -> process(ch, s) end)
+    state = chars |> Enum.reduce(%State{}, fn ch, s -> process(ch, s) end)
     state.comment_char_count
   end
 
   def test do
-    Enum.map(@tests, fn({str, expected}) ->
+    Enum.map(@tests, fn {str, expected} ->
       state =
         str
-        |> String.to_charlist
-        |> Enum.reduce(%State{}, fn(ch, s) -> process(ch, s) end)
+        |> String.to_charlist()
+        |> Enum.reduce(%State{}, fn ch, s -> process(ch, s) end)
+
       Enum.sum(state.scores) == expected
     end)
   end
 
   defp read_stream() do
     default_input_path()
-    |> File.read!
-    |> String.to_charlist
+    |> File.read!()
+    |> String.to_charlist()
   end
 
   defp process(?<, s = %State{state: state}) when state == :group do
     %{s | state: :comment}
   end
+
   defp process(?>, s = %State{state: state}) when state == :comment do
     %{s | state: :group}
   end
+
   defp process(?{, s = %State{state: state}) when state == :group do
     %{s | score: s.score + 1}
   end
+
   defp process(?}, s = %State{state: state}) when state == :group do
     %{s | scores: [s.score | s.scores], score: s.score - 1}
   end
+
   defp process(?,, s = %State{state: state}) when state == :group do
     s
   end
+
   defp process(?!, s = %State{state: state}) when state == :comment do
     %{s | state: :skip}
   end
+
   defp process(_, s = %State{state: state}) when state == :skip do
     %{s | state: :comment}
   end
+
   defp process(_, s = %State{state: state}) when state == :comment do
     %{s | comment_char_count: s.comment_char_count + 1}
   end
+
   defp process(_, s) do
     s
   end

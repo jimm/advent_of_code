@@ -1,5 +1,4 @@
 defmodule Y2015.Day06 do
-
   use Common.File
 
   @line_nums ~r{(turn on|turn off|toggle) (\d+),(\d+) through (\d+),(\d+)}
@@ -8,32 +7,33 @@ defmodule Y2015.Day06 do
 
   def count_lights do
     sum_after_applying(%{
-      "turn on" => fn(_) -> 1 end,
-      "turn off" => fn(_) -> 0 end,
-      "toggle" => fn(brightness) -> 1 - brightness end
+      "turn on" => fn _ -> 1 end,
+      "turn off" => fn _ -> 0 end,
+      "toggle" => fn brightness -> 1 - brightness end
     })
   end
 
   def total_brightness do
     sum_after_applying(%{
-      "turn on" => fn(brightness) -> brightness + 1 end,
+      "turn on" => fn brightness -> brightness + 1 end,
       "turn off" => fn
-          (0) -> 0
-          (1) -> 0
-          (brightness) -> brightness - 1
-        end,
-      "toggle" => fn(brightness) -> brightness + 2 end
+        0 -> 0
+        1 -> 0
+        brightness -> brightness - 1
+      end,
+      "toggle" => fn brightness -> brightness + 2 end
     })
   end
 
   def sum_after_applying(funcmap) do
     grid = List.duplicate(0, @num_rows * @row_len) |> Enum.chunk(@row_len)
+
     default_input_path()
-    |> File.stream!
-    |> Enum.map(&(parse(&1, funcmap)))
-    |> Enum.reduce(grid, fn(cmd, lights) -> execute(lights, cmd) end)
+    |> File.stream!()
+    |> Enum.map(&parse(&1, funcmap))
+    |> Enum.reduce(grid, fn cmd, lights -> execute(lights, cmd) end)
     |> Enum.map(&Enum.sum/1)
-    |> Enum.sum
+    |> Enum.sum()
   end
 
   defp parse(s, funcmap) do
@@ -45,18 +45,21 @@ defmodule Y2015.Day06 do
   defp execute(lights, {_, _, y0, _, _} = cmd), do: execute(lights, cmd, y0)
 
   defp execute(lights, {_, _, _, _, y1}, y) when y > y1, do: lights
+
   defp execute(lights, {f, x0, _, x1, _} = cmd, y) do
-    lights |> update(x0, x1, y, f) |> execute(cmd, y+1)
+    lights |> update(x0, x1, y, f) |> execute(cmd, y + 1)
   end
 
   defp update(lights, x0, x1, y, f) do
     {rows_above, [row | rows_below]} = lights |> Enum.split(y)
     {cols_before, rest} = row |> Enum.split(x0)
-    {cols, cols_after} = rest |> Enum.split(x1-x0+1)
+    {cols, cols_after} = rest |> Enum.split(x1 - x0 + 1)
 
-    Enum.concat([rows_above,
-                 [Enum.concat([cols_before, cols |> Enum.map(f), cols_after])],
-                 rows_below])
+    Enum.concat([
+      rows_above,
+      [Enum.concat([cols_before, cols |> Enum.map(f), cols_after])],
+      rows_below
+    ])
   end
 end
 

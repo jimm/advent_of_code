@@ -1,20 +1,19 @@
 # Corruption Checksum
 
 defmodule Y2017.Day02 do
-
   use Common.File
   alias Common.Set
 
   def part1 do
     input_lines()
     |> Enum.map(&minmax_diff_line/1)
-    |> Enum.sum
+    |> Enum.sum()
   end
 
   def part2 do
     input_lines()
     |> Enum.map(&find_integer_divisor_line/1)
-    |> Enum.sum
+    |> Enum.sum()
   end
 
   defp minmax_diff_line(line) do
@@ -38,17 +37,18 @@ defmodule Y2017.Day02 do
     pair =
       nums
       |> Set.combinations(2)
-      |> Enum.find(fn(pair) ->
-           {min, max} = Enum.min_max(pair)
-           rem(max, min) == 0
-         end)
+      |> Enum.find(fn pair ->
+        {min, max} = Enum.min_max(pair)
+        rem(max, min) == 0
+      end)
+
     {min, max} = Enum.min_max(pair)
     div(max, min)
   end
 
   defp line_nums(line) do
     line
-    |> String.split
+    |> String.split()
     |> Enum.map(&String.to_integer/1)
   end
 end

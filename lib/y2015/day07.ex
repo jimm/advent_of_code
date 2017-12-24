@@ -1,15 +1,14 @@
 defmodule Y2015.Day07 do
-
   use Common.File
   use Bitwise
 
-  def run, do: run(&(&1))
+  def run, do: run(& &1)
 
   def run2, do: run(&reset_and_rerun/1)
 
   defp run(modify) do
     default_input_path()
-    |> File.stream!
+    |> File.stream!()
     |> tokenize
     |> reorder
     |> modify.()
@@ -25,13 +24,16 @@ defmodule Y2015.Day07 do
 
   # Given "foo bar -> target" returns ["target", "foo", "bar"]
   defp tokenize_statement(s) do
-    [target | ["->" | rest]] = s |> String.split |> Enum.reverse
-    args = rest
-    |> Enum.reverse
-    |> Enum.map(fn
-      <<c>> <> _ = s when c >= ?0 and c <= ?9 -> String.to_integer(s)
-      s -> String.to_atom(s)
-    end)
+    [target | ["->" | rest]] = s |> String.split() |> Enum.reverse()
+
+    args =
+      rest
+      |> Enum.reverse()
+      |> Enum.map(fn
+        <<c>> <> _ = s when c >= ?0 and c <= ?9 -> String.to_integer(s)
+        s -> String.to_atom(s)
+      end)
+
     [String.to_atom(target) | args]
   end
 
@@ -44,17 +46,20 @@ defmodule Y2015.Day07 do
   # - [target, value, :BINOP, value]    (binary operation and assignment)
   # - [target, :NOT, value]             (negation and assignment)
   defp reorder(statements) do
-    dependencies = statements
-    |> Enum.reduce(%{}, fn
-      ([target, value], m) -> 
-        m |> add_dependency(target, value)
-      ([target, :NOT, value], m) ->
-        m |> add_dependency(target, value)
-      ([target, value1, _, value2], m) ->
-        m |> add_dependency(target, value1) |> add_dependency(target, value2)
-    end)
+    dependencies =
+      statements
+      |> Enum.reduce(%{}, fn
+        [target, value], m ->
+          m |> add_dependency(target, value)
 
-    reorder(statements, dependencies |> Map.to_list, [])
+        [target, :NOT, value], m ->
+          m |> add_dependency(target, value)
+
+        [target, value1, _, value2], m ->
+          m |> add_dependency(target, value1) |> add_dependency(target, value2)
+      end)
+
+    reorder(statements, dependencies |> Map.to_list(), [])
   end
 
   defp add_dependency(m, target, value) do
@@ -69,20 +74,25 @@ defmodule Y2015.Day07 do
   defp const?(_), do: false
 
   defp reorder([], [], reordered), do: Enum.reverse(reordered)
+
   defp reorder(statements, dependencies, reordered) do
-    free_targets = dependencies
-    |> Enum.filter(fn
-      {_, []} -> true
-      _ -> false
-    end)
-    |> Enum.map(fn {k, _} -> k end)
+    free_targets =
+      dependencies
+      |> Enum.filter(fn
+        {_, []} -> true
+        _ -> false
+      end)
+      |> Enum.map(fn {k, _} -> k end)
 
-    {nd_statements, d_statements} = statements
-    |> Enum.partition(fn([target | _]) -> Enum.member?(free_targets, target) end)
+    {nd_statements, d_statements} =
+      statements
+      |> Enum.partition(fn [target | _] -> Enum.member?(free_targets, target) end)
 
-    reorder(d_statements,
-            remove_satisfied_dependencies(dependencies, free_targets),
-            Enum.concat(nd_statements, reordered))
+    reorder(
+      d_statements,
+      remove_satisfied_dependencies(dependencies, free_targets),
+      Enum.concat(nd_statements, reordered)
+    )
   end
 
   defp remove_satisfied_dependencies(dependencies, free_targets) do
@@ -91,16 +101,17 @@ defmodule Y2015.Day07 do
       {_, []} -> nil
       {k, vs} -> {k, vs |> delete_all(free_targets)}
     end)
-    |> Enum.filter(&(&1))
+    |> Enum.filter(& &1)
   end
 
   defp delete_all(vs, []), do: vs
-  defp delete_all(vs, [h|t]), do: delete_all(List.delete(vs, h), t)
+  defp delete_all(vs, [h | t]), do: delete_all(List.delete(vs, h), t)
 
   defp reset_and_rerun(statements) do
+    # strip first const assignment to b
     statements
     |> Enum.concat([[:b, :a], [:a, 0]])
-    |> Enum.concat(tl(statements)) # strip first const assignment to b
+    |> Enum.concat(tl(statements))
   end
 
   # ================ execution ================
@@ -110,22 +121,25 @@ defmodule Y2015.Day07 do
   end
 
   defp execute([target, :NOT, var], memory) do
-   memory |> Map.put(target, bnot(value_of(memory, var)) &&& 0xffff)
+    memory |> Map.put(target, bnot(value_of(memory, var)) &&& 0xFFFF)
   end
+
   defp execute([target, var1, :AND, var2], memory) do
     memory |> Map.put(target, value_of(memory, var1) &&& value_of(memory, var2))
   end
+
   defp execute([target, var1, :OR, var2], memory) do
     memory |> Map.put(target, bor(value_of(memory, var1), value_of(memory, var2)))
   end
+
   defp execute([target, var1, :LSHIFT, var2], memory) do
-    memory |> Map.put(target,
-                       bsl(value_of(memory, var1), value_of(memory, var2)) &&&
-                         0xffff)
+    memory |> Map.put(target, bsl(value_of(memory, var1), value_of(memory, var2)) &&& 0xFFFF)
   end
+
   defp execute([target, var1, :RSHIFT, var2], memory) do
     memory |> Map.put(target, bsr(value_of(memory, var1), value_of(memory, var2)))
   end
+
   defp execute([target, value], memory) do
     memory |> Map.put(target, value_of(memory, value))
   end

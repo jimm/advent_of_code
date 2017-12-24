@@ -1,5 +1,4 @@
 defmodule Common.File do
-
   defmacro __using__(_) do
     quote do
       import Common.File
@@ -28,10 +27,11 @@ defmodule Common.File do
     path =
       mod
       |> to_string
-      |> String.downcase
+      |> String.downcase()
       |> String.split(".")
       |> tl
       |> Enum.join("/")
+
     "data/#{path}.txt"
   end
 
@@ -49,7 +49,7 @@ defmodule Common.File do
 
   def input_lines(file) do
     file
-    |> File.read!
+    |> File.read!()
     |> String.split("\n", trim: true)
   end
 end

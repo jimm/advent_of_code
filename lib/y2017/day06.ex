@@ -1,7 +1,6 @@
 # Memory Reallocation
 
 defmodule Y2017.Day06 do
-
   use Common.File
 
   def part1 do
@@ -41,13 +40,13 @@ defmodule Y2017.Day06 do
 
     input_lines()
     |> hd
-    |> String.split
+    |> String.split()
     |> Enum.map(&String.to_integer/1)
   end
 
   defp redistribute(banks) do
     max = Enum.max(banks)
-    max_index = Enum.find_index(banks, fn(x) -> x == max end)
+    max_index = Enum.find_index(banks, fn x -> x == max end)
     new_banks = List.replace_at(banks, max_index, 0)
     len = length(new_banks)
     redistribute(new_banks, len, max, clamp(max_index + 1, len))
@@ -56,10 +55,11 @@ defmodule Y2017.Day06 do
   defp redistribute(banks, _, 0, _) do
     banks
   end
+
   defp redistribute(banks, len, max, i) do
     val = Enum.at(banks, i)
-    new_banks = List.replace_at(banks, i, val+1)
-    redistribute(new_banks, len, max-1, clamp(i+1, len))
+    new_banks = List.replace_at(banks, i, val + 1)
+    redistribute(new_banks, len, max - 1, clamp(i + 1, len))
   end
 
   # Simplifying assumption: we know we'll only be incrementing by 1

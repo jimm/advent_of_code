@@ -2,9 +2,9 @@ defmodule Y2015.Day10 do
   @start "3113322113"
 
   def look_and_say(iterations) do
-    (1..iterations)
+    1..iterations
     |> Enum.reduce(@start, fn _, n -> encode(n) end)
-    |> String.length
+    |> String.length()
   end
 
   defp encode(n) do
@@ -13,12 +13,15 @@ defmodule Y2015.Day10 do
 
   defp encode("", 0, _, _), do: ""
   defp encode("", n, c, answer), do: add_encoded(answer, n, c)
+
   defp encode(<<c::utf8, rest::binary>>, n, c, answer) do
-    encode(rest, n+1, c, answer)
+    encode(rest, n + 1, c, answer)
   end
+
   defp encode(<<c::utf8, rest::binary>>, 0, _, answer) do
     encode(rest, 1, c, answer)
   end
+
   defp encode(<<c::utf8, rest::binary>>, n, prev_c, answer) do
     encode(rest, 1, c, add_encoded(answer, n, prev_c))
   end

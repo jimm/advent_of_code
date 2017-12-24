@@ -1,8 +1,7 @@
-#!/usr/bin/env elixir
+#! /usr/bin/env elixir
 
 # Rooms stored as {name, sector, checksum}
 defmodule Y2016.Day04 do
-
   use Common.File
 
   @input_file default_input_path()
@@ -12,19 +11,20 @@ defmodule Y2016.Day04 do
     read_file(file)
     |> Enum.filter(&real?/1)
     |> Enum.map(fn {_, sector, _} -> sector end)
-    |> Enum.sum
-    |> IO.puts
+    |> Enum.sum()
+    |> IO.puts()
   end
 
   def run2(file \\ @input_file) do
     {_, sector, _} =
       read_file(file)
       |> Enum.map(fn {_, sector, checksum} = room ->
-           {decrypt_name(room), sector, checksum}
-         end)
+        {decrypt_name(room), sector, checksum}
+      end)
       |> Enum.filter(fn {name, _, _} -> name == "northpole object storage" end)
       |> hd
-    IO.puts sector
+
+    IO.puts(sector)
   end
 
   defp read_file(file) do
@@ -42,32 +42,35 @@ defmodule Y2016.Day04 do
       name
       |> String.replace("-", "")
       |> String.split("", trim: true)
-      |> Enum.reduce(%{}, fn(ch, m) ->
-           Map.put(m, ch, Map.get(m, ch, 0) + 1)
-         end)
+      |> Enum.reduce(%{}, fn ch, m ->
+        Map.put(m, ch, Map.get(m, ch, 0) + 1)
+      end)
+
     checksum_len = String.length(checksum)
+
     top_n =
       freqs
       |> Enum.sort_by(fn {ch, count} ->
-           (count * 1000) + (36 - String.to_integer(ch, 36))
+        count * 1000 + (36 - String.to_integer(ch, 36))
       end)
-      |> Enum.reverse
+      |> Enum.reverse()
       |> Enum.take(checksum_len)
       |> Enum.map(fn {ch, _} -> ch end)
+
     Enum.join(top_n, "") == checksum
   end
 
   defp decrypt_name({name, sector, _}) do
     name
-    |> String.to_charlist
+    |> String.to_charlist()
     |> Enum.map(fn ch ->
-         case ch do
-           ?- -> 32
-           n -> clamp(n + sector)
-         end
-       end)
+      case ch do
+        ?- -> 32
+        n -> clamp(n + sector)
+      end
+    end)
     |> to_string
-    |> String.trim
+    |> String.trim()
   end
 
   defp clamp(n), do: Integer.mod(n - ?a, 26) + ?a
