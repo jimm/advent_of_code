@@ -11,6 +11,17 @@ defmodule Y2017.Day13 do
   defmodule Layer do
     defstruct [:depth, :range, :loc, :direction]
 
+    @doc """
+    Returns true if ths layer is at the top (position zero) at the specified
+    step. Periodicity is (range + (range - 2)).
+    """
+    def at_top_at_step?(_, 0), do: true
+    def at_top_at_step?(%Layer{range: nil}, _), do: false
+
+    def at_top_at_step?(%Layer{range: range}, step) do
+      Integer.mod(step, range + range - 2) == 0
+    end
+
     def hit_check_cost(l) do
       if at_zero?(l), do: cost(l), else: 0
     end
@@ -83,53 +94,42 @@ defmodule Y2017.Day13 do
     cost
   end
 
-  # 129680 is too low
+  # 129680 is too low Question: is (the least common multiple of all of the
+  # ranges) + 1 the answer?
+  # 586297958400 is too high
+  #
+  # Don't have to simulate. Simply find out if on step (N + delay), the Nth
+  # level is at the top.
   def part2 do
     firewall = read_firewall()
-    cache = %{0 => firewall}
-    max_depth = length(Map.keys(firewall))
+    len = length(Map.keys(firewall))
 
-    # assumes step 0 is not the answer
-    Stream.iterate({cache, 0, -99}, fn {cache, prev_delay, _prev_cost} ->
-      delay = prev_delay + 1
-      {firewall, cache} = find_or_create(firewall, delay, cache)
+    # integer delay starts
+    Stream.iterate(0, &(&1 + 1))
+    |> Enum.find(&no_hits?(firewall, len, &1))
+  end
 
-      {_, cache, cost} =
-        0..(max_depth - 1)
-        |> Enum.reduce({firewall, cache, 0}, fn i, {fwall, cache, cost} ->
-          new_cost = cost + Layer.hit_check_cost(fwall[i])
-          {new_fwall, new_cache} = find_or_create(fwall, delay + i + 1, cache)
-          {new_fwall, new_cache, new_cost}
-        end)
+  # ================ part 2 ================
 
-      {cache, delay, cost}
-    end)
-    |> Enum.find(fn {_, _, cost} -> cost == 0 end)
-    |> elem(1)
+  defp no_hits?(firewall, len, delay) do
+    hit_at =
+      0..(len - 1)
+      |> Enum.find(fn i ->
+        layer = Map.get(firewall, i)
+        Layer.at_top_at_step?(layer, delay + i)
+      end)
+
+    hit_at == nil
   end
 
   # ================ helpers ================
-
-  # Given firewall, step, and cache, return a tuple containing {firewall at
-  # step, possibly modified cache}.
-  defp find_or_create(firewall, step, cache) do
-    f = cache[step]
-
-    if f do
-      {f, cache}
-    else
-      {prev_f, cache} = find_or_create(firewall, step - 1, cache)
-      f = step_firewall(prev_f)
-      {f, Map.put(cache, step, f)}
-    end
-  end
 
   defp step_firewall(firewall) do
     len = length(Map.keys(firewall))
 
     0..(len - 1)
     |> Enum.reduce(firewall, fn i, firewall ->
-      Map.replace(firewall, i, Layer.step(firewall[i]))
+      Map.put(firewall, i, Map.get(firewall, i, Layer.step(firewall[i])))
     end)
   end
 

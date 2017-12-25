@@ -34,7 +34,7 @@ defmodule Y2017.Day05 do
   defp do_steps_until_out_of_bounds(m, len, idx, steps, f) do
     offset = m[idx]
     new_idx = idx + offset
-    new_m = Map.replace(m, idx, f.(offset))
+    new_m = Map.put(m, idx, Map.get(m, f.(offset)))
     do_steps_until_out_of_bounds(new_m, len, new_idx, steps + 1, f)
   end
 end
