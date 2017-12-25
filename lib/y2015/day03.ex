@@ -20,7 +20,7 @@ defmodule Y2015.Day03 do
 
     {odd_dirs_and_indexes, even_dirs_and_indexes} =
       directions_with_indexes
-      |> Enum.partition(fn {_, idx} -> Integer.is_odd(idx) end)
+      |> Enum.split_with(fn {_, idx} -> Integer.is_odd(idx) end)
 
     odd_dirs = odd_dirs_and_indexes |> Enum.map(fn {dir, _} -> dir end)
     even_dirs = even_dirs_and_indexes |> Enum.map(fn {dir, _} -> dir end)

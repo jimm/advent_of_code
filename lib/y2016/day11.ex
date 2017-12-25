@@ -138,22 +138,22 @@ defmodule Y2016.Day11 do
     {new_floors, next_floor}
   end
 
-  defp print_floors(floors, elevator_floor) do
-    [4, 3, 2, 1]
-    |> Enum.each(fn i ->
-      floor = floor_contents(floors, i)
-      e = if i == elevator_floor, do: "E ", else: "  "
+  # defp print_floors(floors, elevator_floor) do
+  #   [4, 3, 2, 1]
+  #   |> Enum.each(fn i ->
+  #     floor = floor_contents(floors, i)
+  #     e = if i == elevator_floor, do: "E ", else: "  "
 
-      things =
-        floor
-        |> Enum.map(fn {elem, type} ->
-          t = if type == :mchip, do: "M", else: "G"
-          "#{elem |> to_string |> String.upcase()}#{t}"
-        end)
+  #     things =
+  #       floor
+  #       |> Enum.map(fn {elem, type} ->
+  #         t = if type == :mchip, do: "M", else: "G"
+  #         "#{elem |> to_string |> String.upcase()}#{t}"
+  #       end)
 
-      IO.puts("F#{i}: #{e} #{Enum.join(things, " ")}")
-    end)
-  end
+  #     IO.puts("F#{i}: #{e} #{Enum.join(things, " ")}")
+  #   end)
+  # end
 end
 
 # F4: .. .. .. .. .. .. .. .. .. ..

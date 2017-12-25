@@ -21,7 +21,6 @@ defmodule Y2017.Day11 do
     |> Enum.reduce({{0, 0, 0}, 0}, fn step, {{x, y, z}, max_dist} ->
       loc = move({x, y, z}, step)
       dist = astar_distance(loc)
-      new_max_dist = max(max_dist, dist)
       {loc, max(max_dist, dist)}
     end)
   end

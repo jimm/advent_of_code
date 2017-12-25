@@ -20,7 +20,7 @@ defmodule Y2015.Day02 do
 
   defp parse(s) do
     s
-    |> String.strip()
+    |> String.trim()
     |> String.split("x")
     |> Enum.map(&String.to_integer/1)
   end

@@ -18,7 +18,7 @@ defmodule Y2015.Day11 do
 
   defp next(pwd) do
     pwd
-    |> String.to_char_list()
+    |> String.to_charlist()
     |> increment_char_list
     |> to_string
   end
@@ -39,7 +39,7 @@ defmodule Y2015.Day11 do
   end
 
   defp run_of_three?(pwd) do
-    run_of_three?(pwd |> String.to_char_list(), 0)
+    run_of_three?(pwd |> String.to_charlist(), 0)
   end
 
   defp run_of_three?(_, 2), do: true

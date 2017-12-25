@@ -9,7 +9,7 @@ defmodule Y2015.Day17 do
   def run(liters \\ @liters, input_file \\ @input_file) do
     containers =
       File.stream!(input_file)
-      |> Enum.map(&(&1 |> String.strip() |> String.to_integer()))
+      |> Enum.map(&(&1 |> String.trim() |> String.to_integer()))
 
     fit_count(containers, liters)
   end
@@ -17,7 +17,7 @@ defmodule Y2015.Day17 do
   def min_container_count(liters \\ @liters, input_file \\ @input_file) do
     containers =
       File.stream!(input_file)
-      |> Enum.map(&(&1 |> String.strip() |> String.to_integer()))
+      |> Enum.map(&(&1 |> String.trim() |> String.to_integer()))
 
     min_fit_count(containers, liters)
   end
@@ -34,7 +34,7 @@ defmodule Y2015.Day17 do
 
   def fit_count(containers, k, liters, count) do
     matches =
-      Common.Set.combinations(containers, k)
+      Set.combinations(containers, k)
       |> Enum.filter(fn perm -> liters == Enum.sum(perm) end)
       |> length
 
@@ -48,7 +48,7 @@ defmodule Y2015.Day17 do
   def min_fit_count(containers, _, k) when k > length(containers), do: 0
 
   def min_fit_count(containers, liters, k) do
-    combis = Common.Set.combinations(containers, k)
+    combis = Set.combinations(containers, k)
 
     matches =
       combis

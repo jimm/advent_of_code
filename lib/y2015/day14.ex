@@ -1,8 +1,6 @@
 defmodule Y2015.Day14 do
   use Common.File
 
-  # @input_file "test.txt"
-  @input_file default_input_path()
   @parse_regex ~r{(\w+) can fly (\d+) km/s for (\d+) seconds, but then must rest for (\d+) seconds\.}
 
   defstruct [:name, :speed, :duration, :rest, :state, :time_in_state, :dist_travelled, :points]

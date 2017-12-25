@@ -5,7 +5,7 @@ defmodule Y2015.Day08 do
     {code_rep_len, char_count} =
       default_input_path()
       |> File.stream!()
-      |> Enum.map(&String.strip/1)
+      |> Enum.map(&String.trim/1)
       |> Enum.reduce({0, 0}, fn s, {crl, cc} ->
         {evalled_s, _} = Code.eval_string(s)
         {crl + String.length(s), cc + String.length(evalled_s)}
@@ -18,7 +18,7 @@ defmodule Y2015.Day08 do
     {code_rep_len, encoded_rep_len} =
       default_input_path()
       |> File.stream!()
-      |> Enum.map(&String.strip/1)
+      |> Enum.map(&String.trim/1)
       |> Enum.reduce({0, 0}, fn s, {crl, ecl} ->
         len = String.length(s)
         {crl + len, ecl + len + escape_chars_count(s, 0) + 2}

@@ -61,8 +61,8 @@ defmodule Y2015.Day18 do
 
   defp read_board_line(line) do
     line
-    |> String.strip()
-    |> String.to_char_list()
+    |> String.trim()
+    |> String.to_charlist()
   end
 
   defp next_board({_, rows, cols} = board, cell_rules) do

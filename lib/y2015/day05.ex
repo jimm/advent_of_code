@@ -9,7 +9,7 @@ defmodule Y2015.Day05 do
 
   def count_nice(f) do
     input_lines()
-    |> Stream.map(&String.strip/1)
+    |> Stream.map(&String.trim/1)
     |> Stream.filter(fn s -> f.(s) end)
     |> Enum.to_list()
     |> length

@@ -86,7 +86,7 @@ defmodule Y2015.Day07 do
 
     {nd_statements, d_statements} =
       statements
-      |> Enum.partition(fn [target | _] -> Enum.member?(free_targets, target) end)
+      |> Enum.split_with(fn [target | _] -> Enum.member?(free_targets, target) end)
 
     reorder(
       d_statements,

@@ -4,6 +4,10 @@ defmodule Y2016.Day19 do
   defmodule Elf do
     use GenServer
 
+    def init(args) do
+      {:ok, args}
+    end
+
     def num_presents(pid) do
       GenServer.call(pid, :num_presents)
     end
