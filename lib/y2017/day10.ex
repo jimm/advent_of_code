@@ -23,8 +23,13 @@ defmodule Y2017.Day10 do
   end
 
   def part2 do
-    rope = init_rope(@rope_len)
-    chars = read_input_chars() ++ @part2_input_suffix
+    part2(@rope_len, read_input_chars())
+  end
+
+  # For use by the external world.
+  def part2(rope_len, input_charlist) do
+    rope = init_rope(rope_len)
+    chars = input_charlist ++ @part2_input_suffix
 
     {sparse_hash, _, _, _} =
       0..63
@@ -83,11 +88,11 @@ defmodule Y2017.Day10 do
 
   # ================ helpers ================
 
-  defp knot(rope, _, [], index, skip_size) do
+  def knot(rope, _, [], index, skip_size) do
     {rope, index, skip_size}
   end
 
-  defp knot(rope, rope_len, [len | t], index, skip_size) do
+  def knot(rope, rope_len, [len | t], index, skip_size) do
     knot(
       reverse(rope, rope_len, index, len),
       rope_len,
