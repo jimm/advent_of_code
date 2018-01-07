@@ -45,7 +45,6 @@ defmodule Y2017.Day17 do
   # ================ end CircularBuffer ================
 
   alias CircularBuffer, as: CB
-  alias Part2Buffer, as: P2B
 
   def part1 do
     spinlock(@input, @last_insert)
