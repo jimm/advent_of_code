@@ -5,9 +5,9 @@ defmodule Y2017.Day15 do
 
   @factor_a 16807
   @factor_b 48271
-  @product 2147483647
+  @product 2_147_483_647
   @part_1_sample_size 40_000_000
-  @part_2_sample_size  5_000_000
+  @part_2_sample_size 5_000_000
 
   # I could read the values from my input file, but it's easier to hard-code
   # them here.
@@ -23,20 +23,23 @@ defmodule Y2017.Day15 do
 
     Stream.zip(a, b)
     |> Stream.take(@part_1_sample_size)
-    |> Stream.filter(fn({a, b}) -> (a &&& 0xffff) == (b &&& 0xffff) end)
-    |> Enum.count
+    |> Stream.filter(fn {a, b} -> (a &&& 0xFFFF) == (b &&& 0xFFFF) end)
+    |> Enum.count()
   end
 
   def part2(start_a \\ @start_a, start_b \\ @start_b) do
-    a = generator(start_a, @factor_a)
-    |> Stream.filter(fn(i) -> (i &&& 3) == 0 end)
-    b = generator(start_b, @factor_b)
-    |> Stream.filter(fn(i) -> (i &&& 7) == 0 end)
+    a =
+      generator(start_a, @factor_a)
+      |> Stream.filter(fn i -> (i &&& 3) == 0 end)
+
+    b =
+      generator(start_b, @factor_b)
+      |> Stream.filter(fn i -> (i &&& 7) == 0 end)
 
     Stream.zip(a, b)
     |> Stream.take(@part_2_sample_size)
-    |> Stream.filter(fn({a, b}) -> (a &&& 0xffff) == (b &&& 0xffff) end)
-    |> Enum.count
+    |> Stream.filter(fn {a, b} -> (a &&& 0xFFFF) == (b &&& 0xFFFF) end)
+    |> Enum.count()
   end
 
   # ================ testing ================
@@ -59,7 +62,7 @@ defmodule Y2017.Day15 do
   # ================ helpers ================
 
   defp generator(initial_value, factor) do
-    Stream.iterate(initial_value, fn(val) ->
+    Stream.iterate(initial_value, fn val ->
       Integer.mod(val * factor, @product)
     end)
     |> Stream.drop(1)

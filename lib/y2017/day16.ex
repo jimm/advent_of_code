@@ -4,32 +4,34 @@ defmodule Y2017.Day16 do
   use Common.File
 
   def part1 do
-    line = Enum.to_list((?a .. ?p))
+    line = Enum.to_list(?a..?p)
     instructions = read_instructions()
     dance(line, instructions)
   end
 
   def part2 do
-    line = Enum.to_list((?a .. ?p))
+    line = Enum.to_list(?a..?p)
     instructions = read_instructions()
 
     cycle = generate_dance_cycle(line, instructions)
     cycle_len = length(cycle)
     num_dances_needed = Integer.mod(1_000_000_000, cycle_len)
 
-    (0..num_dances_needed-1)
-    |> Enum.reduce(line, fn(_, l) -> dance(l, instructions) end)
+    0..(num_dances_needed - 1)
+    |> Enum.reduce(line, fn _, l -> dance(l, instructions) end)
   end
 
   # ================ testing ================
 
   def test1 do
-    line = Enum.to_list((?a .. ?e))
+    line = Enum.to_list(?a..?e)
+
     instructions = [
       {:spin, 1},
       {:exchange, 3, 4},
       {:partner, ?e, ?b}
     ]
+
     Enum.reduce(instructions, line, &interpret/2)
   end
 
@@ -52,18 +54,21 @@ defmodule Y2017.Day16 do
     {part1, parts23} = Enum.split(line, i)
     {part2, part3} = Enum.split(parts23, j - i)
     [ei | p2] = part2
-    {ej_part, p3} = if part3 == [] do
-      {[], []}
-    else
-      [ej | p3] = part3
-      {[ej], p3}
-    end
+
+    {ej_part, p3} =
+      if part3 == [] do
+        {[], []}
+      else
+        [ej | p3] = part3
+        {[ej], p3}
+      end
+
     part1 ++ ej_part ++ p2 ++ [ei] ++ p3
   end
 
   defp interpret({:partner, a, b}, line) do
-    i = Enum.find_index(line, fn(s) -> s == a end)
-    j = Enum.find_index(line, fn(s) -> s == b end)
+    i = Enum.find_index(line, fn s -> s == a end)
+    j = Enum.find_index(line, fn s -> s == b end)
     interpret({:exchange, i, j}, line)
   end
 
@@ -75,11 +80,16 @@ defmodule Y2017.Day16 do
 
   defp generate_dance_cycle(line, instructions, cycle, ms) do
     next_line = dance(line, instructions)
+
     if MapSet.member?(ms, next_line) do
       Enum.reverse(cycle)
     else
-      generate_dance_cycle(next_line, instructions, [next_line | cycle],
-        MapSet.put(ms, next_line))
+      generate_dance_cycle(
+        next_line,
+        instructions,
+        [next_line | cycle],
+        MapSet.put(ms, next_line)
+      )
     end
   end
 
@@ -103,8 +113,6 @@ defmodule Y2017.Day16 do
 
   def parse_instruction(<<?p>> <> rest) do
     [a, b] = String.split(rest, "/")
-    {:partner,
-     a |> String.to_charlist() |> hd(),
-     b |> String.to_charlist() |> hd()}
+    {:partner, a |> String.to_charlist() |> hd(), b |> String.to_charlist() |> hd()}
   end
 end

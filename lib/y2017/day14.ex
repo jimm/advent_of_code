@@ -11,7 +11,7 @@ defmodule Y2017.Day14 do
   def part1(input \\ @puzzle_input) do
     input
     |> input_as_mapset()
-    |> MapSet.size
+    |> MapSet.size()
   end
 
   # Number of contiguous sector groups, where connection is horizontal and
@@ -33,6 +33,7 @@ defmodule Y2017.Day14 do
     # debug_print_memory(ones) # DEBUG
 
     one_bit_coord = find_one_bit(ones)
+
     if one_bit_coord do
       count_groups(remove_group_touching(ones, one_bit_coord), count + 1)
     else
@@ -44,7 +45,7 @@ defmodule Y2017.Day14 do
     if MapSet.size(ones) == 0 do
       nil
     else
-      ones |> MapSet.to_list |> hd
+      ones |> MapSet.to_list() |> hd
     end
   end
 
@@ -56,8 +57,8 @@ defmodule Y2017.Day14 do
     if MapSet.size(ones_coords) == 0 do
       ones
     else
-      coord = ones_coords |> MapSet.to_list |> hd
-      tcs = touching_coords(ones, coord) |> MapSet.new
+      coord = ones_coords |> MapSet.to_list() |> hd
+      tcs = touching_coords(ones, coord) |> MapSet.new()
       new_ones = MapSet.difference(ones, MapSet.put(tcs, coord))
       new_ones_coords = MapSet.union(tcs, MapSet.delete(ones_coords, coord))
       remove_group_touching(new_ones, new_ones_coords)
@@ -66,11 +67,11 @@ defmodule Y2017.Day14 do
 
   defp touching_coords(ones, {row, col}) do
     [{0, 1}, {0, -1}, {1, 0}, {-1, 0}]
-    |> Enum.map(fn({dr, dc}) ->
-      coord = {row + dr, col+dc}
+    |> Enum.map(fn {dr, dc} ->
+      coord = {row + dr, col + dc}
       if MapSet.member?(ones, coord), do: coord
     end)
-    |> Enum.filter(&(&1))
+    |> Enum.filter(& &1)
   end
 
   # ================ testing ================
@@ -81,6 +82,7 @@ defmodule Y2017.Day14 do
     @test_puzzle_input
     |> input_as_mapset()
     |> debug_print_memory()
+
     :ok
   end
 
@@ -115,17 +117,21 @@ defmodule Y2017.Day14 do
 
   defp as_mapset([row | t], row_idx, coords) do
     {_, new_coords} =
-      Enum.reduce(row, {0, coords}, fn(ch, {col_idx, cs}) ->
+      Enum.reduce(row, {0, coords}, fn ch, {col_idx, cs} ->
         i = hex_char_to_int(ch)
-        new_cs = [
-        (if (i &&& 8) != 0, do: {row_idx, col_idx    }),
-        (if (i &&& 4) != 0, do: {row_idx, col_idx + 1}),
-        (if (i &&& 2) != 0, do: {row_idx, col_idx + 2}),
-        (if (i &&& 1) != 0, do: {row_idx, col_idx + 3})
-        ]
-        |> Enum.filter(&(&1))
+
+        new_cs =
+          [
+            if((i &&& 8) != 0, do: {row_idx, col_idx}),
+            if((i &&& 4) != 0, do: {row_idx, col_idx + 1}),
+            if((i &&& 2) != 0, do: {row_idx, col_idx + 2}),
+            if((i &&& 1) != 0, do: {row_idx, col_idx + 3})
+          ]
+          |> Enum.filter(& &1)
+
         {col_idx + 4, new_cs ++ cs}
       end)
+
     as_mapset(t, row_idx + 1, new_coords)
   end
 
@@ -133,11 +139,13 @@ defmodule Y2017.Day14 do
   defp hex_char_to_int(ch) when ch >= ?a and ch <= ?f, do: ch - ?a + 10
 
   defp debug_print_memory(ones, size \\ 16) do
-    (0..size-1)
-    |> Enum.map(fn(row) ->
-      (0..size-1) |> Enum.map(fn(col) ->
+    0..(size - 1)
+    |> Enum.map(fn row ->
+      0..(size - 1)
+      |> Enum.map(fn col ->
         IO.write(if MapSet.member?(ones, {row, col}), do: "#", else: ".")
       end)
+
       IO.puts("")
     end)
   end
