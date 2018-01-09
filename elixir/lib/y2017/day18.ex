@@ -1,5 +1,24 @@
 # Duet
 defmodule Y2017.Day18 do
+
+  # ================ CPU simple looper ================
+
+  defmodule CPU do
+    def loop(state) do
+      case run_until_receive_or_error(state) do
+        :error ->
+          :error
+        new_state ->
+          loop(new_state)
+      end
+    end
+
+    def run_until_receive_or_error(state) do
+    end
+  end
+
+  # ================ end CPU GenServer ================
+
   use Common.File
 
   def part1 do
@@ -55,6 +74,8 @@ defmodule Y2017.Day18 do
   end
 
   defp execute({:mul, reg, ref}, pc, regs) do
+    v1 = value_of(regs, reg)
+    v2 = value_of(regs, ref)
     {pc + 1, store(regs, reg, v1 * v2)}
   end
 

@@ -32,7 +32,7 @@ defmodule Common.File do
       |> tl
       |> Enum.join("/")
 
-    "data/#{path}.txt"
+    "../data/#{path}.txt"
   end
 
   def default_input_path(mod, part) do
