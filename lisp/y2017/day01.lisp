@@ -1,8 +1,5 @@
 ;;; Inverse Captcha
 
-(defun to-integer (str)
-  (with-input-from-string (s str) (read s)))
-
 (defun digits (n)
   (map 'list #'digit-char-p (prin1-to-string n)))
 

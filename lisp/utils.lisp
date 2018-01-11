@@ -2,6 +2,13 @@
 
 (ql:quickload :cl-ppcre)
 
+(defun to-integer (str)
+  (with-input-from-string (s str) (read s)))
+
+(defun split-by-space (string)
+  "Returns a list of substrings of string divided by whitespace."
+  (cl-ppcre:split "\\s+" string))
+
 (defvar *input-file-format* "../../data/y~a/day~2,'0D.txt")
 
 (defun input-lines-from (path &key (keep-blank-lines nil))
@@ -21,7 +28,3 @@ lines in the file, without newlines. Does not return blank lines unless
 year y and day d."
   (input-lines-from (format nil *input-file-format* y d)
                     :keep-blank-lines keep-blank-lines))
-
-(defun split-by-space (string)
-  "Returns a list of substrings of string divided by whitespace."
-  (cl-ppcre:split "\\s+" string))
