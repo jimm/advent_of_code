@@ -26,22 +26,6 @@
            (list mc
                  (- mc (- bot-right (* 3 sqrtm1) i)))))))
 
-;; (defun find-coord (i bot-right sqrt mc)
-;;   (let ((sqrtm1 (- sqrt 1)))
-;;     ;; use method and pattern match?
-;;     (if (>= i (- bot-right sqrtm1))
-;;         ;; bottom row
-;;         (list (- mc (- bot-right i)) (- mc))
-;;         (if (>= i (- bot-right (* 2 sqrtm1)))
-;;             ;; left row
-;;             (list (- mc) (+ (- (max-coord sqrt))
-;;                             (- bot-right sqrtm1 i)))
-;;             (if (>= i (- bot-right (* 3 sqrtm1)))
-;;                 ;; top row
-;;                 (list (+ (- mc) (- bot-right (* 2 sqrtm1) i)) mc)
-;;                 ;; right row
-;;                 (list mc (- mc (- bot-right (* 3 sqrtm1) i))))))))
-
 (defun coord-of (n)
   (let ((sqrt (sqrt-of-bottom-corner-containing n)))
     (find-coord n (* sqrt sqrt) sqrt (max-coord sqrt))))
