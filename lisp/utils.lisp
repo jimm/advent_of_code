@@ -9,6 +9,10 @@
   "Returns a list of substrings of string divided by whitespace."
   (cl-ppcre:split "\\s+" string))
 
+(defun split-by (regex string)
+  "Returns a list of substrings of string divided by whitespace."
+  (cl-ppcre:split regex string))
+
 (defvar *input-file-format* "../../data/y~a/day~2,'0D.txt")
 
 (defun input-lines-from (path &key (keep-blank-lines nil))

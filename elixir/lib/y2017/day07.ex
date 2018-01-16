@@ -13,7 +13,6 @@ defmodule Y2017.Day07 do
     root.name
   end
 
-  # 6457 is too high
   def part2 do
     root = read_tree() |> set_subtree_weights
     misfit = find_misfit(root)
