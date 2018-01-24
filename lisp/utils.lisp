@@ -1,6 +1,9 @@
 ;;;; Advent of Code utilities
 
 (ql:quickload :cl-ppcre)
+(ql:quickload :alexandria)
+
+(defun flatten (l) (alexandria:flatten l))
 
 (defun to-integer (str)
   (with-input-from-string (s str) (read s)))
