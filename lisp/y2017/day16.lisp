@@ -23,10 +23,7 @@
           (cl-ppcre:split "," (first (input-lines 2017 16)))))
 
 (defun spin (dance-line n)
-  (let* ((len (- (length dance-line) n))
-         (new-front (subseq dance-line len))
-         (new-back (subseq dance-line 0 len)))
-    (map-into dance-line #'identity (concatenate 'list new-front new-back))))
+  (alexandria:rotate dance-line n))
 
 (defun swap-positions (dance-line i j)
   (let ((tmp (aref dance-line i)))
