@@ -16,8 +16,6 @@ defmodule Y2017.Day14 do
 
   # Number of contiguous sector groups, where connection is horizontal and
   # vertical but not diagonal.
-  #
-  # 2007 is too high
   def part2(input \\ @puzzle_input) do
     input
     |> input_as_mapset()

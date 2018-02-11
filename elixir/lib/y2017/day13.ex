@@ -94,10 +94,6 @@ defmodule Y2017.Day13 do
     cost
   end
 
-  # 129680 is too low Question: is (the least common multiple of all of the
-  # ranges) + 1 the answer?
-  # 586297958400 is too high
-  #
   # Don't have to simulate. Simply find out if on step (N + delay), the Nth
   # level is at the top.
   def part2 do

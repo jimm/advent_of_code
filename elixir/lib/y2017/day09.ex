@@ -26,7 +26,6 @@ defmodule Y2017.Day09 do
     Enum.sum(state.scores)
   end
 
-  # 8187 too high
   def part2 do
     chars = read_stream()
     state = chars |> Enum.reduce(%State{}, fn ch, s -> process(ch, s) end)

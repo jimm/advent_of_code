@@ -51,15 +51,15 @@
   (string-downcase
    (apply #'concatenate (cons 'string (mapcar (lambda (d) (format nil "~2,'0x" d)) dense)))))
 
-(defun part1 (&optional rope-length lens)
+(defun day10-part1 (&optional rope-length lens)
   (let* ((rope (init-rope (or rope-length rope-len)))
          (knot (knot rope (length rope) (or lens (read-input-lengths)) 0 0)))
     (* (elt (first knot) 0) (elt (first knot) 1))))
 
-(defun test-part1 ()
-  (part1 5 (list 3 4 1 5)))
+(defun test-day10-part1 ()
+  (day10-part1 5 (list 3 4 1 5)))
 
-(defun part2 (&optional rope-length input-str)
+(defun day10-part2 (&optional rope-length input-str)
   (let* ((rope (init-rope (or rope-length rope-len)))
          (lengths
           (append
