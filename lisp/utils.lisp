@@ -6,7 +6,11 @@
 (defun flatten (l) (alexandria:flatten l))
 
 (defun to-integer (str)
-  (with-input-from-string (s str) (read s)))
+  (if str
+      (if (and (> (length str) 0) (digit-char-p (char str 0)))
+          (with-input-from-string (s str) (read s))
+          str)
+      nil))
 
 (defun split-by-space (string)
   "Returns a list of substrings of string divided by whitespace."
