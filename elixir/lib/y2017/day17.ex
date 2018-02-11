@@ -7,10 +7,8 @@ defmodule Y2017.Day17 do
 
   # Circular buffer. An agent holds the list of values, the current
   # index, and the length of the list (an optimization).
-  #
-  # We only ever need one circular buffer in this challenge, so the
-  # functions don't take any args that identify which agent we're using.
   defmodule CircularBuffer do
+    # Returns {:ok, pid}
     def init(initial_list) do
       Agent.start_link(fn -> {initial_list, 0, length(initial_list)} end)
     end
