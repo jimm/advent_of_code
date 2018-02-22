@@ -7,7 +7,8 @@
 
 (defun to-integer (str)
   (if str
-      (if (and (> (length str) 0) (digit-char-p (char str 0)))
+      (if (and (> (length str) 0) (or (digit-char-p (char str 0))
+                                      (eq #\- (char str 0))))
           (with-input-from-string (s str) (read s))
           str)
       nil))
@@ -19,6 +20,8 @@
 (defun split-by (regex string)
   "Returns a list of substrings of string divided by whitespace."
   (cl-ppcre:split regex string))
+
+;;; ================ data input ================
 
 (defvar *input-file-format* "../../data/y~a/day~2,'0D.txt")
 
@@ -39,3 +42,22 @@ lines in the file, without newlines. Does not return blank lines unless
 year y and day d."
   (input-lines-from (format nil *input-file-format* y d)
                     :keep-blank-lines keep-blank-lines))
+
+;;; ================ queue ================
+;;; From Common Lisp Recipes (http://weitz.de/cl-recipes/), section 2-10.
+
+(defclass queue()
+  ((list :initform nil)
+   (tail :initform nil)))
+
+(defmethod dequeue ((queue queue))
+  (with-slots (list) queue
+    (pop list)))
+
+(defmethod enqueue (new-item (queue queue))
+  (with-slots (list tail) queue
+    (let ((new-tail (list new-item)))
+          (cond ((null list) (setf list new-tail))
+                (t (setf (cdr tail) new-tail)))
+          (setf tail new-tail)))
+  queue)
