@@ -2,10 +2,6 @@
 
 (load "../utils.lisp")
 
-;; ================ cpu ================
-
-(defstruct cpu name pc mem snd-func rcv-func send-count mailbox io-blocked)
-
 (define-condition nonzero-received (error)
   ((value-received :initarg :value-received
                    :reader value-received))
@@ -17,6 +13,10 @@
   (:report (lambda (condition stream)
              (format stream "deadlock" ))))
 
+;; ================ cpu ================
+
+(defstruct cpu name pc mem snd-func rcv-func send-count mailbox io-blocked program)
+
 (defun cpu-debug-print (cpu)
   (format t "cpu ~s~%"(cpu-name cpu))
   (format t "  pc: ~d~%"(cpu-pc cpu))
@@ -27,6 +27,9 @@
   (format t "  send-count: ~d~%" (cpu-send-count cpu))
   (format t "  mailbox: ~a~%" (cpu-mailbox cpu))
   (format t "  io-blocked: ~a~%" (cpu-io-blocked cpu)))
+
+(defun cpu-load-program (cpu program)
+  (setf (cpu-program cpu) program))
 
 (defun cpu-read (cpu ref)
   (if (numberp ref) ref
@@ -76,11 +79,15 @@
         (ref2 (third instruction)))
     (funcall f cpu ref1 ref2)))
 
+(defun execute-instruction-at-pc (cpu)
+  (let ((instruction (aref (cpu-program cpu) (cpu-pc cpu))))
+    (execute cpu instruction)))
+
 (defun cpu-create (name snd-func rcv-func &optional (p-val 0))
   (let ((cpu (make-cpu :name name :pc 0 :mem (make-hash-table :test #'equal)
                        :snd-func snd-func :rcv-func rcv-func
                        :send-count 0 :mailbox (make-instance 'queue)
-                       :io-blocked nil)))
+                       :io-blocked nil :program nil)))
     (cpu-write cpu #\p p-val)
     cpu))
 
@@ -115,16 +122,13 @@
 
 ;; ================ part1 ================
 
-(defun run-until-recovery (cpu program)
+(defun run-until-recovery (cpu)
   (handler-case
-      (loop
-         do (let ((instruction (aref program (cpu-pc cpu))))
-              (execute cpu instruction)))
+      (loop do (execute-instruction-at-pc cpu))
     (nonzero-received ()
       cpu)))
 
 (defun part1-snd (cpu ref1 ref2)
-  (incf (cpu-send-count cpu))
   (cpu-write cpu "played" (cpu-read cpu ref1))
   (incr-pc cpu))
 
@@ -137,7 +141,8 @@
 
 (defun part1 ()
   (let ((cpu (cpu-create "p1c1" #'part1-snd #'part1-rcv)))
-    (run-until-recovery cpu (read-program))
+    (cpu-load-program cpu (read-program))
+    (run-until-recovery cpu)
     (cpu-read cpu "received")))
 
 ;; ================ part2 ================
@@ -146,7 +151,6 @@
   (every #'cpu-io-blocked cpus))
 
 (defun part2-snd (cpu ref1 ref2)
-  (incf (cpu-send-count cpu))
   (enqueue (cpu-read cpu ref1) (cpu-mailbox (cpu-read cpu "other-cpu")))
   (incr-pc cpu))
 
@@ -166,21 +170,20 @@
        ;; no mail yet; blocked waiting
        (setf (cpu-io-blocked cpu) t)))))
 
-(defun run-until-deadlock (cpus program)
+(defun run-until-deadlock (cpus)
   (handler-case
-      (loop
-         do (mapc (lambda (cpu)
-                    (let ((instruction (aref program (cpu-pc cpu))))
-                      (execute cpu instruction)))
-                  cpus))
+      (loop do (mapc #'execute-instruction-at-pc cpus))
     (deadlock ()
       cpus)))
 
 ;; answer we get here is too high
 (defun part2 ()
   (let ((cpu1 (cpu-create "p2c1" #'part2-snd #'part2-rcv 0))
-        (cpu2 (cpu-create "p2c2" #'part2-snd #'part2-rcv 1)))
+        (cpu2 (cpu-create "p2c2" #'part2-snd #'part2-rcv 1))
+        (program (read-program)))
     (cpu-write cpu1 "other-cpu" cpu2)
     (cpu-write cpu2 "other-cpu" cpu1)
-    (run-until-deadlock (list cpu1 cpu2) (read-program))
+    (cpu-load-program cpu1 program)
+    (cpu-load-program cpu2 program)
+    (run-until-deadlock (list cpu1 cpu2))
     (cpu-send-count cpu2)))
