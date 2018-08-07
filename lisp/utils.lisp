@@ -5,6 +5,10 @@
 
 (defun flatten (l) (alexandria:flatten l))
 
+(defun drop (n l) (subseq l n))
+
+(defun take (n l) (subseq l 0 n))
+
 (defun to-integer (str)
   (if str
       (if (and (> (length str) 0) (or (digit-char-p (char str 0))
