@@ -34,7 +34,8 @@ def part2(testing=False):
                 return
 
 
-# A generator that returns char or None for each char in line1 that matches line2.
+# A generator that returns char or None for each char in line1 that matches
+# line2.
 def _diff_gen(line1, line2):
     while line1:
         yield (line1[0] == line2[0]) and line1[0] or None
