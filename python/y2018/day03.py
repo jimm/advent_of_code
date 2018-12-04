@@ -1,5 +1,7 @@
 # No Matter How You Slice It
 
+import collections
+
 from utils import data_file_lines
 
 
@@ -31,23 +33,21 @@ class Claim:
 
 def part1(testing=False):
     claims = _read_claims(testing, 1)
-    overlaps = {}
+    overlaps = collections.defaultdict(int)
     for claim in claims.values():
         for i in range(claim.x, claim.x + claim.width):
             for j in range(claim.y, claim.y + claim.height):
-                overlaps[(i, j)] = overlaps.get((i, j), 0) + 1
+                overlaps[(i, j)] += 1
     print(len([k for k, v in overlaps.items() if v > 1]))
 
 
 def part2(testing=False):
     claims = _read_claims(testing, 1)
-    overlaps = {}
+    overlaps = collections.defaultdict(list)
     for claim in claims.values():
         for i in range(claim.x, claim.x + claim.width):
             for j in range(claim.y, claim.y + claim.height):
-                key = (i, j)
-                overlaps[key] = overlaps.get(key, [])
-                overlaps[key].append(claim.id)
+                overlaps[(i, j)].append(claim.id)
     for claim_ids in overlaps.values():
         if len(claim_ids) > 1:
             for claim_id in claim_ids:

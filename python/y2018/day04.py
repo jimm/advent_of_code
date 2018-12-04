@@ -3,6 +3,8 @@
 # Don't need to track date or timestamp, just need nap minute ranges. Could
 # get rid of all timestamps/dates, but no need to bother. Runs plenty fast.
 
+import collections
+
 from utils import *
 
 
@@ -69,9 +71,9 @@ def _parse_data(testing, part_num):
             )
     max_day_start = min_day_start or int(tstamp / 10000) * 10000 + 60
 
-    guard_naps = {}  # key = guard id, val = list of ranges
+    # guard_naps key = guard id, val = list of ranges
+    guard_naps = collections.defaultdict(list)
     for nap in naps:
-        guard_naps[nap.guard_id] = guard_naps.get(nap.guard_id, [])
         guard_naps[nap.guard_id].append(nap)
 
     return (min_day_start, max_day_start, guard_naps)

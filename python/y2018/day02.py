@@ -1,5 +1,6 @@
 # Inventory Management System
 
+import collections
 import sys
 
 from utils import *
@@ -10,9 +11,9 @@ def part1(testing=False):
     num_twos = 0
     num_threes = 0
     for line in lines:
-        freqs = {}
+        freqs = collections.defaultdict(int)
         for char in line:
-            freqs[char] = freqs.get(char, 0) + 1
+            freqs[char] += 1
         vals = list(freqs.values())
         if 2 in vals:
             num_twos += 1
