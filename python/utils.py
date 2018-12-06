@@ -3,10 +3,10 @@ import sys
 
 
 def read_data_file(day, testing=False, part_num=1):
+    fname = f"day{'%02d' % day}"
     if testing:
-        fname = f"day{day}_{part_num}_test.txt"
-    else:
-        fname = f"day{day}.txt"
+        fname += f"_{part_num}_test"
+    fname += ".txt"
     path = os.path.join(
         os.path.dirname(os.path.realpath(__file__)), "../data/y2018", fname
     )

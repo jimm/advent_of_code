@@ -24,5 +24,5 @@ def part2(testing=False):
 
 
 def _read_nums(testing):
-    lines = data_file_lines("01", testing)
+    lines = data_file_lines(1, testing)
     return [int(line) for line in lines]

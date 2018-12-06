@@ -50,7 +50,7 @@ def part2(testing=False):
 # Return min day start as timestamp, max day start as timestamp, and dict
 # with guard_id as key and list of Naps as value.
 def _parse_data(testing, part_num):
-    lines = sorted(data_file_lines("04", testing, part_num))
+    lines = sorted(data_file_lines(4, testing, part_num))
     tstamp = None
     min_day_start = None
     naps = []

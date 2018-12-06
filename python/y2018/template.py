@@ -4,7 +4,7 @@ from utils import *
 
 
 def part1(testing=False):
-    lines = data_file_lines("NN", testing, 1)
+    lines = data_file_lines(DAY, testing, 1)
 
 def part2(testing=False):
-    lines = data_file_lines("NN", testing, 2)
+    lines = data_file_lines(DAY, testing, 2)
