@@ -3,13 +3,22 @@
 from utils import *
 
 
-# TODO clamp function
+# doubly-linked list
+class Node:
+    def __init__(self, data, left, right):
+        self.data = data
+        self.left = left
+        self.right = right
+
 class MarbleMania:
     def __init__(self, num_players, num_marbles, testing=False):
         self.scores = [0] * num_players
         self.next_player = 0
-        self.circle = [0]
-        self.current_marble_index = 0
+        # circle will always point to current node
+        self.circle = Node(0, None, None)
+        self.circle.left = self.circle
+        self.circle.right = self.circle
+        self.begin_printing_at = self.circle
         self.num_marbles = num_marbles
         self.next_marble = 1
         self.testing = testing
@@ -27,34 +36,37 @@ class MarbleMania:
         self.next_marble += 1
 
     def _take_normal_turn(self):
-        place_after_loc = (self.current_marble_index + 1) % len(self.circle)
-        if place_after_loc == len(self.circle):
-            self.circle = self.circle.append(self.next_marble)
-            self.current_marble_index = len(self.circle) - 1
-        else:
-            i = place_after_loc + 1
-            self.circle = self.circle[:i] + [self.next_marble] + self.circle[i:]
-            self.current_marble_index = i
-        self.current_marble_index = place_after_loc + 1
+        place_after_loc = self.circle.right
+        left = place_after_loc
+        right = place_after_loc.right
+        self.circle = Node(self.next_marble, left, right)
+        left.right = self.circle
+        right.left = self.circle
         return True
 
     def _take_funky_turn(self):
         self.scores[self.next_player] += self.next_marble
-        remove_index = self.current_marble_index - 7
-        while remove_index < 0:
-            remove_index += len(self.circle)
-        remove_index = remove_index % len(self.circle)
-        self.scores[self.next_player] += self.circle[remove_index]
-        self.circle = self.circle[:remove_index] + self.circle[remove_index + 1 :]
-        self.current_marble_index = remove_index
+        remove_node = self.circle.left.left.left.left.left.left.left
+        self.scores[self.next_player] += remove_node.data
+        self.circle = remove_node.right
+        remove_node.left.right = remove_node.right
+        remove_node.right.left = remove_node.left
         return True             # make sure _take_normal_turn() not called
 
     def _print_state(self):
         if not self.testing:
             return
-        for i in range(len(self.circle)):
-            is_curr = i == self.current_marble_index
-            print(f" {is_curr and '(' or ''}{self.circle[i]}{is_curr and ')' or ''}", end='')
+        # NOTE: we assume that self.begin_printing_at is never removed from
+        # the game. (To take that into account is certainly possible but not
+        # worth it.) We know this is true for the first test game with 9
+        # players. It may not be true for ANY OTHER GAME.
+        node = self.begin_printing_at
+        while True:
+            is_curr = node == self.circle
+            print(f" {is_curr and '(' or ''}{node.data}{is_curr and ')' or ''}", end='')
+            node = node.right
+            if node == self.begin_printing_at:
+                break
         print()
 
     def __str__(self):
