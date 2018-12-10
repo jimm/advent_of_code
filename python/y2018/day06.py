@@ -61,7 +61,7 @@ def _manhattan_distance(p1, p2):
 
 def _read_coords(testing, part_num):
     coords = []
-    for i, line in enumerate(data_file_lines(6, testing, part_num)):
+    for i, line in enumerate(data_file_lines(6, part_num, testing)):
         x_str, y_str = line.split(", ")
         coords.append(Coord(i, Point(int(x_str), int(y_str))))
     return coords

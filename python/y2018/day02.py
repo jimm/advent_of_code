@@ -7,7 +7,7 @@ from utils import *
 
 
 def part1(testing=False):
-    lines = data_file_lines(2, testing, 1)
+    lines = data_file_lines(2, 1, testing)
     num_twos = 0
     num_threes = 0
     for line in lines:
@@ -24,7 +24,7 @@ def part1(testing=False):
 
 # This is O(n^2) but it's fast enough.
 def part2(testing=False):
-    lines = data_file_lines(2, testing, 2)
+    lines = data_file_lines(2, 2, testing)
     for line1 in lines:
         for line2 in lines:
             if line1 == line2:

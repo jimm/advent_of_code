@@ -90,6 +90,6 @@ def part2(testing=False):
 
 
 def _games(part_num, testing):
-    for line in data_file_lines(9, testing, part_num):
+    for line in data_file_lines(9, part_num, testing):
         words = line.split()
         yield (int(words[0]), int(words[6]), len(words) > 11 and int(words[11]) or None)

@@ -2,7 +2,7 @@ import os.path
 import sys
 
 
-def read_data_file(day, testing=False, part_num=1):
+def read_data_file(day, part_num=1, testing=False):
     fname = f"day{'%02d' % day}"
     if testing:
         fname += f"_{part_num}_test"
@@ -14,5 +14,5 @@ def read_data_file(day, testing=False, part_num=1):
         return f.read()
 
 
-def data_file_lines(day, testing=False, part_num=1):
+def data_file_lines(day, part_num=1, testing=False):
     return [line for line in read_data_file(day, testing, part_num).split("\n") if line]

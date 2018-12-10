@@ -19,7 +19,7 @@ def part1(testing=False):
             if len(result) != len(output):
                 print(f"error with '{input}' => '{output}', wrong result '{result}'")
     else:
-        polymer = data_file_lines(5, False, 1)[0]
+        polymer = data_file_lines(5, 1)[0]
         print(len(_remove_antipairs(polymer)))
 
 
@@ -45,7 +45,7 @@ def part2(testing=False):
         for polymer in tests.keys():
             print(_min_removed_unit_len(polymer))
     else:
-        polymer = data_file_lines(5, False, 2)[0]
+        polymer = data_file_lines(5, 2)[0]
         print(_min_removed_unit_len(polymer))
 
 
