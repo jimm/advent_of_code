@@ -15,4 +15,15 @@ def read_data_file(day, part_num=1, testing=False):
 
 
 def data_file_lines(day, part_num=1, testing=False):
-    return [line for line in read_data_file(day, testing, part_num).split("\n") if line]
+    return [line for line in read_data_file(day, part_num, testing).split("\n") if line]
+
+
+def minmax(xs):
+    min_val = None
+    max_val = None
+    for x in xs:
+        if min_val is None or x < min_val:
+            min_val = x
+        if max_val is None or max_val > x:
+            max_val = x
+    return (min_val, max_val)
