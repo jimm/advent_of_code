@@ -1,11 +1,7 @@
 # Chronal Charge
 #
 # Note, answer must be entered with no spaces. For example, coord (23, 45)
-# must be entered as "23,45".
-
-# part 2 answer 220,103,22 is wrong
-
-from utils import *
+# must be entered as "23,45" and part two must be entered as "x,y,size".
 
 puzzle_input = 9445
 power_level_tests = [
@@ -40,7 +36,8 @@ def part2(testing=False):
     grid = _init_grid(puzzle_input, 300)
     max_coord, max_size, max_power = None, None, 0
     for size in range(3, 301):
-        print(size)
+        if size % 10 == 0:
+            print(size)
         coord, power = _max_power_subgrid(grid, size)
         if power > max_power:
             max_coord = coord
@@ -87,8 +84,9 @@ def _subgrid_power(grid, top_left_x, top_left_y, size):
     if coord in subgrid_power_cache:
         power = subgrid_power_cache[coord]
         x = top_left_x + size - 1
-        for y in range(top_left_y, top_left_y + size):
+        for y in range(top_left_y, top_left_y + size - 1):
             power += grid[y][x]
+        power += sum(grid[top_left_y + size - 1][top_left_x : (top_left_x + size)])
     else:
         for y in range(top_left_y, top_left_y + size):
             power += sum(grid[y][top_left_x : (top_left_x + size)])
