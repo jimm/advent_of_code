@@ -24,6 +24,6 @@ def minmax(xs):
     for x in xs:
         if min_val is None or x < min_val:
             min_val = x
-        if max_val is None or max_val > x:
+        if max_val is None or x > max_val:
             max_val = x
     return (min_val, max_val)
