@@ -1,6 +1,7 @@
 # Beverage Bandits
 
 import collections
+import itertools
 
 from utils import *
 
@@ -36,10 +37,8 @@ class BattleWorld(World):
         self.creatures = []
 
     def battle_outcome(self):
-        turn = 0
-        while True:
+        for turn in itertools.count(1):
             try:
-                turn += 1
                 for c in sorted(self.creatures, key=Creature.rank):
                     c.turn()  # OK if just killed; turn() checks for that
             except GameEnd:
@@ -54,7 +53,8 @@ class BattleWorld(World):
                 c.attack_power = power
 
     def elves_win(self):
-        return type(self.creatures[0]) == Elf
+        self.remove_dead_creatures()  # just in case
+        return len(self.creatures) > 0 and all([type(e) == Elf for e in self.creatures])
 
     def move(self, thing, from_loc, to_loc):
         """Moves thing from one loc to another.
@@ -292,25 +292,13 @@ def part2(testing=False):
 
 
 def _min_guaranteed_win_battle_outcome(i, testing):
-    elf_power = 4
-    while True:
+    for elf_power in itertools.count(4):
         world = _read_world(i, testing)
         world.set_elf_power(elf_power)
-        turn_and_outcome = world.battle_outcome()
+        turn, outcome = world.battle_outcome()
         if world.elves_win():
-            t, o = turn_and_outcome
-            return (elf_power, t, o)
+            return (elf_power, turn, outcome)
         elf_power += 1
-
-
-def _run_part2_at_power(power):
-    num_elves = len([c for c in self.creatures if type(c) == Elf])
-    turn_and_outcome = self.battle_outcome()
-    if type(self.creatures[0]) == Elf and len(self.creatures) == num_elves:
-        t, o = turn_and_outcome
-        return (self.creatures[0].attack_power, t, o)
-    self._restore_map()
-    self._increase_elves_hp()
 
 
 def _read_world(test_part, testing):
