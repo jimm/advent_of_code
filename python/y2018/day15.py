@@ -35,22 +35,16 @@ class BattleWorld(World):
         self.creatures = []
 
     def battle_outcome(self):
-        # self.print_map(turn)    # DEBUG
-        # pause()                 # DEBUG
         while True:
             try:
                 self.turn += 1
                 for c in sorted(self.creatures, key=Creature.rank):
                     c.turn()  # OK if just killed; turn() checks for that
             except GameEnd:
-                # self.print_map(turn)                    # DEBUG
-                # print([str(c) for c in self.creatures]) # DEBUG
                 return (
                     self.turn - 1,
                     (self.turn - 1) * sum([c.hit_points for c in self.creatures]),
                 )
-            # self.print_map(turn) # DEBUG
-            # pause()              # DEBUG
 
     def move(self, thing, from_loc, to_loc):
         """Moves thing from one loc to another.
@@ -96,6 +90,12 @@ class BattleWorld(World):
             if not c.is_alive():
                 self.remove_dead_creature(c)
 
+    def rank(self, x, y=None):
+        if y is None:
+            y = x.y
+            x = x.x
+        return y * self.height + x
+
     def print_map(self, turn=None):
         if turn:
             print()
@@ -136,7 +136,7 @@ class Creature(BattleThing):
 
     def rank(self):
         """'Reading order' value of this thing; lower == first."""
-        return self.loc.y * self.world.height + self.loc.x
+        return self.world.rank(self.loc)
 
     def turn(self):
         if not self.is_alive():  # was just killed
@@ -150,50 +150,28 @@ class Creature(BattleThing):
             for loc in set(flatten([c.adjacent() for c in enemies]))
             if self.world.is_empty(loc.x, loc.y) or self.world.at(loc.x, loc.y) == self
         ]
-        # print(f"{str(self)} possible targets {possible_targets}") # DEBUG
         if self.loc not in possible_targets:
             self.move_towards_nearest(possible_targets)
         if self.loc in possible_targets:
             self.attack()
 
-    # def move_towards_nearest(self, locs):
-    #     """Picks the closest loc and moves towards that."""
-    #     astar_paths = collections.defaultdict(list)  # key = dist, val = [path,...]
-    #     for loc in locs:
-    #         paths = self.astar_paths_to(loc)
-    #         if paths:
-    #             for p in paths:
-    #                 astar_paths[len(p)].append(p)
-    #     if len(astar_paths.keys()) == 0:
-    #         return
-    #     min_astar_dist = min(astar_paths.keys())
-    #     # print(f"{str(self)} min_astar_dist {min_astar_dist}, all paths:") # DEBUG
-    #     # pprint.pprint(astar_paths) # DEBUG
-    #     target_path = min(
-    #         astar_paths[min_astar_dist],
-    #         key=lambda path: path[0].y * self.world.height + path[0].x,
-    #     )
-    #     self.move_along_path(target_path)
-
     def move_towards_nearest(self, locs):
         """Picks the closest loc and moves towards that."""
         astar_paths = collections.defaultdict(list)  # key = dist, val = [path,...]
-        doable_loc_paths = {}                        # loc => paths
         for loc in locs:
             paths = self.astar_paths_to(loc)
             if paths:
-                doable_loc_paths[loc] = paths
                 for p in paths:
                     astar_paths[len(p)].append(p)
         if len(astar_paths.keys()) == 0:
             return
         min_astar_dist = min(astar_paths.keys())
-        min_dist_locs = [path[-1] for path in astar_paths[min_astar_dist]]
-        target_loc = min(min_dist_locs, key=lambda loc: loc.y * self.world.height + loc.x)
-        target_path = min(
-            doable_loc_paths[target_loc],
-            key=lambda path: path[0].y * self.world.height + path[0].x,
-        )
+        closest_targets = [path[-1] for path in astar_paths[min_astar_dist]]
+        target = min(closest_targets, key=lambda loc: self.world.rank(loc))
+        paths_to_target = [
+            path for path in astar_paths[min_astar_dist] if path[-1] == target
+        ]
+        target_path = min(paths_to_target, key=lambda path: self.world.rank(path[0]))
         self.move_along_path(target_path)
 
     def astar_paths_to(self, loc):
@@ -215,7 +193,6 @@ class Creature(BattleThing):
 
     def move_along_path(self, target_path):
         loc = target_path[0]
-        # print(f"{str(self)} moving to {loc} along path {target_path}") # DEBUG
         self.world.move(self, self.loc, loc)  # Modifies self.loc
 
     def attack(self):
