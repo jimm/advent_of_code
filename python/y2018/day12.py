@@ -20,10 +20,11 @@ def _run_for_n_generations(pots, rules, n):
 
 
 def _run_generations(pots, rules, gens_left):
-    seen = {}
+    prev_gen = None
     while gens_left > 0:
-        if _only_gliders(pots):
+        if prev_gen and _offset_from(prev_gen, pots):
             return sum([i + gens_left for i in pots])
+        prev_gen = pots
         pots = _apply_rules(pots, rules)
         gens_left -= 1
     return sum(pots)
@@ -45,12 +46,12 @@ def _matches_rule(pots, i, rules):
     return 0
 
 
-def _only_gliders(pots):
-    prev = None
-    for i in sorted(pots):
-        if prev and (i - prev) < 5:
+def _offset_from(prev_gen, pots):
+    if len(prev_gen) != len(pots):
+        return False
+    for p in pots:
+        if p-1 not in prev_gen:
             return False
-        prev = i
     return True
 
 # rule is a tuple like ([1,1,0,1,1], 1)
