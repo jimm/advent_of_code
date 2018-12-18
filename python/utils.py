@@ -1,3 +1,4 @@
+import itertools
 import os.path
 import sys
 
@@ -27,3 +28,23 @@ def minmax(xs):
         if max_val is None or x > max_val:
             max_val = x
     return (min_val, max_val)
+
+
+def flatten(list_of_lists):
+    """Flattens one level."""
+    return itertools.chain.from_iterable(list_of_lists)
+
+
+pause_continue = False
+
+def pause():
+    """Writes a message and waits for input."""
+    global pause_continue
+    if pause_continue:
+        return
+    line = input("Paused. 'q' to quit, 'c' to continue without pausing, anything else to step.")
+    if line:
+        if line[0] == 'q':
+            exit(0)
+        if line[0] == 'c':
+            pause_continue = True

@@ -5,12 +5,7 @@ import collections
 from utils import *
 
 from .astar import *
-
-# import pprint                   # DEBUG
-
-
-Point = collections.namedtuple("Point", ["x", "y"])
-
+from .world import Point, Thing, World
 
 TEST_OUTCOMES = [
     (47, 27730),
@@ -26,31 +21,33 @@ class GameEnd(BaseException):
     pass
 
 
-class World:
-    instance = None
+class BattleThing(Thing):
+    def is_creature(self):
+        return False
 
+    def is_alive(self):
+        return False
+
+
+class BattleWorld(World):
     def __init__(self, width, height):
-        self.width = width
-        self.height = height
-        self.map = [[None] * width for _ in range(height)]
+        super().__init__(width, height)
         self.creatures = []
-        World.instance = self
 
     def battle_outcome(self):
-        turn = 0
         # self.print_map(turn)    # DEBUG
         # pause()                 # DEBUG
         while True:
             try:
-                turn += 1
+                self.turn += 1
                 for c in sorted(self.creatures, key=Creature.rank):
                     c.turn()  # OK if just killed; turn() checks for that
             except GameEnd:
                 # self.print_map(turn)                    # DEBUG
                 # print([str(c) for c in self.creatures]) # DEBUG
                 return (
-                    turn - 1,
-                    (turn - 1) * sum([c.hit_points for c in self.creatures]),
+                    self.turn - 1,
+                    (self.turn - 1) * sum([c.hit_points for c in self.creatures]),
                 )
             # self.print_map(turn) # DEBUG
             # pause()              # DEBUG
@@ -65,7 +62,7 @@ class World:
         """
         if self.at(to_loc) is not None:
             raise Exception(
-                f"to_loc {to_loc} already occupied by #{self.at(to_loc).char}"
+                f"to_loc {to_loc} already occupied by #{self.char_at(to_loc)}"
             )
         if from_loc:
             self.clear(from_loc)
@@ -99,14 +96,15 @@ class World:
             if not c.is_alive():
                 self.remove_dead_creature(c)
 
-    def print_map(self, turn):
-        print()  # DEBUG
-        print(f"After {turn} rounds:")  # DEBUG
+    def print_map(self, turn=None):
+        if turn:
+            print()
+            print(f"After {turn} rounds:")
         for y in range(self.height):
             hps = []
             for x in range(self.width):
+                print(self.char_at(x, y), end="")
                 thing = self.at(x, y)
-                print(f"{thing.char if thing else '.'}", end="")
                 if thing and thing.is_creature():
                     hps.append(f" {thing.char}({thing.hit_points})")
             if hps:
@@ -115,33 +113,13 @@ class World:
             print()
 
 
-class Thing:
-    def __init__(self, world):
-        self.world = world
-        self.loc = (0, 0)
-        self.char = "."
-
-    def is_creature(self):
-        return False
-
-    def is_alive(self):
-        return False
-
-    def rank(self):
-        """'Reading order' value of this thing; lower == first."""
-        return self.loc.y * self.world.height + self.loc.x
-
-    def __str__(self):
-        return f"{self.char}@({self.loc.x},{self.loc.y})"
-
-
-class Wall(Thing):
+class Wall(BattleThing):
     def __init__(self, world):
         super().__init__(world)
         self.char = "#"
 
 
-class Creature(Thing):
+class Creature(BattleThing):
     def __init__(self, world):
         super().__init__(world)
         self.attack_power = 3
@@ -155,6 +133,10 @@ class Creature(Thing):
 
     def is_enemy(self, thing):
         return thing and thing.is_alive() and type(thing) != type(self)
+
+    def rank(self):
+        """'Reading order' value of this thing; lower == first."""
+        return self.loc.y * self.world.height + self.loc.x
 
     def turn(self):
         if not self.is_alive():  # was just killed
@@ -174,21 +156,42 @@ class Creature(Thing):
         if self.loc in possible_targets:
             self.attack()
 
+    # def move_towards_nearest(self, locs):
+    #     """Picks the closest loc and moves towards that."""
+    #     astar_paths = collections.defaultdict(list)  # key = dist, val = [path,...]
+    #     for loc in locs:
+    #         paths = self.astar_paths_to(loc)
+    #         if paths:
+    #             for p in paths:
+    #                 astar_paths[len(p)].append(p)
+    #     if len(astar_paths.keys()) == 0:
+    #         return
+    #     min_astar_dist = min(astar_paths.keys())
+    #     # print(f"{str(self)} min_astar_dist {min_astar_dist}, all paths:") # DEBUG
+    #     # pprint.pprint(astar_paths) # DEBUG
+    #     target_path = min(
+    #         astar_paths[min_astar_dist],
+    #         key=lambda path: path[0].y * self.world.height + path[0].x,
+    #     )
+    #     self.move_along_path(target_path)
+
     def move_towards_nearest(self, locs):
         """Picks the closest loc and moves towards that."""
         astar_paths = collections.defaultdict(list)  # key = dist, val = [path,...]
+        doable_loc_paths = {}                        # loc => paths
         for loc in locs:
             paths = self.astar_paths_to(loc)
             if paths:
+                doable_loc_paths[loc] = paths
                 for p in paths:
                     astar_paths[len(p)].append(p)
         if len(astar_paths.keys()) == 0:
             return
         min_astar_dist = min(astar_paths.keys())
-        # print(f"{str(self)} min_astar_dist {min_astar_dist}, all paths:") # DEBUG
-        # pprint.pprint(astar_paths) # DEBUG
+        min_dist_locs = [path[-1] for path in astar_paths[min_astar_dist]]
+        target_loc = min(min_dist_locs, key=lambda loc: loc.y * self.world.height + loc.x)
         target_path = min(
-            astar_paths[min_astar_dist],
+            doable_loc_paths[target_loc],
             key=lambda path: path[0].y * self.world.height + path[0].x,
         )
         self.move_along_path(target_path)
@@ -267,16 +270,15 @@ class Goblin(Creature):
 
 def part1(testing=False):
     if testing:
-        ok = True
         # 0th is from puzzle description
         for i in range(len(TEST_OUTCOMES)):
             world = _read_world(i, testing)
             turn_and_outcome = world.battle_outcome()
+            _compare_world_and_test_end(i, world)
             if turn_and_outcome != TEST_OUTCOMES[i]:
                 print(f"test {i} expected {TEST_OUTCOMES[i]}, saw {turn_and_outcome}")
-                ok = False
-        if ok:
-            print("ok")
+            else:
+                print(f"test {i} ok")
     else:
         world = _read_world(0, False)
         print(world.battle_outcome())
@@ -288,7 +290,7 @@ def part2(testing=False):
 
 def _read_world(test_part, testing):
     lines = data_file_lines(15, test_part, testing)
-    world = World(len(lines[0]), len(lines))
+    world = BattleWorld(len(lines[0]), len(lines))
     for y, line in enumerate(lines):
         for x, ch in enumerate(line):
             loc = Point(x, y)
@@ -303,3 +305,24 @@ def _read_world(test_part, testing):
                 world.move(creature, None, loc)
                 world.creatures.append(creature)
     return world
+
+
+def _compare_world_and_test_end(i, world):
+    fname = f"day15_{i}_test_end.txt"
+    path = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), "../../data/y2018", fname
+    )
+    lines = []
+    with open(path, "r") as f:
+        lines = [line for line in f.read().split("\n") if line]
+    for y, line in enumerate(lines):
+        for x, ch in enumerate(line):
+            loc = Point(x, y)
+            thing = world.at(loc)
+            if thing:
+                world_ch = thing.char
+                if world_ch != ch:
+                    raise Exception(f"expected {ch} at {loc} but saw {world_ch}")
+            else:
+                if ch != ".":
+                    raise Exception(f"expected . at {loc} but saw {ch}")
