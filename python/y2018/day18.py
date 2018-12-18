@@ -13,9 +13,19 @@ class Forest(World):
         self.t = 0
 
     def score_after_n_turns(self, n):
-        self.previous_maps = {}
+        previous_map_strings = []
         for _ in range(n):
             self.pass_time()
+            save_str = self._map_save()
+            if save_str in previous_map_strings:
+                idx = previous_map_strings.index(save_str)
+                cycle = previous_map_strings[idx:]
+                save_str = cycle[(n - self.t) % len(cycle)]
+                num_trees = len([1 for ch in save_str if ch == "|"])
+                num_yards = len([1 for ch in save_str if ch == "#"])
+                return num_trees * num_yards
+            else:
+                previous_map_strings.append(self._map_save())
         num_trees = len(
             [
                 1
@@ -44,14 +54,14 @@ class Forest(World):
 
     def _apply_rules(self, x, y, new_map):
         counts = collections.defaultdict(int)
-        counts[self.at(x-1, y-1)] += 1
-        counts[self.at(x  , y-1)] += 1
-        counts[self.at(x+1, y-1)] += 1
-        counts[self.at(x-1, y  )] += 1
-        counts[self.at(x+1, y  )] += 1
-        counts[self.at(x-1, y+1)] += 1
-        counts[self.at(x  , y+1)] += 1
-        counts[self.at(x+1, y+1)] += 1
+        counts[self.at(x - 1, y - 1)] += 1
+        counts[self.at(x, y - 1)] += 1
+        counts[self.at(x + 1, y - 1)] += 1
+        counts[self.at(x - 1, y)] += 1
+        counts[self.at(x + 1, y)] += 1
+        counts[self.at(x - 1, y + 1)] += 1
+        counts[self.at(x, y + 1)] += 1
+        counts[self.at(x + 1, y + 1)] += 1
 
         curr_ch = self.at(x, y)
         new_map[y][x] = curr_ch
@@ -65,7 +75,12 @@ class Forest(World):
             return
         if curr_ch == "#":
             if counts["#"] == 0 or counts["|"] == 0:
-                new_map[y][x] = '.'
+                new_map[y][x] = "."
+
+    def _map_save(self):
+        return "".join(
+            [self.at(x, y) for y in range(self.width) for x in range(self.height)]
+        )
 
 
 def part1(testing=False):
@@ -76,7 +91,7 @@ def part1(testing=False):
 def part2(testing=False):
     world = _read_world(1, testing)
     # It cycles (I can see it if I print out world map at each turn)
-    print(world.score_after_n_turns(1000000000))
+    print(world.score_after_n_turns(1_000_000_000))
 
 
 def _read_world(part_num, testing):
