@@ -5,61 +5,66 @@ from utils import *
 
 def part1(testing=False):
     pots, rules = _read_data(1, testing)
-    pots = _run_for_n_generations(pots, rules, 20)
-    answer = sum([(i - 20) for i in range(len(pots)) if pots[i]])
-    print(answer)
+    print(_run_for_n_generations(pots, rules, 20))
 
 
 def part2(testing=False):
-    pots, rules = _read_data(1, testing)
+    pots, rules = _read_data(2, testing)
     # n = 50000000000
-    n = 50000
-    pots = _run_for_n_generations(pots, rules, n)
-    answer = sum([(i - n) for i in range(len(pots)) if pots[i]])
-    print(answer)
+    n = 50000000000
+    print(_run_for_n_generations(pots, rules, n))
 
 
 def _run_for_n_generations(pots, rules, n):
-    expanded = ([0] * n) + pots + ([0] * (n * 2))
-    return _run_generations(expanded, rules, n)
+    return _run_generations(pots, rules, n)
 
 
 def _run_generations(pots, rules, gens_left):
+    seen = {}
     while gens_left > 0:
+        if _only_gliders(pots):
+            return sum([i + gens_left for i in pots])
         pots = _apply_rules(pots, rules)
         gens_left -= 1
-    return pots
+    return sum(pots)
 
 
 def _apply_rules(pots, rules):
-    min_one_index = pots.index(1)
-    max_one_index = len(pots) - 1 - pots[::-1].index(1)
-    new_pots = (
-        pots[: min_one_index - 5]
-        + [
-            _apply_rule(pots, i, rules)
-            for i in range(min_one_index - 5, max_one_index + 5)
-        ]
-        + pots[max_one_index + 5 :]
-    )
+    new_pots = set()
+    min_idx, max_idx = minmax(pots)
+    for i in range(min_idx - 2, max_idx + 3):
+        if _matches_rule(pots, i, rules):
+            new_pots.add(i)
     return new_pots
 
 
-def _apply_rule(pots, i, rules):
-    neighborhood = pots[i - 2 : i + 3]
+def _matches_rule(pots, i, rules):
+    neighborhood = tuple([1 if idx in pots else 0 for idx in range(i - 2, i + 3)])
     if neighborhood in rules:
         return 1
     return 0
 
 
+def _only_gliders(pots):
+    prev = None
+    for i in sorted(pots):
+        if prev and (i - prev) < 5:
+            return False
+        prev = i
+    return True
+
 # rule is a tuple like ([1,1,0,1,1], 1)
 def _read_data(part_num, testing):
     lines = data_file_lines(12, 1, testing)
-    initial_state = [1 if ch == "#" else 0 for ch in lines[0][15:]]
-    rules = [_parse_rule(line) for line in lines[1:]]
-    # filter out zero rules; _apply_rule sets to zero if no match
-    rules = [nbhd for (nbhd, res) in rules if res == 1]
-    return (initial_state, rules)
+    pots = set([idx for idx, ch in enumerate(lines[0][15:]) if ch == "#"])
+    rules = set(
+        [
+            tuple(nbhd)
+            for nbhd, res in [_parse_rule(line) for line in lines[1:]]
+            if res == 1
+        ]
+    )
+    return (pots, rules)
 
 
 def _parse_rule(line):
