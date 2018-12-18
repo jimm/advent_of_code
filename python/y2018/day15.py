@@ -8,12 +8,13 @@ from .astar import *
 from .world import Point, Thing, World
 
 TEST_OUTCOMES = [
-    (47, 27730),
-    (37, 36334),
-    (46, 39514),
-    (35, 27755),
-    (54, 28944),
-    (20, 18740),
+    # part 1 turn, part 1 outcome, part 2 elf power, part 2 outcome
+    (47, 27730, 15, 29, 4988),
+    (37, 36334, None, None, None),
+    (46, 39514, 4, 33, 31284),
+    (35, 27755, 15, 37, 3478),
+    (54, 28944, 12, 39, 6474),
+    (20, 18740, 34, 30, 1140),
 ]
 
 
@@ -35,16 +36,25 @@ class BattleWorld(World):
         self.creatures = []
 
     def battle_outcome(self):
+        turn = 0
         while True:
             try:
-                self.turn += 1
+                turn += 1
                 for c in sorted(self.creatures, key=Creature.rank):
                     c.turn()  # OK if just killed; turn() checks for that
             except GameEnd:
                 return (
-                    self.turn - 1,
-                    (self.turn - 1) * sum([c.hit_points for c in self.creatures]),
+                    turn - 1,
+                    (turn - 1) * sum([c.hit_points for c in self.creatures]),
                 )
+
+    def set_elf_power(self, power):
+        for c in self.creatures:
+            if type(c) == Elf:
+                c.attack_power = power
+
+    def elves_win(self):
+        return type(self.creatures[0]) == Elf
 
     def move(self, thing, from_loc, to_loc):
         """Moves thing from one loc to another.
@@ -230,7 +240,7 @@ class Creature(BattleThing):
             self.world.remove_dead_creature(self)
 
     def __str__(self):
-        return super().__str__() + f" hp {self.hit_points}"
+        return super().__str__() + f" hp:{self.hit_points} p:{self.attack_power}"
 
 
 class Elf(Creature):
@@ -252,8 +262,10 @@ def part1(testing=False):
             world = _read_world(i, testing)
             turn_and_outcome = world.battle_outcome()
             _compare_world_and_test_end(i, world)
-            if turn_and_outcome != TEST_OUTCOMES[i]:
-                print(f"test {i} expected {TEST_OUTCOMES[i]}, saw {turn_and_outcome}")
+            if turn_and_outcome != TEST_OUTCOMES[i][0:2]:
+                print(
+                    f"test {i} expected {TEST_OUTCOMES[i][0:2]}, saw {turn_and_outcome}"
+                )
             else:
                 print(f"test {i} ok")
     else:
@@ -262,7 +274,43 @@ def part1(testing=False):
 
 
 def part2(testing=False):
-    lines = data_file_lines(15, 2, testing)
+    if testing:
+        # 0th is from puzzle description
+        for i in range(len(TEST_OUTCOMES)):
+            if TEST_OUTCOMES[i][3] is None:
+                continue
+            power_turn_and_outcome = _min_guaranteed_win_battle_outcome(i, testing)
+            if power_turn_and_outcome != TEST_OUTCOMES[i][2:]:
+                print(
+                    f"test {i} expected {TEST_OUTCOMES[i][2:]}, saw {power_turn_and_outcome}"
+                )
+            else:
+                print(f"test {i} ok")
+    else:
+        p, t, o = _min_guaranteed_win_battle_outcome(0, False)
+        print(o)
+
+
+def _min_guaranteed_win_battle_outcome(i, testing):
+    elf_power = 4
+    while True:
+        world = _read_world(i, testing)
+        world.set_elf_power(elf_power)
+        turn_and_outcome = world.battle_outcome()
+        if world.elves_win():
+            t, o = turn_and_outcome
+            return (elf_power, t, o)
+        elf_power += 1
+
+
+def _run_part2_at_power(power):
+    num_elves = len([c for c in self.creatures if type(c) == Elf])
+    turn_and_outcome = self.battle_outcome()
+    if type(self.creatures[0]) == Elf and len(self.creatures) == num_elves:
+        t, o = turn_and_outcome
+        return (self.creatures[0].attack_power, t, o)
+    self._restore_map()
+    self._increase_elves_hp()
 
 
 def _read_world(test_part, testing):

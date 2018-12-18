@@ -70,7 +70,7 @@ class World:
             return "."
         elif type(thing) == str:
             return thing[0]
-        elif issubclass(thing, Thing):
+        elif isinstance(thing, Thing):
             return thing.char
         else:
             return "?"
