@@ -12,9 +12,7 @@ def part1(testing=False):
 
 
 def part2(testing=False):
-    c = _read_input(1, testing)
-    c.execute_program(starting_regs=[1, 0, 0, 0, 0, 0])
-    print(c.regs[0])
+    print("run day19.c")
 
 
 def _read_input(part_num, testing):
