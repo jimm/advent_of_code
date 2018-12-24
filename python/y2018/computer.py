@@ -3,16 +3,8 @@ from sys import stdout
 from utils import pause
 
 
-@dataclass
 class Instruction:
-    REG_NAMES = {
-        "r[0]": "s",
-        "r[1]": "t",
-        "r[2]": "w",
-        "r[3]": "x",
-        "r[4]": "y",
-        "r[5]": "z",
-    }
+    REG_NAMES = {"r0": "r0", "r1": "r1", "r2": "r2", "r3": "r3", "r4": "r4", "r5": "r5"}
 
     def __init__(self, opcode, a, b, c, opcode_str=None, pc_reg=0):
         self.opcode = opcode
@@ -97,7 +89,7 @@ class Computer:
         self.regs = [0, 0, 0, 0, 0, 0]
         self.pc = 0
         self.pc_register = pc_register
-        Instruction.REG_NAMES[f"r[{pc_register}]"] = "pc"
+        Instruction.REG_NAMES[f"r{pc_register}"] = "pc"
         self.before_and_after_tuples = before_and_after_tuples
         self.program = program
         self.opcode_mapping = Computer.opcodes[:]
@@ -222,6 +214,10 @@ class Computer:
                     for j in range(16):
                         matches[j].discard(name)
         return reduced
+
+    def dump_program(self):
+        for pc, inst in enumerate(self.program):
+            print(f"{'%2d' % pc}: {'%-32s' % inst}")
 
     def dump(self):
         inst = (
