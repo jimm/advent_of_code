@@ -1,21 +1,32 @@
 # Beverage Bandits
 
-import collections
 import itertools
+from collections import defaultdict, namedtuple
 
 from utils import *
 
 from .astar import *
 from .world import Point, Thing, World
 
+Outcome = namedtuple("Outcome", ["power", "turn", "outcome"])
 TEST_OUTCOMES = [
-    # part 1 turn, part 1 outcome, part 2 elf power, part 2 outcome
-    (47, 27730, 15, 29, 4988),
-    (37, 36334, None, None, None),
-    (46, 39514, 4, 33, 31284),
-    (35, 27755, 15, 37, 3478),
-    (54, 28944, 12, 39, 6474),
-    (20, 18740, 34, 30, 1140),
+    None,
+    [
+        Outcome(3, 47, 27730),
+        Outcome(3, 37, 36334),
+        Outcome(3, 46, 39514),
+        Outcome(3, 35, 27755),
+        Outcome(3, 54, 28944),
+        Outcome(3, 20, 18740),
+    ],
+    [
+        Outcome(15, 29, 4988),
+        Outcome(None, None, None),
+        Outcome(4, 33, 31284),
+        Outcome(15, 37, 3478),
+        Outcome(12, 39, 6474),
+        Outcome(34, 30, 1140),
+    ],
 ]
 
 
@@ -167,7 +178,7 @@ class Creature(BattleThing):
 
     def move_towards_nearest(self, locs):
         """Picks the closest loc and moves towards that."""
-        astar_paths = collections.defaultdict(list)  # key = dist, val = [path,...]
+        astar_paths = defaultdict(list)  # key = dist, val = [path,...]
         for loc in locs:
             paths = self.astar_paths_to(loc)
             if paths:
@@ -257,15 +268,13 @@ class Goblin(Creature):
 
 def part1(testing=False):
     if testing:
-        # 0th is from puzzle description
-        for i in range(len(TEST_OUTCOMES)):
+        for i, expected in enumerate(TEST_OUTCOMES[1]):
             world = _read_world(i, testing)
-            turn_and_outcome = world.battle_outcome()
+            turn, outcome = world.battle_outcome()
+            answer = Outcome(3, turn, outcome)
             _compare_world_and_test_end(i, world)
-            if turn_and_outcome != TEST_OUTCOMES[i][0:2]:
-                print(
-                    f"test {i} expected {TEST_OUTCOMES[i][0:2]}, saw {turn_and_outcome}"
-                )
+            if answer != expected:
+                print(f"test {i} expected {expected}, saw {answer}")
             else:
                 print(f"test {i} ok")
     else:
@@ -275,15 +284,12 @@ def part1(testing=False):
 
 def part2(testing=False):
     if testing:
-        # 0th is from puzzle description
-        for i in range(len(TEST_OUTCOMES)):
-            if TEST_OUTCOMES[i][3] is None:
+        for i, expected in enumerate(TEST_OUTCOMES[2]):
+            if expected.power is None:
                 continue
-            power_turn_and_outcome = _min_guaranteed_win_battle_outcome(i, testing)
-            if power_turn_and_outcome != TEST_OUTCOMES[i][2:]:
-                print(
-                    f"test {i} expected {TEST_OUTCOMES[i][2:]}, saw {power_turn_and_outcome}"
-                )
+            answer = Outcome(*_min_guaranteed_win_battle_outcome(i, testing))
+            if answer != expected:
+                print(f"test {i} expected {expected}, saw {answer}")
             else:
                 print(f"test {i} ok")
     else:
