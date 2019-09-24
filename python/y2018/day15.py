@@ -107,7 +107,7 @@ class BattleWorld(World):
         self.creatures.remove(c)
 
     def remove_dead_creatures(self):
-        for c in self.creatures:
+        for c in self.creatures[:]:
             if not c.is_alive():
                 self.remove_dead_creature(c)
 
