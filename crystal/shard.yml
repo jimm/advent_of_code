@@ -1,0 +1,13 @@
+name: aoc
+version: 0.1.0
+
+authors:
+  - Jim Menard <jim@jimmenard.com>
+
+targets:
+  aoc:
+    main: src/aoc.cr
+
+crystal: 0.31.1
+
+license: MIT
