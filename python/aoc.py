@@ -15,10 +15,10 @@ year = now.year
 day = now.day
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-y", "--year", help="year")
-parser.add_argument("-d", "--day", help="day")
-parser.add_argument("-t", "--test", help="test mode", action="store_true")
-parser.add_argument("part_number", help="puzzle part number (1 or 2)")
+parser.add_argument("-y", "--year", type=int, help="year")
+parser.add_argument("-d", "--day", type=int, help="day")
+parser.add_argument("-t", "--test", action="store_true", help="test mode")
+parser.add_argument("part_number", type=int, help="puzzle part number (1 or 2)")
 args = parser.parse_args()
 if args.year:
     year = int(args.year)

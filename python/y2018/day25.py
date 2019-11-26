@@ -29,11 +29,11 @@ def part1(testing=False):
 
 
 def part2(testing=False):
-    lines = data_file_lines(25, 2, testing)
+    lines = data_file_lines(2018, 25, 2, testing)
 
 
 def _read_stars(i, testing):
-    return [_read_star(line) for line in data_file_lines(25, i, testing)]
+    return [_read_star(line) for line in data_file_lines(2018, 25, i, testing)]
 
 
 def _read_star(line):

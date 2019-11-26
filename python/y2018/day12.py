@@ -50,13 +50,14 @@ def _offset_from(prev_gen, pots):
     if len(prev_gen) != len(pots):
         return False
     for p in pots:
-        if p-1 not in prev_gen:
+        if p - 1 not in prev_gen:
             return False
     return True
 
+
 # rule is a tuple like ([1,1,0,1,1], 1)
 def _read_data(part_num, testing):
-    lines = data_file_lines(12, 1, testing)
+    lines = data_file_lines(2018, 12, 1, testing)
     pots = set([idx for idx, ch in enumerate(lines[0][15:]) if ch == "#"])
     rules = set(
         [

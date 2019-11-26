@@ -59,5 +59,5 @@ def part2(testing=False):
 
 # Returns dict of {claim_id: claim}
 def _read_claims(testing=False, part_num=1):
-    claims = [Claim.parse(line) for line in data_file_lines(3, part_num, testing)]
+    claims = [Claim.parse(2018, line) for line in data_file_lines(3, part_num, testing)]
     return {claim.id: claim for claim in claims}

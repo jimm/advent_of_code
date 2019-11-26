@@ -25,7 +25,7 @@ def part2(testing=False):
 def _read_input(testing):
     """Returns tuple containing ([(before, instruction, after)], program)."""
     # data_file_lines strips out all blank lines
-    lines = data_file_lines(16, 1, testing)
+    lines = data_file_lines(2018, 16, 1, testing)
     bia_tuples = []
     while lines and lines[0].startswith("Before: ["):
         before = [

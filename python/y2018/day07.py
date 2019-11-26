@@ -94,7 +94,7 @@ def part2(testing=False):
 
 
 def _read_steps(testing, part_num):
-    for line in data_file_lines(7, part_num, testing):
+    for line in data_file_lines(2018, 7, part_num, testing):
         before = Step.find_or_create(line[5])
         after = Step.find_or_create(line[36])
         before.afters.append(after)

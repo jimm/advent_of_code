@@ -4,7 +4,7 @@ import os.path
 import sys
 
 
-def read_data_file(day=None, year=None, part_num=1, testing=False):
+def read_data_file(year=None, day=None, part_num=1, testing=False):
     now = datetime.datetime.today()
     if not day:
         day = now.day
@@ -21,10 +21,10 @@ def read_data_file(day=None, year=None, part_num=1, testing=False):
         return f.read()
 
 
-def data_file_lines(day=None, year=None, part_num=1, testing=False):
+def data_file_lines(year=None, day=None, part_num=1, testing=False):
     return [
         line
-        for line in read_data_file(day, year, part_num, testing).split("\n")
+        for line in read_data_file(year, day, part_num, testing).split("\n")
         if line
     ]
 

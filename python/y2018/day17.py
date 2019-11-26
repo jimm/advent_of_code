@@ -151,7 +151,7 @@ def part2(testing=False):
 
 def _read_world(part_num, testing):
     soundings = []
-    for line in data_file_lines(17, part_num, testing):
+    for line in data_file_lines(2018, 17, part_num, testing):
         print(line)  # DEBUG
         m = re.match(r"x=(\d+), y=(\d+)\.\.(\d+)", line)
         if m:

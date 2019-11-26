@@ -4,6 +4,7 @@ from itertools import cycle
 
 from utils import *
 
+
 class Track(Enum):
     BLANK = auto()
     VERTICAL = auto()
@@ -12,12 +13,14 @@ class Track(Enum):
     CURVE_NW = auto()
     INTERSECTION = auto()
 
+
 # Also encode movement delta
 class Direction(Enum):
     UP = (0, -1)
     DOWN = (0, 1)
     LEFT = (-1, 0)
     RIGHT = (1, 0)
+
 
 class Turn(Enum):
     LEFT = 0
@@ -26,7 +29,8 @@ class Turn(Enum):
 
     @classmethod
     def turn_cycle(cls):
-        return cycle(cls) # [Turn.LEFT, Turn.STRAIGHT, Turn.RIGHT])
+        return cycle(cls)  # [Turn.LEFT, Turn.STRAIGHT, Turn.RIGHT])
+
 
 curve_new_dirs = {
     Track.CURVE_NE: {
@@ -64,6 +68,7 @@ turn_new_dirs = {
     },
 }
 
+
 class Cart(object):
     TURN_LEFT = 0
     TURN_STRAIGHT = 1
@@ -100,21 +105,23 @@ class Cart(object):
     def __str__(self):
         return f"Cart {id(self)} at ({self.x}, {self.y}), dir {self.dir}"
 
+
 track_piece_mapping = {
-    ' ': Track.BLANK,
-    '|': Track.VERTICAL,
-    '-': Track.HORIZONTAL,
-    '/': Track.CURVE_NE,
-    '\\': Track.CURVE_NW,
-    '+': Track.INTERSECTION,
+    " ": Track.BLANK,
+    "|": Track.VERTICAL,
+    "-": Track.HORIZONTAL,
+    "/": Track.CURVE_NE,
+    "\\": Track.CURVE_NW,
+    "+": Track.INTERSECTION,
 }
 
 car_piece_mapping = {
-    '^': (Track.VERTICAL, Direction.UP),
-    'v': (Track.VERTICAL, Direction.DOWN),
-    '>': (Track.HORIZONTAL, Direction.RIGHT),
-    '<': (Track.HORIZONTAL, Direction.LEFT),
+    "^": (Track.VERTICAL, Direction.UP),
+    "v": (Track.VERTICAL, Direction.DOWN),
+    ">": (Track.HORIZONTAL, Direction.RIGHT),
+    "<": (Track.HORIZONTAL, Direction.LEFT),
 }
+
 
 def part1(testing=False):
     track, carts = _read_data(1, testing)
@@ -122,14 +129,16 @@ def part1(testing=False):
         print("expected crash loc = (7, 3)")
     print(_first_crash_loc(track, carts))
 
+
 def part2(testing=False):
     track, carts = _read_data(2, testing)
     if testing:
         print("expected final loc = (6, 4)")
     print(_last_cart_standing_loc(track, carts))
 
+
 def _read_data(part_num, testing):
-    lines = data_file_lines(13, part_num, testing)
+    lines = data_file_lines(2018, 13, part_num, testing)
     track = []
     carts = []
     for row_num, line in enumerate(lines):
@@ -143,6 +152,7 @@ def _read_data(part_num, testing):
         track.append(row)
     return (track, carts)
 
+
 def _first_crash_loc(track, carts):
     while True:
         carts.sort(key=Cart.sort_val)
@@ -150,6 +160,7 @@ def _first_crash_loc(track, carts):
             cart.move(track, carts)
             if cart.crashed_into(carts):
                 return (cart.x, cart.y)
+
 
 def _last_cart_standing_loc(track, carts):
     while True:

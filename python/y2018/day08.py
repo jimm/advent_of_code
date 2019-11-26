@@ -47,7 +47,7 @@ def part2(testing=False):
 
 
 def _read_tree(part_num, testing):
-    data = [int(n) for n in data_file_lines(8, 1, testing)[0].split()]
+    data = [int(n) for n in data_file_lines(2018, 8, 1, testing)[0].split()]
     root, _ = _read_node(None, data)
     return root
 

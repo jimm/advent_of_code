@@ -32,12 +32,12 @@ def part1(testing=False):
 
 
 def part2(testing=False):
-    lines = data_file_lines(24, 2, testing)
+    lines = data_file_lines(2018, 24, 2, testing)
 
 
 def _read_armies(part_num, testing):
     armies = []
-    for line in data_file_lines(24, part_num, testing):
+    for line in data_file_lines(2018, 24, part_num, testing):
         if line[-1] == ":":
             army = Army()
             armies.append(army)

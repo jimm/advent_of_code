@@ -10,6 +10,7 @@ class Node:
         self.left = left
         self.right = right
 
+
 class MarbleMania:
     def __init__(self, num_players, num_marbles, testing=False):
         self.scores = [0] * num_players
@@ -51,7 +52,7 @@ class MarbleMania:
         self.circle = remove_node.right
         remove_node.left.right = remove_node.right
         remove_node.right.left = remove_node.left
-        return True             # make sure _take_normal_turn() not called
+        return True  # make sure _take_normal_turn() not called
 
     def _print_state(self):
         if not self.testing:
@@ -63,7 +64,7 @@ class MarbleMania:
         node = self.begin_printing_at
         while True:
             is_curr = node == self.circle
-            print(f" {is_curr and '(' or ''}{node.data}{is_curr and ')' or ''}", end='')
+            print(f" {is_curr and '(' or ''}{node.data}{is_curr and ')' or ''}", end="")
             node = node.right
             if node == self.begin_printing_at:
                 break
@@ -77,19 +78,21 @@ def part1(testing=False):
     # answer only returned if testing, else None
     for num_players, last_marble_points, answer_high_score in _games(1, testing):
         print(f"{num_players}, {last_marble_points}, {answer_high_score}")
-        game = MarbleMania(num_players, last_marble_points+1, testing and num_players < 10)
+        game = MarbleMania(
+            num_players, last_marble_points + 1, testing and num_players < 10
+        )
         max_score = game.play()
         print(max_score)
 
 
 def part2(testing=False):
     num_players, last_marble_points, _ = next(_games(2, False))
-    game = MarbleMania(num_players, (last_marble_points*100)+1, False)
+    game = MarbleMania(num_players, (last_marble_points * 100) + 1, False)
     max_score = game.play()
     print(max_score)
 
 
 def _games(part_num, testing):
-    for line in data_file_lines(9, part_num, testing):
+    for line in data_file_lines(2018, 9, part_num, testing):
         words = line.split()
         yield (int(words[0]), int(words[6]), len(words) > 11 and int(words[11]) or None)

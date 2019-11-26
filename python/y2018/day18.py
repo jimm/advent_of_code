@@ -95,7 +95,7 @@ def part2(testing=False):
 
 
 def _read_world(part_num, testing):
-    lines = data_file_lines(18, part_num, testing)
+    lines = data_file_lines(2018, 18, part_num, testing)
     world = Forest(len(lines[0]), len(lines))
     for y, line in enumerate(lines):
         for x, ch in enumerate(line):

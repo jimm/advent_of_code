@@ -42,7 +42,7 @@ def part2(testing=False):
 
 def _read_nanobots(part_num, testing):
     bots = []
-    for line in data_file_lines(23, part_num, testing):
+    for line in data_file_lines(2018, 23, part_num, testing):
         m = re.match(r"pos=<(-?\d+),(-?\d+),(-?\d+)>, r=(\d+)", line)
         bots.append(Bot(Point3(int(m[1]), int(m[2]), int(m[3])), int(m[4])))
     return bots

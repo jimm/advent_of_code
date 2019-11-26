@@ -46,7 +46,7 @@ def part2(testing=False):
 
 def _read_lights(part_num, testing):
     lights = []
-    for line in data_file_lines(10, part_num, testing):
+    for line in data_file_lines(2018, 10, part_num, testing):
         match = re.search(LIGHT_REGEX, line)
         ints = [int(match.group(i + 1)) for i in range(4)]
         lights.append(Light(Point(ints[0], ints[1]), Point(ints[2], ints[3])))

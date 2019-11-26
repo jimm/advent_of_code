@@ -42,7 +42,7 @@ def part2(testing=False):
 
 
 def _read_data(part_num, testing):
-    lines = data_file_lines(22, part_num, testing)
+    lines = data_file_lines(2018, 22, part_num, testing)
     m = re.match(r"depth: (\d+)", lines[0])
     depth = int(m[1])
     m = re.match(r"target: (\d+),\s*(\d+)", lines[1])

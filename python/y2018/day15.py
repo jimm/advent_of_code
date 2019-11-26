@@ -308,7 +308,7 @@ def _min_guaranteed_win_battle_outcome(i, testing):
 
 
 def _read_world(test_part, testing):
-    lines = data_file_lines(15, test_part, testing)
+    lines = data_file_lines(2018, 15, test_part, testing)
     world = BattleWorld(len(lines[0]), len(lines))
     for y, line in enumerate(lines):
         for x, ch in enumerate(line):
