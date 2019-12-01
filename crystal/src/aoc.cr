@@ -1,6 +1,7 @@
 #!/usr/bin/env crystal
 
 require "option_parser"
+require "./y2019/*"
 
 # AoC is the driver for running Advent of Code solutions written in Crystal.
 class AoC
@@ -35,11 +36,5 @@ class AoC
     end
   end
 end
-
-# testing, testing
-proc = ->(part_number : Int32, test : Bool) do
-  puts("hello, part_number = #{part_number}, test = #{test}")
-end
-AoC.register("2019.3", proc)
 
 AoC.run
