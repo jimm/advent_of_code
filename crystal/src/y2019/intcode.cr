@@ -7,10 +7,12 @@ class IntcodeComputer
     @mem = [] of Int32
   end
 
+  # Stores a copy of `program` in memory.
   def load(program)
     @mem = program.dup
   end
 
+  # Runs the program starting at address 0. Stops when halt is seen.
   def run
     pc = 0
     while true
