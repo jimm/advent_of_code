@@ -22,9 +22,7 @@ class Day05
   end
 
   def part2(testing)
-    lines = Util.data_file_lines(2019, 5,
-      testing ? 2 : 1,
-      testing)
+    lines = Util.data_file_lines(2019, 5, testing ? 2 : 1, testing)
     initial_memory = lines[0].split(",").map { |s| s.to_i }
     @computer.load(initial_memory)
     if testing
