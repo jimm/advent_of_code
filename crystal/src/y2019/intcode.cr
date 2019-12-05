@@ -35,33 +35,33 @@ class IntcodeComputer
       parse_opcode_at_pc
       case @opcode
       when 1 # add
-        dest = addr_at_param(3)
-        p1 = val_of_param(1)
-        p2 = val_of_param(2)
-        trace_instruction("add", 3, 3)
-        set(dest, p1 + p2)
-        trace_result(get(dest))
+        do_trace("add", 3, 3) do
+          dest = addr_at_param(3)
+          p1 = val_of_param(1)
+          p2 = val_of_param(2)
+          set(dest, p1 + p2)
+        end
         @pc += 4
       when 2 # mult
-        dest = addr_at_param(3)
-        p1 = val_of_param(1)
-        p2 = val_of_param(2)
-        trace_instruction("mult", 3, 3)
-        set(dest, p1 * p2)
-        trace_result(get(dest))
+        do_trace("mult", 3, 3) do
+          dest = addr_at_param(3)
+          p1 = val_of_param(1)
+          p2 = val_of_param(2)
+          set(dest, p1 * p2)
+        end
         @pc += 4
       when 3 # input
-        dest = addr_at_param(1)
-        input = get_input()
-        trace_instruction("input", 1, 1)
-        set(dest, input)
-        trace_result(get(dest))
+        do_trace("input", 1, 1) do
+          dest = addr_at_param(1)
+          input = get_input()
+          set(dest, input)
+        end
         @pc += 2
       when 4 # output
-        val = val_of_param(1)
-        trace_instruction("output", 1, 1)
-        trace_result(val)
-        puts(val)
+        do_trace("output", 1, 1) do
+          val = val_of_param(1)
+          puts(val)
+        end
         @pc += 2
       when 5 # jump if non-zero
         p1 = val_of_param(1)
@@ -82,20 +82,20 @@ class IntcodeComputer
           @pc += 3
         end
       when 7
-        dest = addr_at_param(3)
-        p1 = val_of_param(1)
-        p2 = val_of_param(2)
-        trace_instruction("lt", 3)
-        set(dest, p1 < p2 ? 1 : 0)
-        trace_result(get(dest))
+        do_trace("lt", 3) do
+          dest = addr_at_param(3)
+          p1 = val_of_param(1)
+          p2 = val_of_param(2)
+          set(dest, p1 < p2 ? 1 : 0)
+        end
         @pc += 4
       when 8
-        dest = addr_at_param(3)
-        p1 = val_of_param(1)
-        p2 = val_of_param(2)
-        trace_instruction("eq", 3)
-        set(dest, p1 == p2 ? 1 : 0)
-        trace_result(get(dest))
+        do_trace("eq", 3) do
+          dest = addr_at_param(3)
+          p1 = val_of_param(1)
+          p2 = val_of_param(2)
+          set(dest, p1 == p2 ? 1 : 0)
+        end
         @pc += 4
       when 99 # halt
         trace_instruction("halt", 0)
@@ -123,6 +123,12 @@ class IntcodeComputer
 
   def trace_result(val)
     puts("\t=> #{val}") if @trace
+  end
+
+  def do_trace(name, num_params, must_be_addr = -1)
+    trace_instruction(name, num_params, must_be_addr)
+    val = yield
+    trace_result(val)
   end
 
   def get(loc)
