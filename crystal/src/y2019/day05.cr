@@ -4,26 +4,28 @@ class Day05
   getter computer = IntcodeComputer.new
 
   def run(part_number : Int32, testing : Bool)
-    lines = Util.data_file_lines(2019, 5,
-      part_number == 2 && testing ? 2 : 1,
-      part_number == 1 ? true : testing)
-    initial_memory = lines[0].split(",").map { |s| s.to_i }
     proc = if part_number == 1
-             ->{ part1(initial_memory, testing) }
+             ->{ part1(testing) }
            else
-             ->{ part2(initial_memory, testing) }
+             ->{ part2(testing) }
            end
     proc.call
   end
 
-  def part1(initial_memory, testing)
+  def part1(testing)
+    lines = Util.data_file_lines(2019, 5, 1, false)
+    initial_memory = lines[0].split(",").map { |s| s.to_i }
     @computer.load(initial_memory)
     @computer.trace(true) if testing
     @computer.enqueue_input(1)
     @computer.run
   end
 
-  def part2(initial_memory, testing)
+  def part2(testing)
+    lines = Util.data_file_lines(2019, 5,
+      testing ? 2 : 1,
+      testing)
+    initial_memory = lines[0].split(",").map { |s| s.to_i }
     @computer.load(initial_memory)
     if testing
       [5, 8, 10].each do |input|
