@@ -26,9 +26,10 @@ class Day05
     initial_memory = lines[0].split(",").map { |s| s.to_i }
     @computer.load(initial_memory)
     if testing
-      [5, 8, 10].each do |input|
+      {5 => 999, 8 => 1000, 10 => 1001}.each do |input, expected|
         @computer.load(initial_memory)
         @computer.enqueue_input(input)
+        print("expect to see #{expected}: ")
         @computer.run
       end
     else
