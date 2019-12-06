@@ -1,17 +1,14 @@
-require "../util"
-
-class Day01
-  def initialize(@part_number : Int32, @testing : Bool)
+class Day01 < Day
+  def part1
+    puts(masses().sum { |mass| fuel_for_mass(mass) })
   end
 
-  def run
-    lines = Util.data_file_lines(2019, 1, 1, false)
-    proc = if @part_number == 1
-             ->(i : Int32) { fuel_for_mass(i) }
-           else
-             ->(i : Int32) { recursive_fuel_for_mass(i) }
-           end
-    puts(lines.reduce(0) { |acc, i| acc + proc.call(i.to_i) })
+  def part2
+    puts(masses().sum { |mass| recursive_fuel_for_mass(mass) })
+  end
+
+  def masses
+    data_lines(part_number: 1, testing: false).map(&.to_i)
   end
 
   def fuel_for_mass(mass)

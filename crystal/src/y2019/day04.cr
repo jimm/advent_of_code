@@ -1,14 +1,8 @@
-require "../util"
-
-class Day04
+class Day04 < Day
   @@min_password_input = 271973
   @@max_password_input = 785961
 
-  def initialize(@part_number : Int32, @testing : Bool)
-  end
-
   def run
-    password_range = @@min_password_input..@@max_password_input
     if @part_number == 1
       legit_predicate = ->(pwd : Int32) { legit_password_part_one?(pwd) }
       tests = {111111 => true, 223450 => false, 123789 => false}
@@ -19,6 +13,7 @@ class Day04
     if @testing
       run_tests(tests, legit_predicate)
     else
+      password_range = @@min_password_input..@@max_password_input
       legit_pwds = legit_passwords_in_range(password_range, legit_predicate)
       puts(legit_pwds.size)
     end

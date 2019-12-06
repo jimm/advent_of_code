@@ -1,13 +1,10 @@
-require "../util"
-
 # Orbits are stored as a hash where key = orbiting body and val = inner
 # body.
-class Day06
-  def initialize(@part_number : Int32, @testing : Bool)
+class Day06 < Day
+  def initialize(part_number : Int32, testing : Bool)
+    super
     @orbits = {} of String => String
-    lines = Util.data_file_lines(
-      2019, 6, @testing ? @part_number : 1, @testing
-    )
+    lines = data_lines(part_number: @testing ? @part_number : 1)
     @orbits = create_orbit_map(lines)
   end
 

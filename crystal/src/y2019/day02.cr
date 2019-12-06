@@ -1,23 +1,15 @@
-require "../util"
-
-class Day02
+class Day02 < Day
   @initial_memory : Array(Int32)
 
-  def initialize(@part_number : Int32, @testing : Bool)
-    lines = Util.data_file_lines(
-      2019, 2, 1, @part_number == 1 ? @testing : false
+  def initialize(part_number : Int32, testing : Bool)
+    super
+    lines = data_lines(
+      part_number: 1,
+      testing: @part_number == 1 ? @testing : false
     )
     @initial_memory = lines[0].split(",").map { |s| s.to_i }
     @computer = IntcodeComputer.new
     @computer.load(@initial_memory)
-  end
-
-  def run
-    if @part_number == 1
-      part1()
-    else
-      part2()
-    end
   end
 
   def part1

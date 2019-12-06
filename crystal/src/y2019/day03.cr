@@ -1,21 +1,12 @@
-require "../util"
-
-class Day03
+class Day03 < Day
   @locs : Array(Array({Int32, Int32}))
   @common_locs : Array({Int32, Int32})
 
-  def initialize(@part_number : Int32, @testing : Bool)
-    lines = Util.data_file_lines(2019, 3, 1, @testing)
-    wire_directions = lines.map { |line| line.split(",") }
+  def initialize(part_number : Int32, testing : Bool)
+    super
+    wire_directions =
+      data_lines(part_number: 1).map { |line| line.split(",") }
     @locs, @common_locs = crossovers(wire_directions)
-  end
-
-  def run
-    if @part_number == 1
-      part1()
-    else
-      part2()
-    end
   end
 
   def part1
