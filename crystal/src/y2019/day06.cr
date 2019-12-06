@@ -15,7 +15,6 @@ class Day06
     if @part_number == 1
       part1()
     else
-      # 1137 is too high
       part2()
     end
   end

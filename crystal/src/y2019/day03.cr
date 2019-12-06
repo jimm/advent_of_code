@@ -1,35 +1,39 @@
 require "../util"
 
 class Day03
-  def run(part_number : Int32, testing : Bool)
-    lines = Util.data_file_lines(2019, 3, 1, testing)
+  @locs : Array(Array({Int32, Int32}))
+  @common_locs : Array({Int32, Int32})
+
+  def initialize(@part_number : Int32, @testing : Bool)
+    lines = Util.data_file_lines(2019, 3, 1, @testing)
     wire_directions = lines.map { |line| line.split(",") }
-    proc = if part_number == 1
-             ->{ part1(wire_directions, testing) }
-           else
-             ->{ part2(wire_directions, testing) }
-           end
-    proc.call
+    @locs, @common_locs = crossovers(wire_directions)
   end
 
-  def part1(wire_directions, _testing)
-    locs, common_locs = crossovers(wire_directions)
-    min_dist = common_locs.map { |loc| manhattan_dist_from_origin(loc) }.min
+  def run
+    if @part_number == 1
+      part1()
+    else
+      part2()
+    end
+  end
+
+  def part1
+    min_dist = @common_locs.map { |loc| manhattan_dist_from_origin(loc) }.min
     puts(min_dist)
   end
 
-  def part2(wire_directions, _testing)
-    locs, common_locs = crossovers(wire_directions)
+  def part2
     # This is inefficient (O(n^2), looks up indexes multiple times) but it
     # doesn't take that long to run.
-    fastest_dist = common_locs.min_by do |loc|
-      dist0 = locs[0].index(loc)
-      dist1 = locs[1].index(loc)
+    fastest_dist = @common_locs.min_by do |loc|
+      dist0 = @locs[0].index(loc)
+      dist1 = @locs[1].index(loc)
       dist0.as(Int32) + dist1.as(Int32)
     end
     combined_steps =
-      locs[0].index(fastest_dist).as(Int32) +
-        locs[1].index(fastest_dist).as(Int32)
+      @locs[0].index(fastest_dist).as(Int32) +
+        @locs[1].index(fastest_dist).as(Int32)
     puts(combined_steps)
   end
 
@@ -82,5 +86,5 @@ class Day03
 end
 
 AoC.register("2019.3", ->(part_number : Int32, testing : Bool) do
-  Day03.new.run(part_number, testing)
+  Day03.new(part_number, testing).run
 end)

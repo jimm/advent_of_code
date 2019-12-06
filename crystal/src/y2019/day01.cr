@@ -1,9 +1,12 @@
 require "../util"
 
 class Day01
-  def run(part_number : Int32, testing : Bool)
-    lines = Util.data_file_lines(2019, 1, 1, testing)
-    proc = if part_number == 1
+  def initialize(@part_number : Int32, @testing : Bool)
+  end
+
+  def run
+    lines = Util.data_file_lines(2019, 1, 1, false)
+    proc = if @part_number == 1
              ->(i : Int32) { fuel_for_mass(i) }
            else
              ->(i : Int32) { recursive_fuel_for_mass(i) }
@@ -28,5 +31,5 @@ class Day01
 end
 
 AoC.register("2019.1", ->(part_number : Int32, testing : Bool) do
-  Day01.new.run(part_number, testing)
+  Day01.new(part_number, testing).run
 end)

@@ -4,16 +4,19 @@ class Day04
   @@min_password_input = 271973
   @@max_password_input = 785961
 
-  def run(part_number : Int32, testing : Bool)
+  def initialize(@part_number : Int32, @testing : Bool)
+  end
+
+  def run
     password_range = @@min_password_input..@@max_password_input
-    if part_number == 1
+    if @part_number == 1
       legit_predicate = ->(pwd : Int32) { legit_password_part_one?(pwd) }
       tests = {111111 => true, 223450 => false, 123789 => false}
     else
       legit_predicate = ->(pwd : Int32) { legit_password_part_two?(pwd) }
       tests = {112233 => true, 123444 => false, 111122 => true}
     end
-    if testing
+    if @testing
       run_tests(tests, legit_predicate)
     else
       legit_pwds = legit_passwords_in_range(password_range, legit_predicate)
@@ -67,5 +70,5 @@ class Day04
 end
 
 AoC.register("2019.4", ->(part_number : Int32, testing : Bool) do
-  Day04.new.run(part_number, testing)
+  Day04.new(part_number, testing).run
 end)
