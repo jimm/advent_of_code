@@ -8,7 +8,7 @@ end
 # Assumptions:
 # - The program will not step out of bounds
 class IntcodeComputer
-  @output_io : IO?
+  @output_io : IO | IntcodeComputer | Array(Int32) | Nil
 
   def initialize
     @mem = [] of Int32
@@ -16,7 +16,6 @@ class IntcodeComputer
     @opcode = 0
     @param_modes = [] of ParamMode
     @input_queue = [] of Int32
-    @output_queue = [] of Int32
     @output_io = STDOUT
     @trace = false
   end
@@ -31,7 +30,7 @@ class IntcodeComputer
   # Runs the program starting at address 0. Stops when halt is seen.
   def run
     # Initialize output. Do not initialize input.
-    flush_output(false)
+    flush_output()
     @pc = 0
 
     while true
@@ -139,6 +138,7 @@ class IntcodeComputer
     @input_queue << num
   end
 
+  # Assumes input is only fed to us via append_input.
   def get_input
     if @input_queue.size == 0
       a : String? = nil
@@ -163,13 +163,19 @@ class IntcodeComputer
 
   # ---------------- Output ----------------
 
-  def direct_output_to(io)
-    @output_io = io
+  def direct_output_to(stream)
+    @output_io = stream
   end
 
   def append_output(val)
-    @output_queue << val
-    @output_io.as(IO).puts(val) if @output_io
+    case @output_io
+    when IntcodeComputer
+      @output_io.as(IntcodeComputer).append_input(val)
+    when IO
+      puts(val)
+    when Array(Int32)
+      @output_io.as(Array(Int32)) << val
+    end
   end
 
   def has_output
@@ -186,10 +192,7 @@ class IntcodeComputer
   end
 
   # Output is flushed at the start of every `#run`. (Input is not.)
-  def flush_output(print_output = false)
-    if print_output && @output_io
-      @output_queue.each { |s| @output_io.as(IO).puts(s) }
-    end
+  def flush_output
     @output_queue = [] of Int32
   end
 
