@@ -4,50 +4,45 @@ module Year2019
   class Day07 < Day
     def initialize(part_number : Int32, testing : Bool)
       super
-      @amplifiers = Array(IntcodeComputer).new(5) { |_| IntcodeComputer.new }
+      @amplifiers = Array(IntcodeComputer).new(5) do |i|
+        IntcodeComputer.new("Amp #{'A' + i}")
+      end
       @amplifiers.each_cons(2) { |cons| cons[0].direct_output_to(cons[1]) }
     end
 
-    def part1
+    private def _part(phase_space, run_proc)
       lines = data_lines()
       if @testing
         ok = true
         lines.in_groups_of(2, "").each do |line_pair|
-          ok &&= run_test1(line_pair)
+          ok &&= run_test(line_pair, run_proc)
         end
         puts("ok") if ok # errors already printed
       else
-        phase_space = [0, 1, 2, 3, 4]
         program = lines[0].split(",").map(&.to_i)
         max_signal = phase_space.each_permutation.map do |phases|
-          run_amplifiers_with_phases(program, phases)
+          run_proc.call(program, phases)
         end
           .max
         puts(max_signal)
       end
+    end
+
+    def part1
+      run_proc = ->(program : Array(Int32), phases : Array(Int32)) do
+        run_amplifiers_with_phases(program, phases)
+      end
+      _part([0, 1, 2, 3, 4], run_proc)
     end
 
     def part2
-      lines = data_lines()
-      if @testing
-        ok = true
-        lines.in_groups_of(2, "").each do |line_pair|
-          ok &&= run_test1(line_pair)
-        end
-        puts("ok") if ok # errors already printed
-      else
-        phase_space = [5, 6, 7, 8, 9]
-        program = lines[0].split(",").map(&.to_i)
-        # FIXME
-        max_signal = phase_space.each_permutation.map do |phases|
-          run_amplifiers_with_phases(program, phases)
-        end
-          .max
-        puts(max_signal)
+      run_proc = ->(program : Array(Int32), phases : Array(Int32)) do
+        run_feedback_amplifiers_with_phases(program, phases)
       end
+      _part([5, 6, 7, 8, 9], run_proc)
     end
 
-    def run_test1(line_pair)
+    def run_test(line_pair, run_proc)
       control_line, program_line = line_pair
       if control_line[0] != '#'
         raise "error: malformed test file: expected '#' line saw #{control_line}"
@@ -60,7 +55,7 @@ module Year2019
       raise "error: expected 5 phases" if phases.size != 5
 
       program = program_line.split(",").map(&.to_i)
-      result = run_amplifiers_with_phases(program, phases)
+      result = run_proc.call(program, phases)
       if result == expected_signal
         true
       else
@@ -73,20 +68,45 @@ module Year2019
     # First amp starts with input zero, each one feeds its output to the
     # next input. Returns final amplifier output.
     def run_amplifiers_with_phases(program, phases)
-      last_amp_output = [] of Int32
-      @amplifiers.last.direct_output_to(last_amp_output)
+      result = Channel(Int32).new
+      @amplifiers.last.direct_output_to(result)
+
       @amplifiers.zip(phases).each do |amp, phase|
         amp.load(program)
+        # because done here, guaranteed to happen before receiving input
+        # from previous amplifier in Fiber below
         amp.append_input(phase)
       end
 
+      @amplifiers.each do |amp|
+        spawn { amp.run }
+      end
+
       @amplifiers.first.append_input(0)
-      @amplifiers.each(&.run)
-      last_amp_output[-1]
+      result.receive
     end
 
-    def program_amplifiers(program)
-      @amplifiers.each { |amp| amp.load(program) }
+    def run_feedback_amplifiers_with_phases(program, phases)
+      # FIXME
+      raise "need to implement properly"
+
+      result = Channel(Int32).new
+      @amplifiers.last.direct_output_to(@amplifiers.first)
+
+      @amplifiers.zip(phases).each do |amp, phase|
+        amp.load(program)
+        # because done here, guaranteed to happen before receiving input
+        # from previous amplifier in Fiber below
+        amp.append_input(phase)
+      end
+
+      @amplifiers.each do |amp|
+        spawn { amp.run }
+      end
+
+      @amplifiers.first.append_input(0)
+      Fiber.yield
+      @amplifiers.last.last_output
     end
   end
 end

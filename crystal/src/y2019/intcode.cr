@@ -8,16 +8,21 @@ end
 # Assumptions:
 # - The program will not step out of bounds
 class IntcodeComputer
-  @output_io : IO | IntcodeComputer | Array(Int32) | Nil
+  @@BUFSIZ = 1024
 
-  def initialize
+  getter name : String
+  @output_io : IO | IntcodeComputer | Channel(Int32) | Nil
+  getter last_output : Int32
+
+  def initialize(@name = "Computer")
     @mem = [] of Int32
     @pc = 0
     @opcode = 0
     @param_modes = [] of ParamMode
-    @input_queue = [] of Int32
+    @input_channel = Channel(Int32).new(@@BUFSIZ)
     @output_io = STDOUT
     @trace = false
+    @last_output = 0
   end
 
   # ================ Program loading and execution ================
@@ -135,30 +140,21 @@ class IntcodeComputer
   # ---------------- Input ----------------
 
   def append_input(num : Int32)
-    @input_queue << num
+    puts("#{name}#append_input #{num}") if @trace
+    @input_channel.send(num)
+    puts("#{name}#append_input back from sending") if @trace
   end
 
   # Assumes input is only fed to us via append_input.
   def get_input
-    if @input_queue.size == 0
-      a : String? = nil
-
-      print("input: ")
-      STDOUT.flush
-      a = gets
-      while a.nil? || a == ""
-        a = gets
-      end
-      a.as(String).chomp.to_i
-    else
-      val = @input_queue[0]
-      @input_queue = @input_queue[1..] if @input_queue.size > 0
-      val
+    puts("#{name}#get_input") if @trace
+    @input_channel.receive.tap do |val|
+      puts("#{name}#get_input received input #{val}") if @trace
     end
   end
 
   def flush_input
-    @input_queue = [] of Int32
+    @input_channel = Channel(Int32).new(@@BUFSIZ)
   end
 
   # ---------------- Output ----------------
@@ -168,13 +164,14 @@ class IntcodeComputer
   end
 
   def append_output(val)
+    @last_output = val
     case @output_io
     when IntcodeComputer
       @output_io.as(IntcodeComputer).append_input(val)
     when IO
       puts(val)
-    when Array(Int32)
-      @output_io.as(Array(Int32)) << val
+    when Channel(Int32)
+      @output_io.as(Channel(Int32)).send(val)
     end
   end
 
