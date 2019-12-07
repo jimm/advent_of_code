@@ -8,7 +8,7 @@ end
 # Assumptions:
 # - The program will not step out of bounds
 class IntcodeComputer
-  @opcode : Int32
+  @output_io : IO
 
   def initialize
     @mem = [] of Int32
@@ -16,16 +16,16 @@ class IntcodeComputer
     @opcode = 0
     @param_modes = [] of ParamMode
     @input_queue = [] of Int32
+    @output_queue = [] of Int32
+    @output_io = STDOUT
     @trace = false
   end
+
+  # ================ Program loading and execution ================
 
   # Stores a copy of `program` in memory.
   def load(program)
     @mem = program.dup
-  end
-
-  def enqueue_input(num : Int32)
-    @input_queue << num
   end
 
   # Runs the program starting at address 0. Stops when halt is seen.
@@ -53,14 +53,14 @@ class IntcodeComputer
       when 3 # input
         do_trace("input", 1, 1) do
           dest = addr_at_param(1)
-          input = get_input()
-          set(dest, input)
+          val = get_input()
+          set(dest, val)
         end
         @pc += 2
       when 4 # output
         do_trace("output", 1, 1) do
           val = val_of_param(1)
-          puts(val)
+          append_output(val)
         end
         @pc += 2
       when 5 # jump if non-zero
@@ -107,6 +107,75 @@ class IntcodeComputer
     end
   end
 
+  # ================ Memory I/O ================
+
+  def get(loc)
+    if loc < 0 || loc >= @mem.size
+      puts("@pc #{@pc} error: memory location #{loc} is out of bounds, get returning 0")
+      return 0
+    end
+    @mem[loc]
+  end
+
+  def set(loc, val : Int32)
+    if loc < 0
+      puts("@pc #{@pc} error: memory location #{loc} is out of bounds, ignoring")
+      return
+    end
+    if loc >= @mem.size
+      @mem.concat(Array(Int32).new(loc - @mem.size + 1))
+    end
+    @mem[loc] = val
+  end
+
+  # ================ Character I/O ================
+
+  def append_input(num : Int32)
+    @input_queue << num
+  end
+
+  def get_input
+    if @input_queue.size == 0
+      a : String? = nil
+
+      print("input: ")
+      STDOUT.flush
+      a = gets
+      while a.nil? || a == ""
+        a = gets
+      end
+      a.as(String).chomp.to_i
+    else
+      val = @input_queue[0]
+      @input_queue = @input_queue[1..] if @input_queue.size > 0
+      val
+    end
+  end
+
+  def direct_output_to(io)
+    @output_io = io
+  end
+
+  def append_output(val)
+    @output_queue << val
+    @output_io.puts(val) if @output_io
+  end
+
+  def has_output
+    @output_queue.size > 0
+  end
+
+  # Returns nil if no output
+  def get_output
+    return nil if @output_queue.size == 0
+
+    val = @output_queue[0]
+    @output_queue = @output_queue[1..]
+    val
+  end
+
+  # ================ Debugging ================
+
   def trace(val : Bool)
     @trace = val
   end
@@ -131,42 +200,7 @@ class IntcodeComputer
     trace_result(val)
   end
 
-  def get(loc)
-    if loc < 0 || loc >= @mem.size
-      puts("@pc #{@pc} error: memory location #{loc} is out of bounds, get returning 0")
-      return 0
-    end
-    @mem[loc]
-  end
-
-  def set(loc, val : Int32)
-    if loc < 0
-      puts("@pc #{@pc} error: memory location #{loc} is out of bounds, ignoring")
-      return
-    end
-    if loc >= @mem.size
-      @mem.concat(Array(Int32).new(loc - @mem.size + 1))
-    end
-    @mem[loc] = val
-  end
-
-  def get_input
-    if @input_queue.size == 0
-      a : String? = nil
-
-      print("input: ")
-      STDOUT.flush
-      a = gets
-      while a.nil? || a == ""
-        a = gets
-      end
-      a.as(String).chomp.to_i
-    else
-      val = @input_queue[0]
-      @input_queue = @input_queue[1..] if @input_queue.size > 0
-      val
-    end
-  end
+  # ================ CPU ================
 
   def parse_opcode_at_pc
     param_mode_num, @opcode = @mem[@pc].divmod(100)

@@ -10,14 +10,14 @@ module Year2019
         part_number: @part_number == 1 ? 1 : (@testing ? 2 : 1),
         testing: @part_number == 1 ? false : @testing
       )
-      @initial_memory = lines[0].split(",").map { |s| s.to_i }
+      @initial_memory = lines[0].split(",").map(&.to_i)
       @computer = IntcodeComputer.new
       @computer.load(@initial_memory)
     end
 
     def part1
       @computer.trace(true) if @testing
-      @computer.enqueue_input(1)
+      @computer.append_input(1)
       @computer.run
     end
 
@@ -25,12 +25,12 @@ module Year2019
       if @testing
         {5 => 999, 8 => 1000, 10 => 1001}.each do |input, expected|
           @computer.load(@initial_memory)
-          @computer.enqueue_input(input)
+          @computer.append_input(input)
           print("expect to see #{expected}: ")
           @computer.run
         end
       else
-        @computer.enqueue_input(5)
+        @computer.append_input(5)
         @computer.run
       end
     end

@@ -10,7 +10,7 @@ module Year2019
         part_number: 1,
         testing: @part_number == 1 ? @testing : false
       )
-      @initial_memory = lines[0].split(",").map { |s| s.to_i }
+      @initial_memory = lines[0].split(",").map(&.to_i)
       @computer = IntcodeComputer.new
       @computer.load(@initial_memory)
     end
