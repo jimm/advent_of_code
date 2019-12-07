@@ -8,7 +8,7 @@ end
 # Assumptions:
 # - The program will not step out of bounds
 class IntcodeComputer
-  @output_io : IO
+  @output_io : IO?
 
   def initialize
     @mem = [] of Int32
@@ -30,7 +30,10 @@ class IntcodeComputer
 
   # Runs the program starting at address 0. Stops when halt is seen.
   def run
+    # Initialize output. Do not initialize input.
+    flush_output(false)
     @pc = 0
+
     while true
       parse_opcode_at_pc
       case @opcode
@@ -130,6 +133,8 @@ class IntcodeComputer
 
   # ================ Character I/O ================
 
+  # ---------------- Input ----------------
+
   def append_input(num : Int32)
     @input_queue << num
   end
@@ -152,13 +157,19 @@ class IntcodeComputer
     end
   end
 
+  def flush_input
+    @input_queue = [] of Int32
+  end
+
+  # ---------------- Output ----------------
+
   def direct_output_to(io)
     @output_io = io
   end
 
   def append_output(val)
     @output_queue << val
-    @output_io.puts(val) if @output_io
+    @output_io.as(IO).puts(val) if @output_io
   end
 
   def has_output
@@ -172,6 +183,14 @@ class IntcodeComputer
     val = @output_queue[0]
     @output_queue = @output_queue[1..]
     val
+  end
+
+  # Output is flushed at the start of every `#run`. (Input is not.)
+  def flush_output(print_output = false)
+    if print_output && @output_io
+      @output_queue.each { |s| @output_io.as(IO).puts(s) }
+    end
+    @output_queue = [] of Int32
   end
 
   # ================ Debugging ================
