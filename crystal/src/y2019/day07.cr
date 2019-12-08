@@ -64,17 +64,7 @@ module Year2019
       result = Channel(Int32).new
       amplifiers.last.direct_output_to(result)
 
-      amplifiers.zip(phases).each do |amp, phase|
-        amp.load(program)
-        # because done here, guaranteed to happen before receiving input
-        # from previous amplifier in Fiber below
-        amp.append_input(phase)
-      end
-
-      amplifiers.each do |amp|
-        spawn { amp.run }
-      end
-
+      init_and_start_amplifiers(amplifiers, phases)
       amplifiers.first.append_input(0)
       result.receive
     end
@@ -84,17 +74,7 @@ module Year2019
       result = Channel(Int32).new
       amplifiers.last.direct_output_to(amplifiers.first)
 
-      amplifiers.zip(phases).each do |amp, phase|
-        amp.load(program)
-        # because done here, guaranteed to happen before receiving input
-        # from previous amplifier in Fiber below
-        amp.append_input(phase)
-      end
-
-      amplifiers.each do |amp|
-        spawn { amp.run }
-      end
-
+      init_and_start_amplifiers(amplifiers, phases)
       amp_e = amplifiers.last
       amplifiers.first.append_input(0)
       until amp_e.halted?
@@ -110,6 +90,18 @@ module Year2019
       amplifiers.each_cons(2) { |cons| cons[0].direct_output_to(cons[1]) }
       amplifiers.each { |amp| amp.load(program) }
       amplifiers
+    end
+
+    def init_and_start_amplifiers(amplifiers, phases)
+      amplifiers.zip(phases).each do |amp, phase|
+        # because done here, guaranteed to happen before receiving input
+        # from previous amplifier in Fiber below
+        amp.append_input(phase)
+      end
+
+      amplifiers.each do |amp|
+        spawn { amp.run }
+      end
     end
   end
 end
