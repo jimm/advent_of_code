@@ -77,7 +77,7 @@ module Year2019
       init_and_start_amplifiers(amplifiers, phases)
       amp_e = amplifiers.last
       amplifiers.first.append_input(0)
-      until amp_e.halted?
+      until amp_e.state.halted?
         Fiber.yield
       end
       amp_e.last_output

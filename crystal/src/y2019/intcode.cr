@@ -11,14 +11,60 @@ end
 
 # A simple Intcode computer. Program and memory use the same address space.
 #
-# Assumptions:
+# ## I/O
+#
+# All I/O is done with `Int32` values. Output is flushed at the start of
+# every `#run`. Input is not.
+#
+# To send input to a computer, call `append_input`. Input is buffered with a
+# buffer size of 1024. If the buffer is full, the caller **will be
+# blocked**. Input uses `Channel`s so that we can run multiple computers in
+# `Fiber`s.
+#
+# By default, output is sent to `STDOUT`. Output can be sent to any `IO`,
+# another `IntcodeComputer`, to a `Channel(Int32)`, or to `Nil` (no output).
+# In all cases, the most recently output `Int32` is saved into
+# `last_output`. Call '#direct_output_to` to change a computer's output
+# destination.
+#
+# ## CPU State
+#
+# A computer keeps track of its ready/running/halted `CPUState`. Call
+# `#state` to get the current `CPUState`, which has the predicates
+# `CPUState#ready?`, `CPUState#running?`, and `CPUState#halted?`
+#
+# ## Memory
+#
+# Reads from memory are assumed to be within bounds. There is no bounds
+# checking.
+#
+# Writes to memory are assumed to be to memory locations >= 0. If the
+# location is out of bounds, memory is grown so that the write succeeds.
+#
+# ## Example Code
+#
+# To wait for a computer to halt in a concurrent environment, keep
+# `yield`ing. Here is a concurrent example that loads a program and starts
+# with some initial input:
+#
+#     computer = IntcodeComputer.new
+#     computer.load(program)
+#     computer.append_input(something)
+#     spawn { computer.run }
+#     until computer.state.halted?
+#       Fiber.yield
+#     end
+#
+# ## Assumptions
+#
 # - The program will not step out of bounds
 class IntcodeComputer
   @@BUFSIZ = 1024
 
   getter name : String
-  @output_io : IO | IntcodeComputer | Channel(Int32) | Nil
+  getter state : CPUState
   getter last_output : Int32
+  @output_io : IO | IntcodeComputer | Channel(Int32) | Nil
 
   def initialize(@name = "Computer")
     @mem = [] of Int32
@@ -34,7 +80,7 @@ class IntcodeComputer
 
   # ================ Program loading and execution ================
 
-  # Stores a copy of `program` in memory.
+  # Stores a copy of *program* in memory.
   def load(program)
     @mem = program.dup
   end
@@ -123,25 +169,13 @@ class IntcodeComputer
     end
   end
 
-  def halted?
-    @state == CPUState::Halted
-  end
-
   # ================ Memory I/O ================
 
   def get(loc)
-    if loc < 0 || loc >= @mem.size
-      puts("@pc #{@pc} error: memory location #{loc} is out of bounds, get returning 0")
-      return 0
-    end
     @mem[loc]
   end
 
   def set(loc, val : Int32)
-    if loc < 0
-      puts("@pc #{@pc} error: memory location #{loc} is out of bounds, ignoring")
-      return
-    end
     if loc >= @mem.size
       @mem.concat(Array(Int32).new(loc - @mem.size + 1))
     end
@@ -187,19 +221,6 @@ class IntcodeComputer
     when Channel(Int32)
       @output_io.as(Channel(Int32)).send(val)
     end
-  end
-
-  def has_output
-    @output_queue.size > 0
-  end
-
-  # Returns nil if no output
-  def get_output
-    return nil if @output_queue.size == 0
-
-    val = @output_queue[0]
-    @output_queue = @output_queue[1..]
-    val
   end
 
   # Output is flushed at the start of every `#run`. (Input is not.)
