@@ -2,16 +2,8 @@ require "../day"
 
 module Year2019
   class Day07 < Day
-    def initialize(part_number : Int32, testing : Bool)
-      super
-      @amplifiers = Array(IntcodeComputer).new(5) do |i|
-        IntcodeComputer.new("Amp #{'A' + i}")
-      end
-      @amplifiers.each_cons(2) { |cons| cons[0].direct_output_to(cons[1]) }
-    end
-
     private def _part(phase_space, run_proc)
-      lines = data_lines()
+      lines = data_lines(part_number: @testing ? @part_number : 1)
       if @testing
         ok = true
         lines.in_groups_of(2, "").each do |line_pair|
@@ -68,45 +60,56 @@ module Year2019
     # First amp starts with input zero, each one feeds its output to the
     # next input. Returns final amplifier output.
     def run_amplifiers_with_phases(program, phases)
+      amplifiers = build_amplifiers(program)
       result = Channel(Int32).new
-      @amplifiers.last.direct_output_to(result)
+      amplifiers.last.direct_output_to(result)
 
-      @amplifiers.zip(phases).each do |amp, phase|
+      amplifiers.zip(phases).each do |amp, phase|
         amp.load(program)
         # because done here, guaranteed to happen before receiving input
         # from previous amplifier in Fiber below
         amp.append_input(phase)
       end
 
-      @amplifiers.each do |amp|
+      amplifiers.each do |amp|
         spawn { amp.run }
       end
 
-      @amplifiers.first.append_input(0)
+      amplifiers.first.append_input(0)
       result.receive
     end
 
     def run_feedback_amplifiers_with_phases(program, phases)
-      # FIXME
-      raise "need to implement properly"
-
+      amplifiers = build_amplifiers(program)
       result = Channel(Int32).new
-      @amplifiers.last.direct_output_to(@amplifiers.first)
+      amplifiers.last.direct_output_to(amplifiers.first)
 
-      @amplifiers.zip(phases).each do |amp, phase|
+      amplifiers.zip(phases).each do |amp, phase|
         amp.load(program)
         # because done here, guaranteed to happen before receiving input
         # from previous amplifier in Fiber below
         amp.append_input(phase)
       end
 
-      @amplifiers.each do |amp|
+      amplifiers.each do |amp|
         spawn { amp.run }
       end
 
-      @amplifiers.first.append_input(0)
-      Fiber.yield
-      @amplifiers.last.last_output
+      amp_e = amplifiers.last
+      amplifiers.first.append_input(0)
+      until amp_e.halted?
+        Fiber.yield
+      end
+      amp_e.last_output
+    end
+
+    def build_amplifiers(program)
+      amplifiers = Array(IntcodeComputer).new(5) do |i|
+        IntcodeComputer.new("Amp #{'A' + i}")
+      end
+      amplifiers.each_cons(2) { |cons| cons[0].direct_output_to(cons[1]) }
+      amplifiers.each { |amp| amp.load(program) }
+      amplifiers
     end
   end
 end

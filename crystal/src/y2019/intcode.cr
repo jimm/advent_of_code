@@ -3,6 +3,12 @@ enum ParamMode
   Immediate
 end
 
+enum CPUState
+  Ready
+  Running
+  Halted
+end
+
 # A simple Intcode computer. Program and memory use the same address space.
 #
 # Assumptions:
@@ -23,6 +29,7 @@ class IntcodeComputer
     @output_io = STDOUT
     @trace = false
     @last_output = 0
+    @state = CPUState::Ready
   end
 
   # ================ Program loading and execution ================
@@ -34,6 +41,7 @@ class IntcodeComputer
 
   # Runs the program starting at address 0. Stops when halt is seen.
   def run
+    @state = CPUState::Running
     # Initialize output. Do not initialize input.
     flush_output()
     @pc = 0
@@ -106,12 +114,17 @@ class IntcodeComputer
         @pc += 4
       when 99 # halt
         trace_instruction("halt", 0)
+        @state = CPUState::Halted
         return
       else
         puts("@pc #{@pc} error: unknown opcode #{@opcode}")
         return
       end
     end
+  end
+
+  def halted?
+    @state == CPUState::Halted
   end
 
   # ================ Memory I/O ================
@@ -148,9 +161,10 @@ class IntcodeComputer
   # Assumes input is only fed to us via append_input.
   def get_input
     puts("#{name}#get_input") if @trace
-    @input_channel.receive.tap do |val|
+    val = @input_channel.receive.tap do |val|
       puts("#{name}#get_input received input #{val}") if @trace
     end
+    val
   end
 
   def flush_input
