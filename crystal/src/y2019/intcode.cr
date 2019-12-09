@@ -10,11 +10,12 @@ enum CPUState
   Halted
 end
 
-# A simple Intcode computer. Program and memory use the same address space.
+# A simple 64-bit Intcode computer. Program and memory use the same address
+# space.
 #
 # ## I/O
 #
-# All I/O is done with `Int32` values. Output is flushed at the start of
+# All I/O is done with `Int64` values. Output is flushed at the start of
 # every `#run`. Input is not.
 #
 # To send input to a computer, call `append_input`. Input is buffered with a
@@ -23,8 +24,8 @@ end
 # `Fiber`s.
 #
 # By default, output is sent to `STDOUT`. Output can be sent to any `IO`,
-# another `IntcodeComputer`, to a `Channel(Int32)`, or to `Nil` (no output).
-# In all cases, the most recently output `Int32` is saved into
+# another `IntcodeComputer`, to a `Channel(Int64)`, or to `Nil` (no output).
+# In all cases, the most recently output `Int64` is saved into
 # `last_output`. Call '#direct_output_to` to change a computer's output
 # destination.
 #
@@ -65,20 +66,20 @@ class IntcodeComputer
 
   getter name : String
   getter state : CPUState
-  getter last_output : Int32
-  @output_io : IO | IntcodeComputer | Channel(Int32) | Nil
+  getter last_output : Int64
+  @output_io : IO | IntcodeComputer | Channel(Int64) | Nil
 
   def initialize(@name = "Computer")
-    @mem = [] of Int32
-    @pc = 0
-    @opcode = 0
+    @mem = [] of Int64
+    @pc = 0_i64
+    @opcode = 0_i64
     @param_modes = [] of ParamMode
-    @input_channel = Channel(Int32).new(@@BUFSIZ)
+    @input_channel = Channel(Int64).new(@@BUFSIZ)
     @output_io = STDOUT
     @trace = false
-    @last_output = 0
+    @last_output = 0_i64
     @state = CPUState::Ready
-    @relative_base = 0
+    @relative_base = 0_i64
   end
 
   # ================ Program loading and execution ================
@@ -151,7 +152,7 @@ class IntcodeComputer
           dest = addr_at_param(3)
           p1 = val_of_param(1)
           p2 = val_of_param(2)
-          set(dest, p1 < p2 ? 1 : 0)
+          set(dest, p1 < p2 ? 1_i64 : 0_i64)
         end
         @pc += 4
       when 8 # eq
@@ -159,7 +160,7 @@ class IntcodeComputer
           dest = addr_at_param(3)
           p1 = val_of_param(1)
           p2 = val_of_param(2)
-          set(dest, p1 == p2 ? 1 : 0)
+          set(dest, p1 == p2 ? 1_i64 : 0_i64)
         end
         @pc += 4
       when 9 # adjust relative base
@@ -185,7 +186,7 @@ class IntcodeComputer
     @mem[loc]
   end
 
-  def set(loc, val : Int32)
+  def set(loc, val : Int64)
     address_check(loc)
     @mem[loc] = val
   end
@@ -193,7 +194,7 @@ class IntcodeComputer
   def address_check(loc)
     raise "error: attempt to access loc #{loc}" if loc < 0
     if loc >= @mem.size
-      @mem.concat(Array(Int32).new(loc - @mem.size + 1, 0))
+      @mem.concat(Array(Int64).new(loc - @mem.size + 1, 0))
     end
   end
 
@@ -201,7 +202,7 @@ class IntcodeComputer
 
   # ---------------- Input ----------------
 
-  def append_input(num : Int32)
+  def append_input(num : Int64)
     puts("#{name}#append_input #{num}") if @trace
     @input_channel.send(num)
     puts("#{name}#append_input back from sending") if @trace
@@ -217,7 +218,7 @@ class IntcodeComputer
   end
 
   def flush_input
-    @input_channel = Channel(Int32).new(@@BUFSIZ)
+    @input_channel = Channel(Int64).new(@@BUFSIZ)
   end
 
   # ---------------- Output ----------------
@@ -233,14 +234,14 @@ class IntcodeComputer
       @output_io.as(IntcodeComputer).append_input(val)
     when IO
       @output_io.as(IO).puts(val)
-    when Channel(Int32)
-      @output_io.as(Channel(Int32)).send(val)
+    when Channel(Int64)
+      @output_io.as(Channel(Int64)).send(val)
     end
   end
 
   # Output is flushed at the start of every `#run`. (Input is not.)
   def flush_output
-    @output_queue = [] of Int32
+    @output_queue = [] of Int64
   end
 
   # ================ Debugging ================
@@ -286,7 +287,7 @@ class IntcodeComputer
     ['@', '#', 'r'][mode_of_param(offset).to_i]
   end
 
-  def val_of_param(offset)
+  def val_of_param(offset) : Int64
     param = @mem[@pc + offset]
     param_mode_digit = mode_of_param(offset)
     case param_mode_digit
@@ -301,7 +302,7 @@ class IntcodeComputer
     end
   end
 
-  def addr_at_param(offset)
+  def addr_at_param(offset) : Int64
     @mem[@pc + offset]
   end
 end

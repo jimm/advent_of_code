@@ -11,7 +11,7 @@ module Year2019
         end
         puts("ok") if ok # errors already printed
       else
-        program = lines[0].split(",").map(&.to_i)
+        program = lines[0].split(",").map(&.to_i64)
         max_signal = phase_space.each_permutation.map do |phases|
           run_proc.call(program, phases)
         end
@@ -21,17 +21,17 @@ module Year2019
     end
 
     def part1
-      run_proc = ->(program : Array(Int32), phases : Array(Int32)) do
+      run_proc = ->(program : Array(Int64), phases : Array(Int64)) do
         run_amplifiers_with_phases(program, phases)
       end
-      _part([0, 1, 2, 3, 4], run_proc)
+      _part([0_i64, 1_i64, 2_i64, 3_i64, 4_i64], run_proc)
     end
 
     def part2
-      run_proc = ->(program : Array(Int32), phases : Array(Int32)) do
+      run_proc = ->(program : Array(Int64), phases : Array(Int64)) do
         run_feedback_amplifiers_with_phases(program, phases)
       end
-      _part([5, 6, 7, 8, 9], run_proc)
+      _part([5_i64, 6_i64, 7_i64, 8_i64, 9_i64], run_proc)
     end
 
     def run_test(line_pair, run_proc)
@@ -43,10 +43,10 @@ module Year2019
       control_regex = /signal (\d+).*sequence ([\d,]+)/
       control_regex.match(control_line)
       expected_signal, phases_str = $1.to_i, $2
-      phases = phases_str.split(",").map(&.to_i)
+      phases = phases_str.split(",").map(&.to_i64)
       raise "error: expected 5 phases" if phases.size != 5
 
-      program = program_line.split(",").map(&.to_i)
+      program = program_line.split(",").map(&.to_i64)
       result = run_proc.call(program, phases)
       if result == expected_signal
         true
@@ -61,7 +61,7 @@ module Year2019
     # next input. Returns final amplifier output.
     def run_amplifiers_with_phases(program, phases)
       amplifiers = build_amplifiers(program)
-      result = Channel(Int32).new
+      result = Channel(Int64).new
       amplifiers.last.direct_output_to(result)
 
       init_and_start_amplifiers(amplifiers, phases)
@@ -71,7 +71,7 @@ module Year2019
 
     def run_feedback_amplifiers_with_phases(program, phases)
       amplifiers = build_amplifiers(program)
-      result = Channel(Int32).new
+      result = Channel(Int64).new
       amplifiers.last.direct_output_to(amplifiers.first)
 
       init_and_start_amplifiers(amplifiers, phases)
