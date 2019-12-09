@@ -1,5 +1,5 @@
 enum ParamMode
-  Indirect
+  Indirect # also called "position mode"
   Immediate
   Relative
 end
@@ -94,8 +94,8 @@ class IntcodeComputer
     @state = CPUState::Running
     # Initialize output. Do not initialize input.
     flush_output()
-    @pc = 0
-    @relative_base = 0
+    @pc = 0_i64
+    @relative_base = 0_i64
 
     while true
       parse_opcode_at_pc
@@ -117,31 +117,31 @@ class IntcodeComputer
         end
         @pc += 4
       when 3 # input
-        do_trace("input", 1, 1) do
+        do_trace("in", 1, 1) do
           dest = addr_at_param(1)
           val = get_input()
           set(dest, val)
         end
         @pc += 2
       when 4 # output
-        do_trace("output", 1, 1) do
+        do_trace("out", 1, 1) do
           val = val_of_param(1)
           append_output(val)
         end
         @pc += 2
       when 5 # jump if non-zero
+        trace_instruction("jnz", 2)
         p1 = val_of_param(1)
         p2 = val_of_param(2)
-        trace_instruction("jnz", 2)
         if p1 != 0
           @pc = p2
         else
           @pc += 3
         end
       when 6 # jump if zero
+        trace_instruction("jz", 2)
         p1 = val_of_param(1)
         p2 = val_of_param(2)
-        trace_instruction("jz", 2)
         if p1 == 0
           @pc = p2
         else
@@ -164,7 +164,7 @@ class IntcodeComputer
         end
         @pc += 4
       when 9 # adjust relative base
-        do_trace("rb_adj", 1) do
+        do_trace("rbadj", 1) do
           @relative_base += val_of_param(1)
         end
         @pc += 2
@@ -173,7 +173,7 @@ class IntcodeComputer
         @state = CPUState::Halted
         return
       else
-        puts("@pc #{@pc} error: unknown opcode #{@opcode}")
+        raise("@pc #{@pc} error: unknown opcode #{@opcode}")
         return
       end
     end
@@ -257,11 +257,11 @@ class IntcodeComputer
       mode_char = i == must_be_addr ? '@' : mode_char(offset)
       "#{mode_char}#{get(@pc + offset)}"
     end
-    puts("#{name}\t#{param_strs.join(", ")}")
+    puts("#{"%08d" % @pc}: #{name}\t#{param_strs.join(", ")}")
   end
 
   def trace_result(val)
-    puts("\t=> #{val}") if @trace
+    puts("\t\t=> #{val}") if @trace
   end
 
   def do_trace(name, num_params, must_be_addr = -1)
@@ -273,7 +273,7 @@ class IntcodeComputer
   # ================ CPU ================
 
   def parse_opcode_at_pc
-    param_mode_num, @opcode = @mem[@pc].divmod(100)
+    param_mode_num, @opcode = get(@pc).divmod(100)
     @param_modes = param_mode_num.to_s.reverse.chars.map do |d|
       ParamMode.new(d.to_i)
     end
@@ -303,6 +303,17 @@ class IntcodeComputer
   end
 
   def addr_at_param(offset) : Int64
-    get(@pc + offset)
+    param = get(@pc + offset)
+    param_mode_digit = mode_of_param(offset)
+    case param_mode_digit
+    when ParamMode::Indirect
+      param
+    when ParamMode::Immediate
+      raise("error: immediate address mode is illegal")
+    when ParamMode::Relative
+      param + @relative_base
+    else
+      raise "error: illegal param mode digit #{param_mode_digit}"
+    end
   end
 end
