@@ -288,7 +288,7 @@ class IntcodeComputer
   end
 
   def val_of_param(offset) : Int64
-    param = @mem[@pc + offset]
+    param = get(@pc + offset)
     param_mode_digit = mode_of_param(offset)
     case param_mode_digit
     when ParamMode::Indirect
@@ -303,6 +303,6 @@ class IntcodeComputer
   end
 
   def addr_at_param(offset) : Int64
-    @mem[@pc + offset]
+    get(@pc + offset)
   end
 end
