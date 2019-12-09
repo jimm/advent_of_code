@@ -84,12 +84,14 @@ class IntcodeComputer
 
   # ================ Program loading and execution ================
 
-  # Stores a copy of *program* in memory.
+  # Stores a copy of *program* in memory, completely replacing what was
+  # there.
   def load(program)
     @mem = program.dup
   end
 
-  # Runs the program starting at address 0. Stops when halt is seen.
+  # Runs the program starting at address 0. Stops when a `halt` instruction
+  # is run.
   def run
     @state = CPUState::Running
     # Initialize output. Do not initialize input.
@@ -181,11 +183,20 @@ class IntcodeComputer
 
   # ================ Memory I/O ================
 
+  # Returns the value of memory location *loc*. Uninitialized memory
+  # locations return `0_i64`.
+  #
+  # If necessary, the size of memory is increased so that *loc* is within
+  # bounds.
   def get(loc)
     address_check(loc)
     @mem[loc]
   end
 
+  # Sets the value of memory location *loc* to *val*.
+  #
+  # If necessary, the size of memory is increased so that *loc* is within
+  # bounds.
   def set(loc, val : Int64)
     address_check(loc)
     @mem[loc] = val
@@ -198,17 +209,22 @@ class IntcodeComputer
     end
   end
 
-  # ================ Character I/O ================
+  # ================ I/O ================
 
   # ---------------- Input ----------------
 
+  # Sends *num* to this computer's input chanel.
+  #
+  # Input is buffered with a buffer size of 1024. If the buffer is full, the
+  # caller **will be blocked**. Input uses `Channel`s so that we can run
+  # multiple computers in `Fiber`s.
   def append_input(num : Int64)
     puts("#{name}#append_input #{num}") if @trace
     @input_channel.send(num)
     puts("#{name}#append_input back from sending") if @trace
   end
 
-  # Assumes input is only fed to us via append_input.
+  # Receives input from our input `Channel`.
   def get_input
     puts("#{name}#get_input") if @trace
     val = @input_channel.receive.tap do |val|
@@ -217,16 +233,14 @@ class IntcodeComputer
     val
   end
 
-  def flush_input
-    @input_channel = Channel(Int64).new(@@BUFSIZ)
-  end
-
   # ---------------- Output ----------------
 
+  # Directs all output to *stream*.
   def direct_output_to(stream)
     @output_io = stream
   end
 
+  # Appends a single *val* to the current output stream.
   def append_output(val)
     @last_output = val
     case @output_io
@@ -239,7 +253,8 @@ class IntcodeComputer
     end
   end
 
-  # Output is flushed at the start of every `#run`. (Input is not.)
+  # Empties the output queue. Output is flushed at the start of every
+  # `#run`. (Input is not.)
   def flush_output
     @output_queue = [] of Int64
   end
@@ -272,6 +287,7 @@ class IntcodeComputer
 
   # ================ CPU ================
 
+  # Reads the instruction at `@pc` and sets `@opcode` and `@param_modes`.
   def parse_opcode_at_pc
     param_mode_num, @opcode = get(@pc).divmod(100)
     @param_modes = param_mode_num.to_s.reverse.chars.map do |d|
@@ -279,14 +295,20 @@ class IntcodeComputer
     end
   end
 
+  # Returns the `ParamMode` of parameter *offset*.
   def mode_of_param(offset)
     (offset - 1) < @param_modes.size ? @param_modes[offset - 1] : ParamMode::Indirect
   end
 
+  # Returns a character denoting the `ParamMode` of parameter *offset*
+  # (starting at 1).
   def mode_char(offset)
     ['@', '#', 'r'][mode_of_param(offset).to_i]
   end
 
+  # Returns the value of parameter *offset*, taking into account the param
+  # mode for that parameter. Assumes the program counter is pointing to the
+  # beginning of the current instruction.
   def val_of_param(offset) : Int64
     param = get(@pc + offset)
     param_mode_digit = mode_of_param(offset)
@@ -302,6 +324,10 @@ class IntcodeComputer
     end
   end
 
+  # Returns the destination address of parameter *offset*, taking into
+  # account the param mode for that parameter. `ParamMode::Immediate` is
+  # illegal. Assumes the program counter is pointing to the beginning of the
+  # current instruction.
   def addr_at_param(offset) : Int64
     param = get(@pc + offset)
     param_mode_digit = mode_of_param(offset)
