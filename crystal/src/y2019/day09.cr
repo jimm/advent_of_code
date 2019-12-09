@@ -3,19 +3,15 @@ require "../day"
 module Year2019
   class Day09 < Day
     def part1
-      lines = data_lines()
       if @testing
         ok = true
+        lines = data_lines()
         lines.in_groups_of(2, "").each do |line_pair|
           ok &&= run_test1(line_pair)
         end
         puts("ok") if ok # errors already printed
       else
-        boost_program = lines[0].split(",").map(&.to_i64)
-        computer = IntcodeComputer.new
-        computer.load(boost_program)
-        computer.append_input(1)
-        computer.run
+        run_with_input(1_i64)
       end
     end
 
@@ -59,6 +55,16 @@ module Year2019
     end
 
     def part2
+      raise "no test for part 2" if @testing
+      run_with_input(2_i64)
+    end
+
+    def run_with_input(input)
+      boost_program = data_lines(part_number: 1)[0].split(",").map(&.to_i64)
+      computer = IntcodeComputer.new
+      computer.load(boost_program)
+      computer.append_input(input)
+      computer.run
     end
   end
 end
