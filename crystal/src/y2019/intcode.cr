@@ -1,6 +1,7 @@
 enum ParamMode
   Indirect
   Immediate
+  Relative
 end
 
 enum CPUState
@@ -36,10 +37,11 @@ end
 # ## Memory
 #
 # Reads from memory are assumed to be within bounds. There is no bounds
-# checking.
+# checking at read time.
 #
 # Writes to memory are assumed to be to memory locations >= 0. If the
 # location is out of bounds, memory is grown so that the write succeeds.
+# Attempts to access negative addresses raise an error.
 #
 # ## Example Code
 #
@@ -76,6 +78,7 @@ class IntcodeComputer
     @trace = false
     @last_output = 0
     @state = CPUState::Ready
+    @relative_base = 0
   end
 
   # ================ Program loading and execution ================
@@ -91,6 +94,7 @@ class IntcodeComputer
     # Initialize output. Do not initialize input.
     flush_output()
     @pc = 0
+    @relative_base = 0
 
     while true
       parse_opcode_at_pc
@@ -142,7 +146,7 @@ class IntcodeComputer
         else
           @pc += 3
         end
-      when 7
+      when 7 # lt
         do_trace("lt", 3) do
           dest = addr_at_param(3)
           p1 = val_of_param(1)
@@ -150,7 +154,7 @@ class IntcodeComputer
           set(dest, p1 < p2 ? 1 : 0)
         end
         @pc += 4
-      when 8
+      when 8 # eq
         do_trace("eq", 3) do
           dest = addr_at_param(3)
           p1 = val_of_param(1)
@@ -158,6 +162,11 @@ class IntcodeComputer
           set(dest, p1 == p2 ? 1 : 0)
         end
         @pc += 4
+      when 9 # adjust relative base
+        do_trace("rb_adj", 1) do
+          @relative_base += val_of_param(1)
+        end
+        @pc += 2
       when 99 # halt
         trace_instruction("halt", 0)
         @state = CPUState::Halted
@@ -172,12 +181,14 @@ class IntcodeComputer
   # ================ Memory I/O ================
 
   def get(loc)
+    raise "error: attempt to read from loc #{loc}" if loc < 0
     @mem[loc]
   end
 
   def set(loc, val : Int32)
+    raise "error: attempt to write to loc #{loc}" if loc < 0
     if loc >= @mem.size
-      @mem.concat(Array(Int32).new(loc - @mem.size + 1))
+      @mem.concat(Array(Int32).new(loc - @mem.size + 1, 0))
     end
     @mem[loc] = val
   end
@@ -259,7 +270,7 @@ class IntcodeComputer
   def parse_opcode_at_pc
     param_mode_num, @opcode = @mem[@pc].divmod(100)
     @param_modes = param_mode_num.to_s.reverse.chars.map do |d|
-      d.to_i == 0 ? ParamMode::Indirect : ParamMode::Immediate
+      ParamMode.new(d.to_i)
     end
   end
 
@@ -268,16 +279,21 @@ class IntcodeComputer
   end
 
   def mode_char(offset)
-    mode_of_param(offset) == ParamMode::Indirect ? '@' : '#'
+    ['@', '#', 'r'][mode_of_param(offset).to_i]
   end
 
   def val_of_param(offset)
-    param_mode =
-      param = @mem[@pc + offset]
-    if mode_of_param(offset) == ParamMode::Indirect
+    param = @mem[@pc + offset]
+    param_mode_digit = mode_of_param(offset)
+    case param_mode_digit
+    when ParamMode::Indirect
       @mem[param]
-    else
+    when ParamMode::Immediate
       param
+    when ParamMode::Relative
+      @mem[param + @relative_base]
+    else
+      raise "error: illegal param mode digit #{param_mode_digit}"
     end
   end
 
