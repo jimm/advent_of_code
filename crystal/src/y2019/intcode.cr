@@ -181,16 +181,20 @@ class IntcodeComputer
   # ================ Memory I/O ================
 
   def get(loc)
-    raise "error: attempt to read from loc #{loc}" if loc < 0
+    address_check(loc)
     @mem[loc]
   end
 
   def set(loc, val : Int32)
-    raise "error: attempt to write to loc #{loc}" if loc < 0
+    address_check(loc)
+    @mem[loc] = val
+  end
+
+  def address_check(loc)
+    raise "error: attempt to access loc #{loc}" if loc < 0
     if loc >= @mem.size
       @mem.concat(Array(Int32).new(loc - @mem.size + 1, 0))
     end
-    @mem[loc] = val
   end
 
   # ================ Character I/O ================
@@ -228,7 +232,7 @@ class IntcodeComputer
     when IntcodeComputer
       @output_io.as(IntcodeComputer).append_input(val)
     when IO
-      puts(val)
+      @output_io.as(IO).puts(val)
     when Channel(Int32)
       @output_io.as(Channel(Int32)).send(val)
     end
@@ -287,11 +291,11 @@ class IntcodeComputer
     param_mode_digit = mode_of_param(offset)
     case param_mode_digit
     when ParamMode::Indirect
-      @mem[param]
+      get(param)
     when ParamMode::Immediate
       param
     when ParamMode::Relative
-      @mem[param + @relative_base]
+      get(param + @relative_base)
     else
       raise "error: illegal param mode digit #{param_mode_digit}"
     end
