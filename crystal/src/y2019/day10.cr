@@ -55,63 +55,75 @@ module Year2019
 
     def part2
       if @testing
-        ok = true
-        laser_at = {11, 13}
         expected, map = parse_test2_input()
-
-        all_angles, distances = calc_angles_and_distances(map.asteroids)
-        angles_to_others = all_angles[laser_at] # Hash(Float64, Asteroid)
-        sorted_angles = angles_to_others.keys.sort
         max_index = expected.map { |e| e[0] }.max
+        vaporized = vaporize_sweep(map, max_index + 1)
 
-        index = 0
-        first_angle_found = false
-        sorted_angles.cycle do |angle|
-          if !first_angle_found
-            next if angle < 0
-            first_angle_found = true
+        ok = true
+        expected.each do |index, asteroid|
+          found = vaporized[index]
+          if found != asteroid
+            puts("error: asteroid vaporized at index #{index} expected #{asteroid} saw #{found}")
+            ok = false
           end
-          if index > max_index
-            break
-          end
-
-          if angles_to_others[angle].empty?
-            index += 1
-            next
-          end
-
-          # find nearest and, if thre is one, vaporize it
-          a = angles_to_others[angle].min_by { |a| distances[{laser_at, a}] }
-          next if a.nil?
-
-          angles_to_others[angle].delete(a)
-          # compare with expected
-          if expected.has_key?(index)
-            expected_vaporized = expected[index]
-            if expected_vaporized.as(Asteroid) != a
-              puts("error: at index #{index} expected #{expected_vaporized} but saw #{a}")
-              ok = false
-            end
-          end
-
-          index += 1
         end
         if ok
           puts("ok")
         end
       else
         map = Map.new(data_lines(part_number: 1))
+        vaporized = vaporize_sweep(map, 200)
+        asteroid_bet = vaporized[199]
+        puts(asteroid_bet[0] * 100 + asteroid_bet[1])
+      end
+    end
+
+    # Vaporizes up to *max_vaporization_count* asteroids in *map* and
+    # returns them in the order vaporized.
+    def vaporize_sweep(map, max_vaporization_count)
+      laser_at = part1_find_max_seen(map)[0]
+      all_angles, distances = calc_angles_and_distances(map.asteroids)
+      angles_to_others = all_angles[laser_at] # Hash(Float64, Asteroid)
+      sorted_angles = angles_to_others.keys.sort
+
+      index = 0
+      vaporized = [] of Asteroid
+      first_angle_found = false
+      sorted_angles.cycle do |angle|
+        if !first_angle_found
+          next if angle != 270.0 # we happen to know that there are ones here
+          first_angle_found = true
+        end
+
+        next if angles_to_others[angle].empty?
+
+        # find nearest and, if thre is one, vaporize it
+        a = angles_to_others[angle].min_by { |a| distances[{laser_at, a}] }
+        unless a.nil?
+          vaporized << a
+          if vaporized.size == max_vaporization_count
+            return vaporized
+          end
+          angles_to_others[angle].delete(a)
+        end
+        index += 1
       end
     end
 
     def angle_between(p1, p2)
       x_len = (p2[0] - p1[0]).to_f
       y_len = (p2[1] - p1[1]).to_f
-      Math.atan2(y_len, x_len)
+      arctan_to_degrees(Math.atan2(y_len, x_len))
+    end
+
+    def arctan_to_degrees(x)
+      (x > 0.0 ? x : (2.0*Math::PI + x)) * 360.0 / (2.0*Math::PI)
     end
 
     def square_of_distance_between(p1, p2)
-      (p2[0] - p1[0]).abs.to_f * (p2[1] - p1[1]).abs.to_f
+      x_len = (p2[0] - p1[0]).abs.to_f
+      y_len = (p2[1] - p1[1]).abs.to_f
+      x_len * x_len + y_len * y_len
     end
 
     def calc_angles_and_distances(asteroids) : Tuple(Hash(Asteroid, Hash(Angle, Array(Asteroid))), Hash(Tuple(Asteroid, Asteroid), Float64))
