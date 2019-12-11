@@ -38,6 +38,17 @@ module Year2019
     def locs_painted
       @painted_locs.keys
     end
+
+    def print
+      min_x, max_x = @painted_locs.keys.map(&.first).minmax
+      min_y, max_y = @painted_locs.keys.map(&.last).minmax
+      (min_y - 1...max_y + 1).each do |y|
+        (min_x - 1...max_x + 1).each do |x|
+          print(color_at({x, y}) == Color::White ? "*" : " ")
+        end
+        puts()
+      end
+    end
   end
 
   class PaintingRobot
@@ -114,6 +125,15 @@ module Year2019
       robot = PaintingRobot.new(program, hull)
       robot.run
       puts(hull.locs_painted.size)
+    end
+
+    def part2
+      hull = Hull.new
+      hull.paint({0, 0}, Color::White)
+      program = data_lines(part_number: 1)[0].split(",").map(&.to_i64)
+      robot = PaintingRobot.new(program, hull)
+      robot.run
+      hull.print
     end
   end
 end
