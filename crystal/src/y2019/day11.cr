@@ -16,20 +16,19 @@ module Year2019
   end
 
   class Hull
-    @painted_locs : Hash(Loc, Array(Color))
+    @painted_locs : Hash(Loc, Color)
 
     def initialize
-      pl_init = ->(h : Hash(Loc, Array(Color)), k : Loc) { h[k] = [] of Color }
-      @painted_locs = Hash(Loc, Array(Color)).new(pl_init)
+      @painted_locs = {} of Loc => Color
     end
 
     def paint(loc, color)
-      @painted_locs[loc] << color
+      @painted_locs[loc] = color
     end
 
     def color_at(loc)
       if @painted_locs.keys.includes?(loc)
-        @painted_locs[loc].last
+        @painted_locs[loc]
       else
         Color::Black
       end
@@ -42,8 +41,8 @@ module Year2019
     def print
       min_x, max_x = @painted_locs.keys.map(&.first).minmax
       min_y, max_y = @painted_locs.keys.map(&.last).minmax
-      (min_y - 1...max_y + 1).each do |y|
-        (min_x - 1...max_x + 1).each do |x|
+      (min_y..max_y).each do |y|
+        (min_x..max_x).each do |x|
           print(color_at({x, y}) == Color::White ? "*" : " ")
         end
         puts()
@@ -52,6 +51,8 @@ module Year2019
   end
 
   class PaintingRobot
+    HALT = -1_i64
+
     def initialize(program : Array(Int64), @hull : Hull)
       @loc = {0, 0}
       @dir = Direction::Up
@@ -65,8 +66,7 @@ module Year2019
       @computer.direct_output_to(output_stream)
       spawn do
         @computer.run
-        output_stream.send(-1) # signal end of program to robot
-        output_stream.send(-1)
+        output_stream.send(HALT) # signal end of program to robot
       end
 
       @running = true
@@ -78,14 +78,14 @@ module Year2019
     def cycle(output_stream)
       input_current_color()
       color_int = output_stream.receive
-      turn_int = output_stream.receive
-      if color_int == -1
+      if color_int == HALT
         @running = false
-      else
-        paint(color_int)
-        turn(turn_int)
-        move_forward()
+        return
       end
+      turn_int = output_stream.receive
+      paint(color_int)
+      turn(turn_int)
+      move_forward()
     end
 
     def input_current_color
