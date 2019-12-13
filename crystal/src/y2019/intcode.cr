@@ -2,6 +2,7 @@ enum ParamMode
   Indirect # also called "position mode"
   Immediate
   Relative
+  Unknown # when dumping data
 end
 
 enum CPUState
@@ -181,6 +182,59 @@ class IntcodeComputer
     end
   end
 
+  # This is by no means perfect. It doesn't handle unknown instructions
+  # (locations used as memory) well at all.
+  def dump_memory
+    old_pc = @pc
+    @pc = 0
+    old_trace = @trace
+    @trace = true
+    while @pc < @mem.size
+      if @mem[@pc] >= 0
+        parse_opcode_at_pc
+      else
+        @opcode = 98 # constant
+      end
+      case @opcode
+      when 1 # add
+        trace_instruction("add", 3, 3)
+        @pc += 4
+      when 2 # mult
+        trace_instruction("mult", 3, 3)
+        @pc += 4
+      when 3 # input
+        trace_instruction("in", 1, 1)
+        @pc += 2
+      when 4 # output
+        trace_instruction("out", 1, 1)
+        @pc += 2
+      when 5 # jump if non-zero
+        trace_instruction("jnz", 2)
+        @pc += 3
+      when 6 # jump if zero
+        trace_instruction("jz", 2)
+        @pc += 3
+      when 7 # lt
+        trace_instruction("lt", 3)
+        @pc += 4
+      when 8 # eq
+        trace_instruction("eq", 3)
+        @pc += 4
+      when 9 # adjust relative base
+        trace_instruction("rbadj", 1)
+        @pc += 2
+      when 99 # halt
+        trace_instruction("halt", 0)
+        @pc += 1
+      else
+        puts("#{"%08d" % @pc}: #{@mem[@pc]}")
+        @pc += 1
+      end
+    end
+    @trace = old_trace
+    @pc = old_pc
+  end
+
   # ================ Memory I/O ================
 
   # Returns the value of memory location *loc*. Uninitialized memory
@@ -270,7 +324,11 @@ class IntcodeComputer
     param_strs = (0...num_params).map do |i|
       offset = i + 1
       mode_char = i == must_be_addr ? '@' : mode_char(offset)
-      "#{mode_char}#{get(@pc + offset)}"
+      if @pc + offset >= @mem.size
+        "???"
+      else
+        "#{mode_char}#{get(@pc + offset)}"
+      end
     end
     puts("#{"%08d" % @pc}: #{name}\t#{param_strs.join(", ")}")
   end
@@ -291,7 +349,9 @@ class IntcodeComputer
   def parse_opcode_at_pc
     param_mode_num, @opcode = get(@pc).divmod(100)
     @param_modes = param_mode_num.to_s.reverse.chars.map do |d|
-      ParamMode.new(d.to_i)
+      n = d.to_i
+      n = 3 if n > 3
+      ParamMode.new(n)
     end
   end
 
@@ -303,7 +363,7 @@ class IntcodeComputer
   # Returns a character denoting the `ParamMode` of parameter *offset*
   # (starting at 1).
   def mode_char(offset)
-    ['@', '#', 'r'][mode_of_param(offset).to_i]
+    ['@', '#', 'r', '?'][mode_of_param(offset).to_i]
   end
 
   # Returns the value of parameter *offset*, taking into account the param
