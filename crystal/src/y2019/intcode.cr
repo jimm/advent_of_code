@@ -184,11 +184,12 @@ class IntcodeComputer
 
   # This is by no means perfect. It doesn't handle unknown instructions
   # (locations used as memory) well at all.
-  def dump_memory
+  def dump_memory(assume_first_zero_is_data_region = false)
     old_pc = @pc
     @pc = 0
     old_trace = @trace
     @trace = true
+
     while @pc < @mem.size
       if @mem[@pc] >= 0
         parse_opcode_at_pc
@@ -227,8 +228,15 @@ class IntcodeComputer
         trace_instruction("halt", 0)
         @pc += 1
       else
-        puts("#{"%08d" % @pc}: #{@mem[@pc]}")
-        @pc += 1
+        if @opcode == 0 && assume_first_zero_is_data_region
+          while @pc < @mem.size
+            puts("#{"%08d" % @pc}: #{@mem[@pc]}")
+            @pc += 1
+          end
+        else
+          puts("#{"%08d" % @pc}: #{@mem[@pc]}")
+          @pc += 1
+        end
       end
     end
     @trace = old_trace
