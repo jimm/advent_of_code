@@ -17,6 +17,14 @@ struct Point2
     Point2.new(@x + other[0], @y + other[1])
   end
 
+  def -(other : Point2)
+    Point2.new(@x - other.x, @y - other.y)
+  end
+
+  def -(other : {Int32, Int32})
+    Point2.new(@x - other[0], @y - other[1])
+  end
+
   def to_tuple
     {@x, @y}
   end
@@ -37,7 +45,15 @@ struct Point3
   end
 
   def +(other : {Int32, Int32, Int32})
-    Point2.new(@x + other[0], @y + other[1], @z + other[2])
+    Point3.new(@x + other[0], @y + other[1], @z + other[2])
+  end
+
+  def -(other : Point3)
+    Point3.new(@x - other.x, @y - other.y, @z - other.z)
+  end
+
+  def -(other : {Int32, Int32, Int32})
+    Point3.new(@x - other[0], @y - other[1], @z - other[2])
   end
 
   def to_tuple
