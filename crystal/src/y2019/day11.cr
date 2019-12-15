@@ -1,8 +1,7 @@
 require "../day"
+require "../types"
 
 module Year2019
-  alias Loc = {Int32, Int32}
-
   enum Color
     Black
     White
@@ -16,14 +15,14 @@ module Year2019
   end
 
   class Hull
-    @painted_locs : Hash(Loc, Color)
+    @painted_locs : Hash({Int32, Int32}, Color)
 
     def initialize
-      @painted_locs = {} of Loc => Color
+      @painted_locs = {} of {Int32, Int32} => Color
     end
 
     def paint(loc, color)
-      @painted_locs[loc] = color
+      @painted_locs[loc.to_tuple] = color
     end
 
     def color_at(loc)
@@ -54,7 +53,7 @@ module Year2019
     HALT = -1_i64
 
     def initialize(program : Array(Int64), @hull : Hull)
-      @loc = {0, 0}
+      @loc = Point2.new(0, 0)
       @dir = Direction::Up
       @computer = IntcodeComputer.new
       @computer.load(program)
@@ -89,7 +88,7 @@ module Year2019
     end
 
     def input_current_color
-      @computer.append_input(@hull.color_at(@loc).to_i64)
+      @computer.append_input(@hull.color_at(@loc.to_tuple).to_i64)
     end
 
     def paint(color_int)
@@ -107,19 +106,20 @@ module Year2019
     def move_forward
       case @dir
       when Direction::Up
-        @loc = {@loc[0], @loc[1] - 1}
+        @loc += {0, -1}
       when Direction::Left
-        @loc = {@loc[0] - 1, @loc[1]}
+        @loc += {-1, 0}
       when Direction::Down
-        @loc = {@loc[0], @loc[1] + 1}
+        @loc += {0, 1}
       when Direction::Right
-        @loc = {@loc[0] + 1, @loc[1]}
+        @loc += {1, 0}
       end
     end
   end
 
   class Day11 < Day
     def part1
+      raise "no part1 test" if @testing
       hull = Hull.new
       program = data_lines()[0].split(",").map(&.to_i64)
       robot = PaintingRobot.new(program, hull)
@@ -128,8 +128,9 @@ module Year2019
     end
 
     def part2
+      raise "no part2 test" if @testing
       hull = Hull.new
-      hull.paint({0, 0}, Color::White)
+      hull.paint(Point2.new(0, 0), Color::White)
       program = data_lines(part_number: 1)[0].split(",").map(&.to_i64)
       robot = PaintingRobot.new(program, hull)
       robot.run
