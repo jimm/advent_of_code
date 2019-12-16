@@ -1,3 +1,10 @@
+macro no_tests
+  if @testing
+    puts("no tests defined for part #{@part_number}")
+    return
+  end
+end
+
 class Day
   @year : Int32
   @day : Int32

@@ -119,7 +119,7 @@ module Year2019
 
   class Day11 < Day
     def part1
-      raise "no part1 test" if @testing
+      no_tests
       hull = Hull.new
       program = data_lines()[0].split(",").map(&.to_i64)
       robot = PaintingRobot.new(program, hull)
@@ -128,7 +128,7 @@ module Year2019
     end
 
     def part2
-      raise "no part2 test" if @testing
+      no_tests
       hull = Hull.new
       hull.paint(Point2.new(0, 0), Color::White)
       program = data_lines(part_number: 1)[0].split(",").map(&.to_i64)

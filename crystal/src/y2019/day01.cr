@@ -3,10 +3,12 @@ require "../day"
 module Year2019
   class Day01 < Day
     def part1
+      no_tests
       puts(masses().sum { |mass| fuel_for_mass(mass) })
     end
 
     def part2
+      no_tests
       puts(masses().sum { |mass| recursive_fuel_for_mass(mass) })
     end
 

@@ -21,7 +21,7 @@ module Year2019
     end
 
     def part1
-      raise "no test for part 1" if @testing
+      no_tests
       spawn do
         @computer.run
         # signal end of program run
@@ -40,8 +40,7 @@ module Year2019
     end
 
     def part2
-      raise "no test for part 1" if @testing
-      @computer.dump_memory
+      no_tests
       @computer.set(0_i64, 2_i64) # insert two quarters
       spawn do
         @computer.run

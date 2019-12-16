@@ -55,7 +55,7 @@ module Year2019
     end
 
     def part2
-      raise "no test for part 2" if @testing
+      no_tests
       run_with_input(2_i64)
     end
 

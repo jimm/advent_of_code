@@ -6,9 +6,7 @@ module Year2019
     @@num_rows = 6
 
     def part1
-      if @testing
-        raise "no tests for part 1"
-      end
+      no_tests
       layers = extract_layers(data_lines())
 
       flat_layers = layers.map(&.flatten)
@@ -22,9 +20,7 @@ module Year2019
     # Also, we invert colors: white pixels are printed. The puzzle author
     # must have assumed everybody uses dark mode.
     def part2
-      if @testing
-        raise "no tests for part 2"
-      end
+      no_tests
       layers = extract_layers(data_lines(part_number: 1))
 
       final_image_rows : Array(String) = [] of String
