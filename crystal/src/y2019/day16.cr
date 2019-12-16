@@ -40,24 +40,21 @@ module Year2019
 
     def fft(input)
       len = input.size
-      patterns = build_patterns(input.size).map { |p| p.cycle(len + 1).to_a[1..] }
       output = input
       100.times do |i|
         new_output = (0...len).map do |j|
-          output.zip(patterns[j]).map do |x, y|
-            y == 0 ? 0 : (y == 1 ? x : -x)
-          end.sum.abs % 10
+          groups = output[j..].in_groups_of(j + 1, 0) # 1's, 0's, -1's, 0's
+          total = 0
+          groups.in_groups_of(4, [0]).each do |group|
+            ones, _zeroes_1, neg_ones, _zeroes_2 = group
+            total += ones.sum
+            total -= neg_ones.sum
+          end
+          total.abs % 10
         end
         output = new_output
       end
       output
-    end
-
-    def build_patterns(len)
-      base_pattern = [[0], [1], [0], [-1]]
-      (1..len + 1).map do |i|
-        base_pattern.flat_map { |val_arr| val_arr * i }
-      end
     end
 
     def test1(expected, input)
