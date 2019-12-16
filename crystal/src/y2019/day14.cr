@@ -70,7 +70,8 @@ module Year2019
           expected = expected_tuple[1][0][2..].to_i
           formulas = parse_rules(rules_tuple[1])
           puts(formulas) # DEBUG
-          # ok &&= run_test1(formulas, expected)
+          # result = run_test1(formulas, expected)
+          # ok &&= result
         end
       ok
     end

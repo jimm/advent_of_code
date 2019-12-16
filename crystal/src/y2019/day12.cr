@@ -55,6 +55,15 @@ module Year2019
     def to_s
       "pos=<x=#{@loc[0]}, y=#{@loc[1]}, z=#{@loc[2]}>, vel=<x=#{@velocity[0]}, y=#{@velocity[1]}, z=#{@velocity[2]}>"
     end
+
+    def hash
+      @loc[0].to_i64 +
+        (@loc[1].to_i64 << 10) +
+        (@loc[2].to_i64 << 20) +
+        (@velocity[0].to_i64 << 30) +
+        (@velocity[1].to_i64 << 40) +
+        (@velocity[2].to_i64 << 50)
+    end
   end
 
   class Day12 < Day
@@ -62,7 +71,8 @@ module Year2019
       if @testing
         ok = true
         data_lines().in_groups_of(5, "").each do |line_group|
-          ok &&= run_test1(line_group[0], line_group[1..])
+          result = run_test1(line_group[0], line_group[1..])
+          ok &&= result
         end
         puts("ok") if ok # errors already printed if not ok
       else
@@ -76,6 +86,19 @@ module Year2019
     end
 
     def part2
+      if @testing
+        lines = data_lines()
+        if run_test2(lines[0], lines[1..])
+          puts("ok")
+        end
+      else
+        moons = make_moons(data_lines())
+        1000.times do |_step|
+          moons.each(&.apply_gravity)
+          moons.each(&.apply_velocity)
+        end
+        puts(moons.map(&.energy).sum)
+      end
     end
 
     def make_moons(position_lines)
@@ -87,6 +110,10 @@ module Year2019
       moons = locs.map { |loc| Moon.new(loc) }
       moons.each { |moon| moon.others = moons - [moon] }
       moons
+    end
+
+    def universe_state(moons)
+      moons.map(&.hash).hash
     end
 
     def run_test1(expected_line, positions)
@@ -104,6 +131,34 @@ module Year2019
       else
         puts("error: energy #{e} != expected energy #{expected_energy}")
         false
+      end
+    end
+
+    def run_test2(expected_line, positions)
+      expected_steps = expected_line[2..].to_u64
+      moons = make_moons(positions)
+      step = 0_u64
+      initial_state = universe_state(moons)
+
+      while true
+        step += 1
+        if step % 1_000_000 == 0
+          puts(step)
+        end
+        if step > expected_steps + 2
+          puts("error: expected #{expected_steps} but we've gone beyond that")
+          return false
+        end
+        moons.each(&.apply_gravity)
+        moons.each(&.apply_velocity)
+        state = universe_state(moons)
+        if state == initial_state
+          if step == expected_steps
+            return true
+          end
+          puts("error: found repeat at step #{step} but expected #{expected_steps}")
+          return false
+        end
       end
     end
   end

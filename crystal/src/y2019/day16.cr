@@ -42,15 +42,20 @@ module Year2019
       len = input.size
       output = input
       100.times do |i|
-        new_output = (0...len).map do |j|
-          groups = output[j..].in_groups_of(j + 1, 0) # 1's, 0's, -1's, 0's
+        puts(".") # DEBUG
+        new_output = Array(Int32).new(len)
+        (0...len).each do |j|
           total = 0
-          groups.in_groups_of(4, [0]).each do |group|
-            ones, _zeroes_1, neg_ones, _zeroes_2 = group
-            total += ones.sum
-            total -= neg_ones.sum
+          groups = output[j..].in_groups_of(j + 1, 0) # 1's, 0's, -1's, 0's
+          groups.each_with_index do |group, i|
+            case i & 3
+            when 0
+              total += group.sum
+            when 2
+              total -= group.sum
+            end
           end
-          total.abs % 10
+          new_output << total.abs % 10
         end
         output = new_output
       end
