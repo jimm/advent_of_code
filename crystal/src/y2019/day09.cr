@@ -7,7 +7,8 @@ module Year2019
         ok = true
         lines = data_lines()
         lines.in_groups_of(2, "").each do |line_pair|
-          ok &&= run_test1(line_pair)
+          result = run_test1(line_pair)
+          ok &&= result
         end
         puts("ok") if ok # errors already printed
       else

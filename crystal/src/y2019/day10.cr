@@ -43,7 +43,8 @@ module Year2019
         ok = true
         tests = parse_test1_input()
         tests.each do |tg|
-          ok &&= run_test1(tg)
+          result = run_test1(tg)
+          ok &&= result
         end
         puts("ok") if ok # errors already printed
       else
@@ -67,9 +68,7 @@ module Year2019
             ok = false
           end
         end
-        if ok
-          puts("ok")
-        end
+        puts("ok") if ok
       else
         map = Map.new(data_lines(part_number: 1))
         vaporized = vaporize_sweep(map, 200)

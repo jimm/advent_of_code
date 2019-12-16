@@ -7,7 +7,8 @@ module Year2019
       if @testing
         ok = true
         lines.in_groups_of(2, "").each do |line_pair|
-          ok &&= run_test(line_pair, run_proc)
+          result = run_test(line_pair, run_proc)
+          ok &&= result
         end
         puts("ok") if ok # errors already printed
       else
