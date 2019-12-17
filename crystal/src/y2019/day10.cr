@@ -4,40 +4,40 @@ module Year2019
   alias Asteroid = Tuple(Int32, Int32)
   alias Angle = Float64
 
-  class Map
-    getter rows : Int32
-    getter cols : Int32
-    getter asteroids : Array(Asteroid)
-    getter map_strings : Array(String)
+  class Day10 < Day
+    class AsteroidMap
+      getter rows : Int32
+      getter cols : Int32
+      getter asteroids : Array(Asteroid)
+      getter map_strings : Array(String)
 
-    def initialize(@map_strings)
-      @rows = map_strings.size
-      @cols = map_strings[0].size
-      @asteroids = [] of Asteroid
-      @map_strings.each_with_index do |row_str, y|
-        row_str.each_char_with_index do |char, x|
-          if char != '.'
-            @asteroids << {x, y}
+      def initialize(@map_strings)
+        @rows = map_strings.size
+        @cols = map_strings[0].size
+        @asteroids = [] of Asteroid
+        @map_strings.each_with_index do |row_str, y|
+          row_str.each_char_with_index do |char, x|
+            if char != '.'
+              @asteroids << {x, y}
+            end
           end
         end
       end
+
+      def asteroid_char_at(a : Asteroid)
+        @map_strings[a[1]].char_at(a[0])
+      end
     end
 
-    def asteroid_char_at(a : Asteroid)
-      @map_strings[a[1]].char_at(a[0])
+    class Test
+      getter best : Asteroid
+      getter other_count : Int32
+      getter map : AsteroidMap
+
+      def initialize(@best, @other_count, @map)
+      end
     end
-  end
 
-  class Test
-    getter best : Asteroid
-    getter other_count : Int32
-    getter map : Map
-
-    def initialize(@best, @other_count, @map)
-    end
-  end
-
-  class Day10 < Day
     def part1
       if @testing
         ok = true
@@ -48,7 +48,7 @@ module Year2019
         end
         puts("ok") if ok # errors already printed
       else
-        map = Map.new(data_lines())
+        map = AsteroidMap.new(data_lines())
         winner = part1_find_max_seen(map)
         puts(winner[1])
       end
@@ -70,7 +70,7 @@ module Year2019
         end
         puts("ok") if ok
       else
-        map = Map.new(data_lines(part_number: 1))
+        map = AsteroidMap.new(data_lines(part_number: 1))
         vaporized = vaporize_sweep(map, 200)
         asteroid_bet = vaporized[199]
         puts(asteroid_bet[0] * 100 + asteroid_bet[1])
@@ -191,13 +191,13 @@ module Year2019
           Test.new(
             {best[0], best[1]},
             other_count,
-            Map.new(meta_and_map[1].as(Array(String)))
+            AsteroidMap.new(meta_and_map[1].as(Array(String)))
           )
         end
     end
 
     # Reads the test2 input file and returns a `Hash(Int32, Asteroid)`
-    # and a `Map`, together as a `Tuple`.
+    # and an `AsteroidMap`, together as a `Tuple`.
     def parse_test2_input
       expected_regex = /The (\d+).*is at (\d+),(\d+)/
       expected_chunk, map_chunk = data_lines().chunks { |line| line.starts_with?(";") }
@@ -205,7 +205,7 @@ module Year2019
         expected_regex.match(line)
         h[$1.to_i - 1] = {$2.to_i, $3.to_i} # "1" => index 0
       end
-      map = Map.new(map_chunk[1])
+      map = AsteroidMap.new(map_chunk[1])
       {expected, map}
     end
   end
