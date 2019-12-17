@@ -24,11 +24,11 @@ end
 # blocked**. Input uses `Channel`s so that we can run multiple computers in
 # `Fiber`s.
 #
-# By default, output is sent to `STDOUT`. Output can be sent to any `IO`,
-# another `IntcodeComputer`, to a `Channel(Int64)`, or to `Nil` (no output).
-# In all cases, the most recently output `Int64` is saved into
-# `last_output`. Call '#direct_output_to` to change a computer's output
-# destination.
+# By default, output is sent to `STDOUT`. Call '#direct_output_to` to change
+# a computer's output destination. Output can be sent to any `IO`, another
+# `IntcodeComputer`, a `Channel(Int64)`, an `Array(Int64)`, or `Nil` (no
+# output). In all cases, the most recently output `Int64` is saved into
+# `last_output`.
 #
 # ## CPU State
 #
@@ -68,7 +68,7 @@ class IntcodeComputer
   getter name : String
   getter state : CPUState
   getter last_output : Int64
-  @output_io : IO | IntcodeComputer | Channel(Int64) | Nil
+  @output_io : IO | IntcodeComputer | Channel(Int64) | Array(Int64) | Nil
 
   def initialize(@name = "Computer")
     @mem = [] of Int64
@@ -312,6 +312,8 @@ class IntcodeComputer
       @output_io.as(IO).puts(val)
     when Channel(Int64)
       @output_io.as(Channel(Int64)).send(val)
+    when Array(Int64)
+      @output_io.as(Array(Int64)) << val
     end
   end
 
