@@ -130,6 +130,7 @@ class IntcodeComputer
         do_trace("out", 1, 1) do
           val = val_of_param(1)
           append_output(val)
+          val
         end
         @pc += 2
       when 5 # jump if non-zero
@@ -329,7 +330,7 @@ class IntcodeComputer
     @trace = val
   end
 
-  def trace_instruction(name, num_params, must_be_addr = -1)
+  def trace_instruction(name, num_params, must_be_addr = -1, newline = true)
     return unless @trace
     param_strs = (0...num_params).map do |i|
       offset = i + 1
@@ -340,7 +341,8 @@ class IntcodeComputer
         "#{mode_char}#{get(@pc + offset)}"
       end
     end
-    puts("#{"%08d" % @pc}: #{name}\t#{param_strs.join(", ")}")
+    print("#{"%08d" % @pc}: #{name}\t#{param_strs.join(", ")}")
+    puts() if newline
   end
 
   def trace_result(val)
@@ -348,7 +350,7 @@ class IntcodeComputer
   end
 
   def do_trace(name, num_params, must_be_addr = -1)
-    trace_instruction(name, num_params, must_be_addr)
+    trace_instruction(name, num_params, must_be_addr, newline = false)
     val = yield
     trace_result(val)
   end
