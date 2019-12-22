@@ -62,13 +62,11 @@ module Year2019
 
     def run_test1
       ok = true
-      data_lines()
-        .chunks { |line| line[0] == '#' }
-        .in_groups_of(2, {false, [""]})
-        .each do |grp|
-          expected_tuple, rules_tuple = grp
-          expected = expected_tuple[1][0][2..].to_i
-          formulas = parse_rules(rules_tuple[1])
+      data_chunks(data_lines())
+        .each do |data_chunk|
+          expected_line, rules_lines = data_chunk
+          expected = expected_line.to_i
+          formulas = parse_rules(rules_lines)
           puts(formulas) # DEBUG
           # result = run_test1(formulas, expected)
           # ok &&= result

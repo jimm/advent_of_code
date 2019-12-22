@@ -5,9 +5,8 @@ module Year2019
     def part1
       if @testing
         ok = true
-        lines = data_lines()
-        lines.in_groups_of(2, "").each do |line_pair|
-          result = run_test1(line_pair)
+        data_chunks(data_lines()).each do |data_chunk|
+          result = run_test1(data_chunk[0], data_chunk[1][0])
           ok &&= result
         end
         puts("ok") if ok # errors already printed
@@ -16,13 +15,8 @@ module Year2019
       end
     end
 
-    def run_test1(line_pair)
-      control_line, program_line = line_pair
-      if control_line[0] != '#'
-        raise "error: malformed test file: expected '#' line saw #{control_line}"
-      end
-
-      /^#\s+(\w+)\s+(.*)/.match(control_line)
+    def run_test1(control_line, program_line)
+      /^(\w+)\s+(.*)/.match(control_line)
       expected_type, expected_val = $1, $2
       program = program_line.split(",").map(&.to_i64)
 

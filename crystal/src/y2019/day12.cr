@@ -139,6 +139,7 @@ module Year2019
       moons = make_moons(positions)
       step = 0_u64
       initial_state = universe_state(moons)
+      initial_x = moons[0].loc[0]
 
       while true
         step += 1
@@ -151,13 +152,16 @@ module Year2019
         end
         moons.each(&.apply_gravity)
         moons.each(&.apply_velocity)
-        state = universe_state(moons)
-        if state == initial_state
-          if step == expected_steps
-            return true
+        state_x = moons[0].loc[0]
+        if state_x == initial_x # optimization: check less frequently
+          state = universe_state(moons)
+          if state == initial_state
+            if step == expected_steps
+              return true
+            end
+            puts("error: found repeat at step #{step} but expected #{expected_steps}")
+            return false
           end
-          puts("error: found repeat at step #{step} but expected #{expected_steps}")
-          return false
         end
       end
     end

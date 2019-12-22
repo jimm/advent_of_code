@@ -41,9 +41,8 @@ module Year2019
 
     def part2
       no_tests
-      @computer.set(0_i64, 2_i64) # insert two quarters
-      # Flood input with "do not move the paddle" commands
-      1024.times { |_| @computer.append_input(0_i64) }
+      @computer.set(0, 2) # insert two quarters
+      @computer.trace(true)
       spawn do
         @computer.run
         # FIXME
@@ -60,22 +59,18 @@ module Year2019
         if x == -1 && y == 0
           print_tiles(tiles)
           puts("score: #{val}")
-          # NOTE: we don't need to move the paddle
-          # print("(l,r,.,q)> ")
-          # str = gets.as(String).strip
-          # case str
-          # when "l"
-          #   @computer.append_input(-1_i64)
-          #   Fiber.yield
-          # when "r"
-          #   @computer.append_input(1_i64)
-          #   Fiber.yield
-          # when "."
-          #   @computer.append_input(0_i64)
-          #   Fiber.yield
-          # when "q"
-          #   break
-          # end
+          print("(l,r,.,q)> ")
+          ch = gets.as(String)[0]
+          case ch
+          when 'l'
+            @computer.append_input(-1)
+          when 'r'
+            @computer.append_input(1)
+          when '.'
+            @computer.append_input(0)
+          when 'q'
+            break
+          end
         else
           break if val == -1
           tiles[loc] = ArcadeTile.new(val)

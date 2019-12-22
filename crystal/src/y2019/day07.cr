@@ -6,8 +6,8 @@ module Year2019
       lines = data_lines(part_number: @testing ? @part_number : 1)
       if @testing
         ok = true
-        lines.in_groups_of(2, "").each do |line_pair|
-          result = run_test(line_pair, run_proc)
+        data_chunks(lines).each do |data_chunk|
+          result = run_test(data_chunk[0], data_chunk[1][0], run_proc)
           ok &&= result
         end
         puts("ok") if ok # errors already printed
@@ -35,12 +35,7 @@ module Year2019
       _part([5_i64, 6_i64, 7_i64, 8_i64, 9_i64], run_proc)
     end
 
-    def run_test(line_pair, run_proc)
-      control_line, program_line = line_pair
-      if control_line[0] != '#'
-        raise "error: malformed test file: expected '#' line saw #{control_line}"
-      end
-
+    def run_test(control_line, program_line, run_proc)
       control_regex = /signal (\d+).*sequence ([\d,]+)/
       control_regex.match(control_line)
       expected_signal, phases_str = $1.to_i, $2

@@ -38,4 +38,22 @@ class Day
     path = "../data/y#{@year}/day#{day_str}_#{part_number}#{testing_str}.txt"
     File.read_lines(path).tap(&.delete(""))
   end
+
+  # Many times test data files have multiple tests. The first line will
+  # start with '#' and the data/input for the test is the following lines up
+  # to the next '#' or EOF. This method returns an Array({String,
+  # Array(String)}) where the first string in the tuple is the '#' line,
+  # minus the '#' and any leading whitespace and the array of strings
+  # contains the data lines for that test.
+  def data_chunks(lines)
+    lines
+      .chunks { |line| line[0] == '#' }
+      .in_groups_of(2, {true, [""]})
+      .map { |tuple_pair|
+        first_line_tuple, remaining_lines_tuple = tuple_pair
+        first_line = first_line_tuple[1][0]
+        {first_line_tuple[1][0].lchop("# "), remaining_lines_tuple[1]}
+          .as({String, Array(String)})
+      }
+  end
 end
