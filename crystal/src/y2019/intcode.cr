@@ -68,7 +68,7 @@ class IntcodeComputer
   getter name : String
   getter state : CPUState
   getter last_output : Int64
-  @output_io : IO | IntcodeComputer | Channel(Int64) | Array(Int64) | Nil
+  getter output_io : IO | IntcodeComputer | Channel(Int64) | Array(Int64) | Nil
 
   def initialize(@name = "Computer")
     @mem = [] of Int64
