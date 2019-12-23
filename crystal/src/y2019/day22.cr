@@ -28,7 +28,7 @@ module Year2019
       # puts(deck[2020]) # 2021? 1-based?
     end
 
-    def run_rules(deck : Array(UInt64), rules)
+    def run_rules(deck, rules)
       size = deck.size
       rules.each do |rule|
         case rule
