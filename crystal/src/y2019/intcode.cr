@@ -16,8 +16,10 @@ end
 #
 # ## I/O
 #
-# All I/O is done with `Int64` values. Output is flushed at the start of
-# every `#run`. Input is not.
+# All I/O is done with `Int64` values, except when the output stream is of
+# type `Char` (yes, that's odd, but it's a way to signal the computer that
+# we want values translated to characters). Output is flushed at the start
+# of every `#run`. Input is not.
 #
 # To send input to a computer, call `append_input`. Input is buffered with a
 # buffer size of 1024. If the buffer is full, the caller **will be
@@ -68,7 +70,7 @@ class IntcodeComputer
   getter name : String
   getter state : CPUState
   getter last_output : Int64
-  getter output_io : IO | IntcodeComputer | Channel(Int64) | Array(Int64) | Nil
+  getter output_io : IO | IntcodeComputer | Channel(Int64) | Array(Int64) | Char | Nil
 
   def initialize(@name = "Computer")
     @mem = [] of Int64
@@ -311,6 +313,8 @@ class IntcodeComputer
       @output_io.as(IntcodeComputer).append_input(val)
     when IO
       @output_io.as(IO).puts(val)
+    when Char
+      print(val.chr)
     when Channel(Int64)
       @output_io.as(Channel(Int64)).send(val)
     when Array(Int64)

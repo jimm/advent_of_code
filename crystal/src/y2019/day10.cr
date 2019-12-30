@@ -23,10 +23,6 @@ module Year2019
           end
         end
       end
-
-      def asteroid_char_at(a : Asteroid)
-        @map_strings[a[1]].char_at(a[0])
-      end
     end
 
     class Test
