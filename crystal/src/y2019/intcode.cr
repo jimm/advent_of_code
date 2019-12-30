@@ -278,7 +278,7 @@ class IntcodeComputer
 
   # ---------------- Input ----------------
 
-  # Sends *num* to this computer's input chanel.
+  # Sends *num* to this computer's input channel.
   #
   # Input is buffered with a buffer size of 1024. If the buffer is full, the
   # caller **will be blocked**. Input uses `Channel`s so that we can run
@@ -287,6 +287,11 @@ class IntcodeComputer
     puts("#{name}#append_input #{num}") if @trace
     @input_channel.send(num)
     puts("#{name}#append_input back from sending") if @trace
+  end
+
+  # Sends each char in *str* to this computer's input channel.
+  def append_input(str : String)
+    str.each_char { |ch| append_input(ch.ord.to_i64) }
   end
 
   # Receives input from our input `Channel`.
