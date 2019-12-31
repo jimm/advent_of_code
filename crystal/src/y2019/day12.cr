@@ -6,7 +6,7 @@ module Year2019
   class Moon
     property others : Array(Moon)
     getter loc : Loc3
-    @velocity : Loc3
+    getter velocity : Loc3
 
     def initialize(@loc)
       @velocity = {0, 0, 0}
@@ -92,12 +92,7 @@ module Year2019
           puts("ok")
         end
       else
-        moons = make_moons(data_lines())
-        1000.times do |_step|
-          moons.each(&.apply_gravity)
-          moons.each(&.apply_velocity)
-        end
-        puts(moons.map(&.energy).sum)
+        puts(run_until_loop(data_lines(part_number: 1)))
       end
     end
 
@@ -110,10 +105,6 @@ module Year2019
       moons = locs.map { |loc| Moon.new(loc) }
       moons.each { |moon| moon.others = moons - [moon] }
       moons
-    end
-
-    def universe_state(moons)
-      moons.map(&.hash).hash
     end
 
     def run_test1(expected_line, positions)
@@ -134,36 +125,42 @@ module Year2019
       end
     end
 
-    def run_test2(expected_line, positions)
-      expected_steps = expected_line[2..].to_u64
+    # 214288319476776 too low
+    def run_until_loop(positions)
       moons = make_moons(positions)
       step = 0_u64
-      initial_state = universe_state(moons)
-      initial_x = moons[0].loc[0]
+      initial_xs = moons.map { |m| m.loc[0] }
+      initial_ys = moons.map { |m| m.loc[1] }
+      initial_zs = moons.map { |m| m.loc[2] }
+      steps_x = 0_u64
+      steps_y = 0_u64
+      steps_z = 0_u64
 
-      while true
+      while steps_x == 0_u64 || steps_y == 0_u64 || steps_z == 0_u64
         step += 1
-        if step % 1_000_000 == 0
-          puts(step)
-        end
-        if step > expected_steps + 2
-          puts("error: expected #{expected_steps} but we've gone beyond that")
-          return false
-        end
         moons.each(&.apply_gravity)
         moons.each(&.apply_velocity)
-        state_x = moons[0].loc[0]
-        if state_x == initial_x # optimization: check less frequently
-          state = universe_state(moons)
-          if state == initial_state
-            if step == expected_steps
-              return true
-            end
-            puts("error: found repeat at step #{step} but expected #{expected_steps}")
-            return false
-          end
+        if initial_xs == moons.map { |m| m.loc[0] } && moons.map { |m| m.velocity[0] }.all?(&.zero?)
+          steps_x = step
+        end
+        if initial_ys == moons.map { |m| m.loc[1] } && moons.map { |m| m.velocity[1] }.all?(&.zero?)
+          steps_y = step
+        end
+        if initial_zs == moons.map { |m| m.loc[2] } && moons.map { |m| m.velocity[2] }.all?(&.zero?)
+          steps_z = step
         end
       end
+      return steps_x.lcm(steps_y.lcm(steps_z))
+    end
+
+    def run_test2(expected_line, positions)
+      expected_steps = expected_line[2..].to_u64
+      step = run_until_loop(positions)
+      if step != expected_steps
+        puts("error: expected #{expected_steps} but saw #{step}")
+        return false
+      end
+      true
     end
   end
 end
