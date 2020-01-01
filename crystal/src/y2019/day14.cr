@@ -1,9 +1,9 @@
 require "../day"
 
 module Year2019
-  # The list of are modeled as a tree. Root node is the FUEL formula. The
-  # tree is built out of a Hash where keys are {amount, chemical} and values
-  # are arrays of the same.
+  # The list rules of are modeled as a tree. Root node is the FUEL formula.
+  # The tree is built out of a Hash where keys are {amount, chemical} and
+  # values are arrays of the same.
   #
   # Terminology: everything but FUEL and ORE is an "ingredient". An
   # "element" is an ingredient that can be produced directly from ORE. Any
@@ -13,14 +13,16 @@ module Year2019
       if @testing
         puts("ok") if run_test1()
       else
+        puts("not yet implemented")
       end
     end
 
     def part2
+      puts("not yet implemented")
     end
 
     def parse_rules(rules)
-      parsed = {} of String => {Int32, Array({Int32, String})}
+      parsed = {} of {Int32, String} => Array({Int32, String})
       rules.each do |rule|
         inputs_str, output_str = rule.split(" => ")
         inputs = inputs_str.split(", ").map do |input|
@@ -35,14 +37,25 @@ module Year2019
     end
 
     def calc_ore_needed(formulas)
+      puts("formulas #{formulas}") # DEBUG
       elements_needed = calc_ingredients_needed(formulas, formulas["FUEL"])
     end
 
     # Returns a list of {amount, element} need to create FUEL. *satisfy*
     # should start with the inputs to FUEL.
     def calc_elements_needed(formulas, satisfy)
-      needed = Hash(String, Int32).new(0)
-      calc_ingredients_needed(formulas, satisfy, needed)
+      puts("calc_elements_needed satisfy #{satisfy}") # DEBUG
+      if satisfy.all? { |rule| rule[1] == "ORE" }
+        return satisfy.sum_by { |sat| sat[0] }
+      end
+      new_satisfy = satisfy.flat_map do |sat|
+        if sat[1] == "ORE"
+          [sat]
+        else
+          # FIXME
+        end
+      end
+      calc_elements_needed(formulas, new_satisfy)
     end
 
     # Recursively finds elements and adds counts to *needed*.

@@ -42,7 +42,6 @@ module Year2019
     def part2
       no_tests
       @computer.set(0, 2) # insert two quarters
-      @computer.trace(true)
       spawn do
         @computer.run
         # FIXME
@@ -63,11 +62,14 @@ module Year2019
           ch = gets.as(String)[0]
           case ch
           when 'l'
-            @computer.append_input(-1)
+            @computer.append_input(-1_i64)
+            Fiber.yield
           when 'r'
-            @computer.append_input(1)
+            @computer.append_input(1_i64)
+            Fiber.yield
           when '.'
-            @computer.append_input(0)
+            @computer.append_input(0_i64)
+            Fiber.yield
           when 'q'
             break
           end
