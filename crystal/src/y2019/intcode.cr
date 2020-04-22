@@ -21,10 +21,8 @@ end
 # we want values translated to characters). Output is flushed at the start
 # of every `#run`. Input is not.
 #
-# To send input to a computer, call `append_input`. Input is buffered with a
-# buffer size of 1024. If the buffer is full, the caller **will be
-# blocked**. Input uses `Channel`s so that we can run multiple computers in
-# `Fiber`s.
+# To send input to a computer, call `append_input`. Input is an unbuffered
+# `Channel` so that we can run multiple computers in `Fiber`s.
 #
 # By default, output is sent to `STDOUT`. Call '#direct_output_to` to change
 # a computer's output destination. Output can be sent to any `IO`, another
@@ -65,8 +63,6 @@ end
 #
 # - The program will not step out of bounds
 class IntcodeComputer
-  @@BUFSIZ = 1024
-
   getter name : String
   getter state : CPUState
   getter last_output : Int64
@@ -77,7 +73,7 @@ class IntcodeComputer
     @pc = 0_i64
     @opcode = 0_i64
     @param_modes = [] of ParamMode
-    @input_channel = Channel(Int64).new(@@BUFSIZ)
+    @input_channel = Channel(Int64).new
     @output_io = STDOUT
     @trace = false
     @last_output = 0_i64

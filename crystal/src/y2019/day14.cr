@@ -23,16 +23,17 @@ module Year2019
 
     def parse_rules(rules)
       parsed = {} of {Int32, String} => Array({Int32, String})
-      rules.each do |rule|
-        inputs_str, output_str = rule.split(" => ")
-        inputs = inputs_str.split(", ").map do |input|
-          num_str, chemical = input.split(" ")
-          {num_str.to_i, chemical}
-        end
-        num_str, chemical = output_str.split(" ")
-        output = {num_str.to_i, chemical}
-        parsed[chemical] = {num_str.to_i, inputs}
-      end
+      # FIXME
+      # rules.each do |rule|
+      #   inputs_str, output_str = rule.split(" => ")
+      #   output = {num_str.to_i, chemical}
+      #   inputs = inputs_str.split(", ").map do |input|
+      #     num_str, chemical = input.split(" ")
+      #     {num_str.to_i, chemical}
+      #   end
+      #   num_str, chemical = output_str.split(" ")
+      #   parsed[output] << {num_str.to_i, inputs}
+      # end
       parsed
     end
 
