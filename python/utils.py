@@ -4,6 +4,19 @@ import os.path
 import sys
 
 
+def file_year(path):
+    """Returns year XXXX as int from file path .../yXXXX/dayYY.py"""
+    return int(os.path.basename(os.path.dirname(path))[1:])
+
+
+def file_day(path):
+    """Returns day YY as int from file path .../yXXXX/dayYY.py"""
+    date_str = os.path.basename(path)[3:5]
+    if date_str[0] == "0":
+        date_str = date_str[1:]
+    return int(date_str)
+
+
 def read_data_file(year=None, day=None, part_num=1, testing=False):
     now = datetime.datetime.today()
     if not day:
