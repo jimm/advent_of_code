@@ -1,0 +1,59 @@
+class Day
+  def initialize(year, day, part_number, testing)
+    @year = year
+    @day = day
+    @part_number = part_number
+    @testing = testing
+  end
+
+  def run
+    case @part_number
+    when 1
+      part1()
+    when 2
+      part2()
+    else
+      raise "unexpected part number #@part_number"
+    end
+  end
+
+  def part1
+    raise "subclasses must implement"
+  end
+
+  def part2
+    raise "subclasses must implement"
+  end
+
+  def read_data_file(part_number=@part_number)
+    fname = "day#{'%02d' % @day}"
+    fname += "_#{part_number}_test" if @testing
+    IO.readlines(File.join(__dir__, "../data/y#{@year}", "#{fname}.txt"))
+  end
+
+  # Returns non-empty lines from the data file for @year, @day, and
+  # part_number (default @part_number).
+  def data_lines(part_number=@part_number)
+    read_data_file(part_number).reject(&:empty?)
+  end
+
+  # Many times test data files have multiple tests. The first line will
+  # start with '#' and the data/input for the test is the following lines up
+  # to the next '#' or EOF. This method returns a list of two-element lists
+  # where the first element is the '#' line, minus the '#' and any leading
+  # whitespace, and the second element is the array of strings contains the
+  # data lines for that test.
+  def data_chunks(part_number=@part_number)
+    chunks = []
+    chunk_index = -1
+    data_lines(part_number).each do |line|
+      if line[0] == '#'
+        chunk_index += 1
+        chunks[chunk_index] = [line[1..-1].strip, []]
+      elsif chunk_index >= 0
+        chunks[chunk_index][1] << line
+      end
+    end
+    chunks
+  end
+end

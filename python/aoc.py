@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# usage: aoc [--year year] [--day day] [--test] 1|2
+# usage: aoc.py [--year year] [--day day] [--test] 1|2
 #
 # 't' for test
 
