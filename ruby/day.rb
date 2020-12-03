@@ -28,7 +28,8 @@ class Day
   def read_data_file(part_number=@part_number)
     fname = "day#{'%02d' % @day}"
     fname += "_#{part_number}_test" if @testing
-    IO.readlines(File.join(__dir__, "../data/y#{@year}", "#{fname}.txt"))
+    path = File.join(__dir__, "../data/y#{@year}", "#{fname}.txt")
+    IO.readlines(path).map(&:chomp!)
   end
 
   # Returns non-empty lines from the data file for @year, @day, and
