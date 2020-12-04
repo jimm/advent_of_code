@@ -34,16 +34,23 @@ class Day
 
   # Returns non-empty lines from the data file for @year, @day, and
   # part_number (default @part_number).
-  def data_lines(part_number=@part_number)
-    read_data_file(part_number).reject(&:empty?)
+  #
+  # Normally, empty lines are skipped but if `skip_empty_lines` is false
+  # then they're returned as well.
+  def data_lines(part_number=@part_number, skip_empty_lines=true)
+    lines = read_data_file(part_number)
+    lines.reject!(&:empty?) if skip_empty_lines
+    lines
   end
 
-  # Many times test data files have multiple tests. The first line will
-  # start with '#' and the data/input for the test is the following lines up
-  # to the next '#' or EOF. This method returns a list of two-element lists
-  # where the first element is the '#' line, minus the '#' and any leading
-  # whitespace, and the second element is the array of strings contains the
-  # data lines for that test.
+  # Many times test data files have multiple tests. (These are usually files
+  # that I've created based on multiple test cases provided by the problem
+  # description and/or my needs.) The first line will start with '#' and the
+  # data/input for the test is the following lines up to the next '#' or
+  # EOF. This method returns a list of two-element lists where the first
+  # element is the '#' line, minus the '#' and any leading whitespace, and
+  # the second element is the array of strings contains the data lines for
+  # that test.
   def data_chunks(part_number=@part_number)
     chunks = []
     chunk_index = -1
