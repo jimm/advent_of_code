@@ -25,6 +25,11 @@ class Day
     raise "subclasses must implement"
   end
 
+  def no_tests
+    puts("no tests available")
+    exit(0)
+  end
+
   def read_data_file(part_number=@part_number)
     fname = "day#{'%02d' % @day}"
     fname += "_#{part_number}_test" if @testing
