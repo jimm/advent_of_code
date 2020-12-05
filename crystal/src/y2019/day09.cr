@@ -5,7 +5,7 @@ module Year2019
     def part1
       if @testing
         ok = true
-        data_chunks(data_lines()).each do |data_chunk|
+        test_chunks(data_lines()).each do |data_chunk|
           result = run_test1(data_chunk[0], data_chunk[1][0])
           ok &&= result
         end

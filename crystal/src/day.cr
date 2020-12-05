@@ -45,7 +45,7 @@ class Day
   # Array(String)}) where the first string in the tuple is the '#' line,
   # minus the '#' and any leading whitespace and the array of strings
   # contains the data lines for that test.
-  def data_chunks(lines)
+  def test_chunks(lines)
     lines
       .chunks { |line| line[0] == '#' }
       .in_groups_of(2, {true, [""]})

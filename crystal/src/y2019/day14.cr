@@ -76,7 +76,7 @@ module Year2019
 
     def run_test1
       ok = true
-      data_chunks(data_lines())
+      test_chunks(data_lines())
         .each do |data_chunk|
           expected_line, rules_lines = data_chunk
           expected = expected_line.to_i

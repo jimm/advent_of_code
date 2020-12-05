@@ -2,25 +2,29 @@
 
 class Day05 < Day
   def part1
-    nums = data_lines(1).map { |entry| seat_num_from_code(entry) }
     if @testing
-      errors = []
-      answers = [357, 567, 119, 820]
-      nums.zip(answers).each do |num, answer|
-        if num == answer
-          print('.')
-        else
-          print('F')
-          errors << "expected #{answer} got #{num}"
-        end
-      end
-      if errors.empty?
-        puts("\nok")
-      else
-        puts("errors: #{errors}")
-      end
+      part1_tests
     else
-      print(nums.max)
+      nums = data_lines(1).map { |entry| seat_num_from_code(entry) }
+      puts(nums.max)
+    end
+  end
+
+  def part1_tests
+    errors = []
+    test_chunks(1).each do |expected, lines|
+      num = seat_num_from_code(lines[0])
+      if num == expected.to_i
+        print('.')
+      else
+        print('F')
+        errors << "expected #{expected} got #{num}"
+      end
+    end
+    if errors.empty?
+      puts("\nok")
+    else
+      puts("errors: #{errors}")
     end
   end
 
@@ -41,7 +45,9 @@ class Day05 < Day
   end
 
   def seat_num_from_code(code)
-    binary_text = code.gsub('F', '0').gsub('B', '1').gsub('R', '1').gsub('L', '0')
-    binary_text.to_i(2)
+    code
+      .gsub(/[BR]/, '1')
+      .gsub(/[FL]/, '0')
+      .to_i(2)
   end
 end

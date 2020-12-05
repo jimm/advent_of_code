@@ -6,7 +6,7 @@ module Year2019
       lines = data_lines(part_number: @testing ? @part_number : 1)
       if @testing
         ok = true
-        data_chunks(lines).each do |data_chunk|
+        test_chunks(lines).each do |data_chunk|
           result = run_test(data_chunk[0], data_chunk[1][0], run_proc)
           ok &&= result
         end

@@ -11,22 +11,18 @@ class Day03 < Day
 
   def part2
     map = Map.new(data_lines(1))
-    n = num_trees_on_slope(map, 1, 1) *
-        num_trees_on_slope(map, 3, 1) *
-        num_trees_on_slope(map, 5, 1) *
-        num_trees_on_slope(map, 7, 1) *
-        num_trees_on_slope(map, 1, 2)
+    n = [[1, 1], [3, 1], [5, 1], [7, 1], [1, 2]]
+          .map { |right, down| num_trees_on_slope(map, right, down) }
+          .reduce(:*)
     puts(n)
   end
 
   def num_trees_on_slope(map, right, down)
     num_trees = 0
-    row_idx = 0
-    col_idx = 0
-    while row_idx < map.height
-      num_trees += 1 if map.at(row_idx, col_idx % map.width, wrap: true) == '#'
-      row_idx += down
-      col_idx += right
+    map.row = map.col = 0
+    while map.row < map.height
+      num_trees += 1 if map.here == '#'
+      map.move_by(down, right, :col)
     end
     num_trees
   end

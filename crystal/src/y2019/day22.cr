@@ -5,7 +5,7 @@ module Year2019
     def part1
       if @testing
         ok = true
-        data_chunks(data_lines()).each do |data_chunk|
+        test_chunks(data_lines()).each do |data_chunk|
           retval = run_test1(data_chunk[0].split(" ").map(&.to_i), data_chunk[1])
           ok &&= retval
         end

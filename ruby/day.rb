@@ -7,29 +7,37 @@ class Day
   end
 
   def run
-    case @part_number
-    when 1
-      part1()
-    when 2
-      part2()
-    else
-      raise "unexpected part number #@part_number"
-    end
+    fname = "part#{@part_number}"
+    fname += "_tests" if @testing
+    send(fname.to_sym)
   end
 
   def part1
     raise "subclasses must implement"
   end
 
+  def part1_tests
+    part1
+  end
+
   def part2
     raise "subclasses must implement"
   end
 
-  def no_tests
-    puts("no tests available")
-    exit(0)
+  def part2_tests
+    part2
   end
 
+  def no_tests
+    if @testing
+      puts("no tests available")
+      exit(0)
+    end
+  end
+
+  # Returns the contents of a data file as an array of lines with line
+  # endings stripped. File is found using year, day, part number and
+  # the testing flag.
   def read_data_file(part_number=@part_number)
     fname = "day#{'%02d' % @day}"
     fname += "_#{part_number}_test" if @testing
@@ -56,7 +64,7 @@ class Day
   # element is the '#' line, minus the '#' and any leading whitespace, and
   # the second element is the array of strings contains the data lines for
   # that test.
-  def data_chunks(part_number=@part_number)
+  def test_chunks(part_number=@part_number)
     chunks = []
     chunk_index = -1
     data_lines(part_number).each do |line|
