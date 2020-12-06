@@ -1,6 +1,6 @@
 ;;; Spinlock
 
-(defparameter input 328)
+(defparameter input 343)
 (defparameter test-input 3)
 (defparameter last-insert 2017)
 

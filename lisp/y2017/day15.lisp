@@ -6,9 +6,9 @@
 (defparameter gen-b nil)
 
 (defun generator-init-a (f)
-  (setf gen-a (make-generator :factor 16807 :state 679 :filter f)))
+  (setf gen-a (make-generator :factor 16807 :state 512 :filter f)))
 (defun generator-init-b (f)
-  (setf gen-b (make-generator :factor 48271 :state 771 :filter f)))
+  (setf gen-b (make-generator :factor 48271 :state 191 :filter f)))
 
 (defun generator-next-value (g)
   (loop

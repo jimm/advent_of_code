@@ -1,6 +1,6 @@
 ;;; Spiral Memory
 
-(defparameter start-location 368078)
+(defparameter start-location 265149)
 (defvar state-coord-offset)
 
 (defun sqrt-of-bottom-corner-containing (n)

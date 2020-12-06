@@ -1,2 +1,2 @@
-Generator A starts with 679
-Generator B starts with 771
+Generator A starts with 512
+Generator B starts with 191

@@ -3,7 +3,7 @@
 (load "../utils.lisp")
 (load "day10.lisp")
 
-(defparameter input "ugkiagan")
+(defparameter input "wenycdww")
 (defparameter test-input "flqrgnkx")
 (defparameter hex-to-bits
   (let ((h (make-hash-table)))
