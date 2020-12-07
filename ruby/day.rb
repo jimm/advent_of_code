@@ -6,6 +6,8 @@ class Day
     @testing = testing
   end
 
+  # ================ running solutions ================
+
   def run
     fname = "part#{@part_number}"
     fname += "_tests" if @testing
@@ -34,6 +36,8 @@ class Day
       exit(0)
     end
   end
+
+  # ================ reading data files ================
 
   # Returns the contents of a data file as an array of lines with line
   # endings stripped. File is found using year, day, part number and

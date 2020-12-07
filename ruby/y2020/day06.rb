@@ -1,43 +1,31 @@
 # Custom Customs
 
 require 'set'
+require_relative '../utils'
 
 class Day06 < Day
   def part1
-    entries = data_lines(1, skip_empty_lines=false)
-    groups = group_entries(entries)
-    puts(groups.map { |group| num_yesses_or(group) }.reduce(:+))
+    answer = sum_grouped_data { |group|
+      Set.new(group.join('').chars)
+    }
+    puts(answer)
   end
 
   def part2
-    entries = data_lines(1, skip_empty_lines=false)
-    groups = group_entries(entries)
-    puts(groups.map { |group| num_yesses_and(group) }.reduce(:+))
+    answer = sum_grouped_data { |group|
+      group
+        .map { |answers| Set.new(answers.chars) }
+        .reduce(:intersection)
+    }
+    puts(answer)
   end
 
-  def num_yesses_or(group)
-    unique_chars = Set.new(group.join('').chars)
-    unique_chars.length
-  end
-
-  def num_yesses_and(group)
-    sets = group.map { |answers| Set.new(answers.chars) }
-    common_chars = sets.reduce(:intersection)
-    common_chars.length
-  end
-
-  def group_entries(entries)
-    groups = []
-    group = []
-    groups << group
-    entries.each do |entry|
-      if entry.empty?
-        group = []
-        groups << group
-      else
-        group << entry
-      end
-    end
-    groups
+  # Split input into groups, run the given block on each group (which should
+  # return an integer), and add up the answers.
+  def sum_grouped_data(&answers)
+    data_lines(1, skip_empty_lines=false)
+      .split(:empty?)
+      .map { |group| answers.call(group).length }
+      .reduce(:+)
   end
 end
