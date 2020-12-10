@@ -21,7 +21,7 @@ if __FILE__ == $PROGRAM_NAME
     exit(1)
   end
   part_number = ARGV[0].to_i
-  day_str = '%02x' % day
+  day_str = '%02d' % day
 
   require_relative "y#{year}/day#{day_str}.rb"
   Object.const_get("Day#{day_str}").new(year, day, part_number, testing).run
