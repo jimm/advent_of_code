@@ -4,21 +4,25 @@
 # [0, 0] is at the top left of the map. @row increases down, @col increases
 # to the right.
 class Map
-  attr_reader :cell, :height, :width
+  attr_reader :cells, :height, :width, :wrap_type
   attr_accessor :row, :col
 
-  # Given lines of text, initializes a two-dimensional map of characters.
+  # Given `lines` of text, initializes a two-dimensional map of characters.
   # Assumes all lines are the same length.
-  def initialize(lines)
-    @cell = lines.map { |line| line.split('') }
-    @height = @cell.length
-    @width = @cell[0].length
+  #
+  # `wrap_type` may be nil, :both, :row, or :col.
+  def initialize(lines, wrap_type=nil)
+    @cells = lines.map { |line| line.split('') }
+    @wrap_type = wrap_type
+    @height = @cells.length
+    @width = @cells[0].length
     @row = @col = 0
   end
 
   # Returns the character at [row][col].
   def at(row=@row, col=@col)
-    @cell[row][col]
+    row, col = wrap(row, col)
+    @cells[row][col]
   end
 
   # A convenience method that returns `at(@row, @col)`
@@ -26,31 +30,35 @@ class Map
     at(@row, @col)
   end
 
-  # Move to row and col. wrap_type may be nil, :both, :row, or :col.
-  def move_to(row, col, wrap_type=nil)
-    @row = row
-    @col = col
-    wrap(wrap_type)
+  # Move to row and col. 
+  def move_to(row, col)
+    @row, @col = wrap(row, col)
   end
 
   # Move by deltas. wrap_type may be nil, :both, :row, or :col.
-  def move_by(row_delta, col_delta, wrap_type=nil)
-    @row += row_delta
-    @col += col_delta
-    wrap(wrap_type)
+  def move_by(row_delta, col_delta)
+    @row, @col = wrap(row + row_delta, col + col_delta)
+  end
+
+  def in_bounds?(row=@row, col=@col)
+    row >= 0 && row < @height && col >= 0 && col < @width
   end
 
   # wrap_type may be nil, :both, :row, or :col.
-  def wrap(wrap_type)
-    return if wrap_type.nil?
+  def wrap(row, col)
     case wrap_type
     when :both
-      @row = @row % @height
-      @col = @col % @width
+      row = row % @height
+      col = col % @width
     when :row
-      @row = @row % @height
+      row = row % @height
     when :col
-      @col = @col % @width
+      col = col % @width
     end
+    [row, col]
+  end
+
+  def to_s
+    @cells.map(&:join).join("\n")
   end
 end
