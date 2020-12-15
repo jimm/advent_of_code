@@ -1,17 +1,16 @@
 #!/bin/bash
 #
-# Advent of Code launcher.
-
-HERE="$(cd $(dirname "$0") && pwd)"
+# Advent of code launcher.
 
 usage() {
     cat <<EOS
 usage: $(basename $0) [-m] [-y year] [-d day] [-l lang] [-L] [-t] [-h] part_num
 
-  -m       Run \`makeup\` first
+  -m       Run \`makeup\` first (a personal cross-language build script)
   -a dir   Advent of Code root directory. Default is this script's directory
   -y year  Default is current year
-  -d day   Default is current day of the month
+  -d day   Default is current day of the month or, if negative,
+           offset from current day (for example, -1 == yesterday)
   -l lang  Required only if more than one lang for a year
   -L       List languages available for the year and exit
   -t       Testing
@@ -43,9 +42,10 @@ find_lang_for_year() {
     echo ${langs[0]}
 }
 
-dir="$HERE"
+dir="$(cd $(dirname "$0") && pwd)"
 year=$(date "+%Y")
-day=$(date "+%d" | sed -e 's/^0//')
+today=$(date "+%d" | sed -e 's/^0//')
+day=$today
 makeup=0
 list_langs=no
 lang=""
@@ -57,7 +57,12 @@ while getopts "may:d:l:Ltnh" opt ; do
         m) makeup=1 ;;
         a) dir="$OPTARG" ;;
         y) year="$OPTARG" ;;
-        d) day="$OPTARG" ;;
+        d)
+            day="$OPTARG"
+            if [ $day -le 0 ] ; then
+                day=$(( today + day ))
+            fi
+            ;;
         l) lang="$OPTARG" ;;
         L) list_langs=yes ;;
         t) testing=1 ;;
