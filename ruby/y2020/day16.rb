@@ -9,7 +9,7 @@ class Rule
     @range2 = (min2..max2)
   end
 
-  def val_in_range?(val)
+  def valid?(val)
     @range1.include?(val) || @range2.include?(val)
   end
 end
@@ -21,14 +21,17 @@ class Ticket
     @nums = nums
   end
 
+  # Returns true if every rule is valid for at least one value in this
+  # ticket.
   def valid?(rules)
     invalid_values(rules).empty?
   end
 
+  # Returns all rules that are not valid for this ticket.
   def invalid_values(rules)
     if @invalid_values.nil?
       @invalid_values = @nums.select do |num|
-        rules.none? { |rule| rule.val_in_range?(num) }
+        rules.none? { |rule| rule.valid?(num) }
       end
     end
     @invalid_values
@@ -50,10 +53,10 @@ class Day16 < Day
     other_tickets.select! { |t| t.valid?(rules) }
 
     possible_indexes = possible_rule_indexes(rules, other_tickets)
-    indexes = reduce_rule_indexes(possible_indexes)
+    ticket_field_indexes = reduce_rule_indexes(possible_indexes)
 
     answer = 1
-    indexes.each_with_index do |rule_index, ticket_field_index|
+    ticket_field_indexes.each_with_index do |ticket_field_index, rule_index|
       rule = rules[rule_index]
       if @testing
         puts("#{rule.name}: #{my_ticket.nums[ticket_field_index]}")
@@ -70,15 +73,14 @@ class Day16 < Day
   # rule is valid for all tickets. Return an array of arrays.
   def possible_rule_indexes(rules, tickets)
     num_fields = rules.length
-    rule_indexes = []
-    rules.each_with_index do |rule, index|
+    rule_indexes = rules.map do |rule|
       indexes = []
       (0...num_fields).each do |field_index|
-        if tickets.all? { |t| rule.val_in_range?(t.nums[field_index]) }
+        if tickets.all? { |t| rule.valid?(t.nums[field_index]) }
           indexes << field_index
         end
       end
-      rule_indexes << indexes
+      indexes
     end
     rule_indexes
   end
