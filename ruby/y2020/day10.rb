@@ -65,21 +65,10 @@ class Day10 < Day
 
   def run_tests(func_sym)
     errors = []
-    test_chunks(1).each do |chunk_comment, lines|
+    run_chunk_tests(1) do |chunk_comment, lines|
       expected = expected_for_part(chunk_comment)
       answer = send(func_sym, lines)
-      if expected == answer
-        print('.')
-      else
-        print('F')
-        errors << "expected #{expected} != answer #{answer}"
-      end
-    end
-    puts()
-    if errors.empty?
-      puts("ok")
-    else
-      puts(errors)
+      [expected == answer, answer]
     end
   end
 

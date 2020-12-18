@@ -27,22 +27,10 @@ class Day13 < Day
   end
 
   def part2_tests
-    errors = []
-    test_chunks().each do |chunk|
-      expected, buses = chunk[0].to_i, parse_buses(chunk[1][0])
+    run_chunk_tests do |expected, lines|
+      buses = parse_buses(lines[0])
       answer = do_part2(buses)
-      if expected != answer
-        errors << [expected, answer]
-        print('F')
-      else
-        print('.')
-      end
-    end
-    puts()
-    if errors.empty?
-      puts('ok')
-    else
-      errors.each { |e| puts("expected #{e[0]}, got #{e[1]}") }
+      [expected.to_i == answer, answer]
     end
   end
 

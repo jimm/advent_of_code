@@ -26,22 +26,9 @@ class Day18 < Day
   end
 
   def do_tests(next_op_index_func)
-    errors = []
-    test_chunks.each do |expected, lines|
-      expected = expected.to_i
+    run_chunk_tests do |expected, lines|
       answer = new_math_eval(parse(lines[0]), next_op_index_func)
-      if answer != expected
-        print('F')
-        errors << "expected #{expected} got #{answer}"
-      else
-        print('.')
-      end
-    end
-    puts()
-    if errors.empty?
-      puts('ok')
-    else
-      errors.each { |err| puts(err) }
+      [answer == expected.to_i, answer]
     end
   end
 

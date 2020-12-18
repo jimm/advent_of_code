@@ -30,6 +30,25 @@ class Day
     part2
   end
 
+  def run_chunk_tests(part_number=@part_number)
+    errors = []
+    test_chunks(part_number).each do |expected, lines|
+      ok, answer = yield(expected, lines)
+      if ok
+        print('.')
+      else
+        print('F')
+        errors << [expected, answer]
+      end
+    end
+    puts()
+    if errors.empty?
+      puts('ok')
+    else
+      errors.each { |err| puts("expected #{err[0]}, got #{err[1]}") }
+    end
+  end
+
   def no_tests
     if @testing
       puts("no tests available")

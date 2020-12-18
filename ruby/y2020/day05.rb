@@ -11,20 +11,10 @@ class Day05 < Day
   end
 
   def part1_tests
-    errors = []
+    run_chunk_tests do |expected, lines|
     test_chunks(1).each do |expected, lines|
       num = seat_num_from_code(lines[0])
-      if num == expected.to_i
-        print('.')
-      else
-        print('F')
-        errors << "expected #{expected} got #{num}"
-      end
-    end
-    if errors.empty?
-      puts("\nok")
-    else
-      puts("errors: #{errors}")
+      [num == expected.to_i, num]
     end
   end
 
