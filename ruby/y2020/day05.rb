@@ -12,7 +12,6 @@ class Day05 < Day
 
   def part1_tests
     run_chunk_tests do |expected, lines|
-    test_chunks(1).each do |expected, lines|
       num = seat_num_from_code(lines[0])
       [num == expected.to_i, num]
     end

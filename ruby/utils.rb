@@ -1,3 +1,19 @@
+class Object
+  # Prints self.to_s to stdout and returns self, so that this method can be
+  # chained.
+  def debug
+    puts(self.to_s)
+    self
+  end
+
+  # Prints self.inspect to stdout and returns self, so that this method can
+  # be chained.
+  def debug_inspect
+    puts(self.inspect)
+    self
+  end
+end
+
 module Enumerable
   # Divides `self` into arrays based on a delimiter, returning an array of
   # arrays of elements. Must either specfiy `func_sym` or pass in a block to
