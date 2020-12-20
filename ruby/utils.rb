@@ -8,7 +8,7 @@ class Object
 
   # Prints self.inspect to stdout and returns self, so that this method can
   # be chained.
-  def debug_inspect
+  def debugi
     puts(self.inspect)
     self
   end

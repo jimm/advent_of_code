@@ -1,7 +1,5 @@
 # Monster Messages
 
-require_relative '../utils'
-
 class Day19 < Day
   def part1
     rules, inputs = parse(data_lines(1))
@@ -24,8 +22,8 @@ class Day19 < Day
   def part2
     rules, inputs = parse(data_lines(1))
 
-    regex_str_42 = reduced_to_regex_str(reduce(rules, rules[42])).debug
-    regex_str_31 = reduced_to_regex_str(reduce(rules, rules[31])).debug
+    regex_str_42 = reduced_to_regex_str(reduce(rules, rules[42]))
+    regex_str_31 = reduced_to_regex_str(reduce(rules, rules[31]))
     regex = /\A(?<r42>(#{regex_str_42})+)(?<r31>(#{regex_str_31})+)\z/
     count = inputs.select do |input|
       m = regex.match(input)
