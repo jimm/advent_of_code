@@ -30,7 +30,11 @@ class Tile
 
   # Returns true if this tile is attached to any other tile.
   def attached?
-    [top_tile, right_tile, bottom_tile, left_tile].any?
+    attached_count > 0
+  end
+
+  def attached_count
+    [top_tile, right_tile, bottom_tile, left_tile].compact.length
   end
 
   # Returns the number of border matches given our current orientation. OK
@@ -123,28 +127,32 @@ class Day20 < Day
     tiles = parse()
     attach_tiles(tiles)
 
-    top_left = tiles.first
-    $stderr.puts "starting at tile #{top_left.id}" # DEBUG
-    top_left = top_left.top_tile while top_left.top_tile
-    top_left = top_left.left_tile while top_left.left_tile
+    corners = tiles.select { |t| t.attached_count == 2 }
+    $stderr.puts "found #{corners.length} corners" # DEBUG
+    0
 
-    top_right = top_left
-    while top_right.right_tile
-      top_right = top_right.right_tile
-    end
+    # top_left = tiles.first
+    # $stderr.puts "starting at tile #{top_left.id}" # DEBUG
+    # top_left = top_left.top_tile while top_left.top_tile
+    # top_left = top_left.left_tile while top_left.left_tile
 
-    bottom_left = top_left
-    while bottom_left.bottom_tile
-      bottom_left = bottom_left.bottom_tile
-    end
+    # top_right = top_left
+    # while top_right.right_tile
+    #   top_right = top_right.right_tile
+    # end
 
-    bottom_right = bottom_left
-    while bottom_right.right_tile
-      bottom_right = bottom_right.right_tile
-    end
+    # bottom_left = top_left
+    # while bottom_left.bottom_tile
+    #   bottom_left = bottom_left.bottom_tile
+    # end
 
-    $stderr.puts [top_left, top_right, bottom_left, bottom_right].map(&:id) # DEBUG
-    [top_left, top_right, bottom_left, bottom_right].map(&:id).reduce(&:*)
+    # bottom_right = bottom_left
+    # while bottom_right.right_tile
+    #   bottom_right = bottom_right.right_tile
+    # end
+
+    # $stderr.puts [top_left, top_right, bottom_left, bottom_right].map(&:id) # DEBUG
+    # [top_left, top_right, bottom_left, bottom_right].map(&:id).reduce(&:*)
   end
 
   def part2
@@ -152,39 +160,53 @@ class Day20 < Day
   end
 
   def attach_tiles(tiles)
-    # FIXME after this pass some tiles next to each other might not be attached
-    #
-    # for example x -- y
-    #             |
-    #             z -- w
-    #
-    # but y and w are not attached
-    tiles.each do |unattached|
-      unattached.orientation_index = -1
-      while !unattached.attached? && unattached.orientation_index < Tile::NUM_ORIENTATIONS
-        unattached.orientation_index += 1
-        tiles.each do |tile|
-          next if unattached == tile
-          if unattached.top_tile.nil? && tile.bottom_tile.nil? && unattached.top == tile.bottom
-            unattached.top_tile = tile
-            tile.bottom_tile = unattached
-          elsif unattached.right_tile.nil? && tile.left_tile.nil? && unattached.right == tile.left
-            unattached.right_tile = tile
-            tile.left_tile = unattached
-          elsif unattached.bottom_tile.nil? && tile.top_tile.nil? && unattached.bottom == tile.top
-            unattached.bottom_tile = tile
-            tile.top_tile = unattached
-          elsif unattached.left_tile.nil? && tile.right_tile.nil? && unattached.left == tile.right
-            unattached.left_tile = tile
-            tile.right_tile = unattached
-          end
+    pairs = tiles.combination(2)
+    pairs.each { |t1, t2| maybe_attach(t1, t2) }
+
+    attached, unattached = tiles.partition(&:attached?)
+    $stderr.puts "#{attached.length} attached, #{unattached.length} unattached" # DEBUG
+    until unattached.empty?
+      unattached.each do |t1|
+        was_attached = false
+        (0..Tile::NUM_ORIENTATIONS-1).each do |orientation|
+          t1.orientation_index = orientation
+          break if attached.any? { |t2| maybe_attach(t1, t2) }
         end
       end
-      unless unattached.attached?
-        puts "error: tile #{unattached.id} doesn't attach with any rotation"
-        next
-      end
+      attached, unattached = tiles.partition(&:attached?)
     end
+
+    # should be no more unattached, now for final cleanup
+    unless tiles.reject(&:attached?).empty?
+      raise "error: should be no more unattached"
+    end
+    any_more_attached = true
+    while any_more_attached
+      any_more_attached = pairs.any? { |t1, t2| maybe_attach(t1, t2) }
+    end
+  end
+
+  def maybe_attach(t1, t2)
+    return false if t1 == t2    # shouldn't happen
+    attached = false
+    if t1.top_tile.nil? && t2.bottom_tile.nil? && t1.top == t2.bottom
+      t1.top_tile = t2
+      t2.bottom_tile = t1
+      attached = true
+    elsif t1.right_tile.nil? && t2.left_tile.nil? && t1.right == t2.left
+      t1.right_tile = t2
+      t2.left_tile = t1
+      attached = true
+    elsif t1.bottom_tile.nil? && t2.top_tile.nil? && t1.bottom == t2.top
+      t1.bottom_tile = t2
+      t2.top_tile = t1
+      attached = true
+    elsif t1.left_tile.nil? && t2.right_tile.nil? && t1.left == t2.right
+      t1.left_tile = t2
+      t2.right_tile = t1
+      attached = true
+    end
+    attached
   end
 
   def parse
