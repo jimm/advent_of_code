@@ -1,16 +1,35 @@
 # Crab Combat
 
+require 'set'
+
+
 class Player
   # The deck of cards is a simple array, with the top card at deck[0].
-  attr_accessor :deck
+  attr_reader :deck
 
-  def initialize(deck)
-    @deck = deck
+  def initialize
+    @deck = []
     @deck_stack = []
   end
 
+  def draw_card
+    @deck.shift
+  end
+
+  def append_cards(cards)
+    @deck += cards
+  end
+
+  def can_recurse?(n)
+    @deck.length >= n
+  end
+
+  def lost?
+    @deck.empty?
+  end
+
   def push_deck(n)
-    new_deck = @deck[0, n].dup
+    new_deck = @deck.take(n)
     @deck_stack.push(@deck)
     @deck = new_deck
   end
@@ -21,7 +40,7 @@ class Player
 
   def score
     total = 0
-    deck.reverse.each_with_index { |card, i| total += card * (i+1) }
+    @deck.reverse.each_with_index { |card, i| total += card * (i+1) }
     total
   end
 end
@@ -49,24 +68,28 @@ class Day22 < Day
   def do_part1
     player1, player2 = parse()
     while true
-      card1 = player1.deck.shift
-      card2 = player2.deck.shift
-      winner, loser = card1 > card2 ? [player1, player2] : [player2, player1]
-      winner.deck += [card1, card2].sort.reverse
-      return winner if loser.deck.empty?
+      card1 = player1.draw_card
+      card2 = player2.draw_card
+      winner = card1 > card2 ? player1 : player2
+      cards = winner == player1 ? [card1, card2] : [card2, card1]
+      winner.append_cards(cards)
+
+      other = winner == player1 ? player2 : player1
+      return winner if other.lost?
     end
   end
 
+  # 33886 is too low
   def part2
     player1, player2 = parse()
-    winner = do_part2(player1, player2)[0]
+    winner = do_part2(player1, player2)
     puts winner.score
   end
 
   def part2_tests
     expected = 291
     player1, player2 = parse()
-    winner = do_part2(player1, player2)[0]
+    winner = do_part2(player1, player2)
     answer = winner.score
     if answer == expected
       puts('.')
@@ -77,55 +100,56 @@ class Day22 < Day
     end
   end
 
-  def do_part2(player1, player2, game_num=1)
-    previous_rounds = {}
-    round_num = 1
+  def do_part2(player1, player2)
+    previous_rounds = Set.new
     while true
-      # if hand has been seen before, player 1 wins
+      # If these hands have been seen before, player 1 wins.
       round_start = player1.deck + player2.deck
-      return [player1, player2] if previous_rounds.include?(round_start)
+      return player1 if previous_rounds.include?(round_start)
+      previous_rounds << round_start
 
-      card1 = player1.deck.shift
-      card2 = player2.deck.shift
-
-      # Check for empty hands
-      return [player1, player2] if card2.nil?
-      return [player2, player1] if card1.nil?
-
-      if player1.deck.length >= card1 && player2.deck.length >= card2
-        # play a recursive game
+      card1 = player1.draw_card
+      card2 = player2.draw_card
+      if player1.can_recurse?(card1) && player2.can_recurse?(card2)
+        # Play a recursive game
         player1.push_deck(card1)
         player2.push_deck(card2)
-        winner, loser = do_part2(player1, player2, game_num+1)
+        # We can take a shortcut. If player1 has the highest card, they are
+        # guaranteed to win.
+        max_card = (player1.deck + player2.deck).max
+        winner = if player1.deck.include?(max_card)
+                   player1
+                 else
+                   do_part2(player1, player2)
+                 end
         player1.pop_deck
         player2.pop_deck
       else
-        # a normal hand
-        winner, loser = card1 > card2 ? [player1, player2] : [player2, player1]
+        # A normal hand
+        winner = card1 > card2 ? player1 : player2
       end
 
       # Winning card order is determined by who the winner was, not the
       # value of the cards.
       cards = winner == player1 ? [card1, card2] : [card2, card1]
-      winner.deck += cards
-      return [winner, loser] if loser.deck.empty?
-      round_num += 1
+      winner.append_cards(cards)
+
+      other = winner == player1 ? player2 : player1
+      return winner if other.lost?
     end
   end
 
   def parse
     players = []
-    deck = []
+    player = nil
     data_lines(1).each do |line|
       if line =~ /Player (\d+)/
-        unless deck.empty?
-          players << Player.new(deck)
-        end
-        deck = []
+        player = Player.new
+        players << player
       else
-        deck << line.to_i
+        player.deck << line.to_i
       end
     end
-    players << Player.new(deck)
+    players
   end
 end
