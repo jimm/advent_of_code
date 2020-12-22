@@ -79,7 +79,6 @@ class Day22 < Day
     end
   end
 
-  # 33886 is too low
   def part2
     player1, player2 = parse()
     winner = do_part2(player1, player2)
@@ -104,7 +103,7 @@ class Day22 < Day
     previous_rounds = Set.new
     while true
       # If these hands have been seen before, player 1 wins.
-      round_start = player1.deck + player2.deck
+      round_start = [player1.score, player2.score]
       return player1 if previous_rounds.include?(round_start)
       previous_rounds << round_start
 
