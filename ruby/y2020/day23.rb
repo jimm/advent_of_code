@@ -1,98 +1,111 @@
 # Crab Cups
 
+class Node
+  attr_accessor :val, :left, :right
+
+  def initialize(val)
+    @val = val
+  end
+end
+
+
 class CrabCups
-  def initialize(cups)
-    @cups = cups.split('').map(&:to_i)
-    @num_cups = @cups.length
-    @min_cup, @max_cup = @cups.minmax
+  def initialize(cups, max_cup=0)
+    cups = cups.split('').map(&:to_i)
+    @min_cup, @max_cup = cups.minmax
+    while @max_cup < max_cup
+      @max_cup += 1
+      cups << @max_cup
+    end
+
+    cups = cups.map { |i| Node.new(i) }
+    cups.each_with_index do |cup, i|
+      cup.left = cups[i-1]
+      cups[i-1].right = cup
+
+      idx = (i+1) % cups.length
+      cup.right = cups[idx]
+      cups[idx].left = cup
+    end
+
+    @current_cup = cups[0]
+    @nodes = {}
+    cups.each { |cup| @nodes[cup.val] = cup }
   end
 
-  # Instead of constantly moving the current cup index, we keep that at 0 so
-  # that shuffling things around is much, much easier.
   def move
-    three_cups = @cups[1, 3]
+    # extract three cups to the right of the current cup
+    three_cups_start = @current_cup.right
+    three_cups_end = three_cups_start.right.right
+    @current_cup.right = three_cups_end.right
+    @current_cup.right.left = @current_cup
 
-    dest_cup = @cups[0] - 1
-    while three_cups.include?(dest_cup)
-      dest_cup -= 1
+    # determine the destination cup number
+    three_cups_vals = [three_cups_start.val, three_cups_start.right.val, three_cups_start.right.right.val]
+    dest_cup_val = @current_cup.val - 1
+    while three_cups_vals.include?(dest_cup_val)
+      dest_cup_val -= 1
     end
-    dest_cup = @max_cup if dest_cup < @min_cup
-    while three_cups.include?(dest_cup)
-      dest_cup -= 1
+    dest_cup_val = @max_cup if dest_cup_val < @min_cup
+    while three_cups_vals.include?(dest_cup_val)
+      dest_cup_val -= 1
     end
-    dest_cup_index = @cups.index(dest_cup)
 
-    first = @cups.first
-    @cups = @cups[4..dest_cup_index] + three_cups + @cups[dest_cup_index+1..-1]
-    @cups << first
+    # insert the three cups after the destination cup
+    dest_cup = @nodes[dest_cup_val]
+    cup_after_dest = dest_cup.right
+    dest_cup.right = three_cups_start
+    three_cups_start.left = dest_cup
+    three_cups_end.right = cup_after_dest
+    cup_after_dest.left = three_cups_end
+
+    # update current cup
+    @current_cup = @current_cup.right
   end
 
   def part1_answer
-    if @cups[0] == 1
-      @cups[1..-1].join
-    elsif @cups[-1] == 1
-      @cups[0..-2].join
-    else
-      one_index = @cups.index(1)
-      (@cups[one_index+1..-1] + @cups[0..one_index-1]).join('')
+    cup_one = @nodes[1]
+    cup = cup_one.right
+    str = ''
+    while cup != cup_one
+      str << cup.val.to_s
+      cup = cup.right
     end
-  end
-end
-
-
-class BiggerCrabCups < CrabCups
-  def initialize(cups)
-    super
-    while @max_cup <= 1_000_000
-      @max_cup += 1
-      @cups << @max_cup
-    end
-    @cache = {}
-  end
-
-  def move
-    cached = @cache[@cups]
-    return cached if cached
-    curr_cups = @cups.dup
-    super
-    @cache[curr_cups] = @cups.dup
+    str
   end
 
   def part2_answer
-    one_index = @cups.index(1)
-    @cups[one_index + 1] * @cups[one_index + 2]
+    cup_one = @nodes[1]
+    cup_one.right.val * cup_one.right.right.val
   end
 end
 
+
 class Day23 < Day
+  TEST_INPUT = '389125467'
+  REAL_INPUT = '253149867'
+
   def part1
-    puts(do_part1('253149867'))
+    game = play(100)
+    puts(game.part1_answer)
   end
 
   def part1_tests
-    expected = '67384529'
-    answer = do_part1('389125467')
-    if answer == expected
-      puts('.')
-      puts('ok')
-    else
-      puts('F')
-      puts("error: expected #{expected}, got #{answer}")
-    end
-  end
-
-  def do_part1(start)
-    crab_cups = CrabCups.new(start)
-    100.times { |_| crab_cups.move }
-    crab_cups.part1_answer
+    do_tests('67384529', 100)
   end
 
   def part2
+    game = play(10_000_000, 1_000_000)
+    puts(game.part2_answer)
   end
 
   def part2_tests
-    expected = 149245887792
-    answer = do_part2('389125467')
+    do_tests(149245887792, 10_000_000, 1_000_000)
+  end
+
+  def do_tests(expected, num_iterations, max_cup=0)
+    game = play(num_iterations, max_cup)
+    answer = game.send("part#{@part_number}_answer".to_sym)
     if answer == expected
       puts('.')
       puts('ok')
@@ -102,9 +115,10 @@ class Day23 < Day
     end
   end
 
-  def do_part2(start)
-    crab_cups = BiggerCrabCups.new(start)
-    10_000_000.times { |_| crab_cups.move }
-    crab_cups.part2_answer
+  def play(num_iterations, max_cup=0)
+    start = @testing ? TEST_INPUT : REAL_INPUT
+    crab_cups = CrabCups.new(start, max_cup)
+    num_iterations.times { |_| crab_cups.move }
+    crab_cups
   end
 end
