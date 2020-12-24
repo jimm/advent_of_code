@@ -104,14 +104,10 @@ class Day23 < Day
   end
 
   def do_tests(expected, num_iterations, max_cup=0)
-    game = play(num_iterations, max_cup)
-    answer = game.send("part#{@part_number}_answer".to_sym)
-    if answer == expected
-      puts('.')
-      puts('ok')
-    else
-      puts('F')
-      puts("error: expected #{expected}, got #{answer}")
+    run_one_test(expected) do |expected|
+      game = play(num_iterations, max_cup)
+      answer = game.send("part#{@part_number}_answer".to_sym)
+      [answer == expected, answer]
     end
   end
 

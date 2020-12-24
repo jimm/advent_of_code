@@ -30,6 +30,25 @@ class Day
     part2
   end
 
+  # Given an expected answer and a block, yields the expected answer to the
+  # block, which must return a [boolean, answer] pair. Prints success or
+  # failure.
+  #
+  # Despite their names, `run_chunk_tests` does not call this method.
+  def run_one_test(expected)
+    ok, answer = yield(expected)
+    if answer == expected
+      puts('.')
+      puts('ok')
+    else
+      puts('F')
+      puts("error: expected #{expected}, got #{answer}")
+    end
+  end
+
+  # Given an optional part number, reads each test chunk and yields the
+  # expected value as a string and the data lines. The block must return a
+  # [boolean, answer] pair. Prints success or failure for all the tests.
   def run_chunk_tests(part_number=@part_number)
     errors = []
     test_chunks(part_number).each do |expected, lines|

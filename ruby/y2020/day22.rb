@@ -53,15 +53,9 @@ class Day22 < Day
   end
 
   def part1_tests
-    expected = 306
-    winner = do_part1()
-    answer = winner.score
-    if answer == expected
-      puts('.')
-      puts('ok')
-    else
-      puts('F')
-      puts("error: expected #{expected}, got #{answer}")
+    run_one_test(306) do |expected|
+      answer = do_part1().score
+      [answer == expected, answer]
     end
   end
 
@@ -86,16 +80,10 @@ class Day22 < Day
   end
 
   def part2_tests
-    expected = 291
-    player1, player2 = parse()
-    winner = do_part2(player1, player2)
-    answer = winner.score
-    if answer == expected
-      puts('.')
-      puts('ok')
-    else
-      puts('F')
-      puts("error: expected #{expected}, got #{answer}")
+    run_one_test(291) do |expected|
+      player1, player2 = parse()
+      answer = do_part2(player1, player2).score
+      [answer == expected, answer]
     end
   end
 

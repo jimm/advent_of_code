@@ -112,14 +112,9 @@ class Day20 < Day
   end
 
   def part1_tests
-    expected = 20899048083289
-    answer = do_part1()
-    if answer == expected
-      puts('.')
-      puts('ok')
-    else
-      puts('F')
-      puts("error: expected #{expected}, got #{answer}")
+    run_one_test(20899048083289) do |expected|
+      answer = do_part1()
+      [answer == expected, answer]
     end
   end
 
