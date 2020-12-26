@@ -6,6 +6,11 @@ require_relative '../utils'     # for debug{i,}
 
 class Tile
   NUM_ORIENTATIONS = 8
+  # OPPOSITES = {top: :bottom, bottom: :top, right: :left, left: :right}
+  # ORTHOGONAL = {
+  #   top: [:left, :right], bottom: [:left, :right],
+  #   left: [:top, :bottom], right: [:top, :bottom]
+  # }
 
   @@reversals = {}
 
@@ -25,95 +30,110 @@ class Tile
     @flip_cache = {}
   end
 
+  def l; @left_tile; end
+  def r; @right_tile; end
+  def t; @top_tile; end
+  def b; @bottom_tile; end
+  def l=(t); @left_tile = t; end
+  def r=(t); @right_tile = t; end
+  def t=(t); @top_tile = t; end
+  def b=(t); @bottom_tile = t; end
+
   def maybe_attach(other)
-    if @top_tile.nil? && other.bottom_tile.nil? && @top == other.bottom
-      @top_tile = other
-      other.bottom_tile = self
+    if t.nil? && other.b.nil? && top == other.bottom
+      t = other
+      other.b = self
 
-      if @left_tile && @left_tile.top_tile
-        other.left_tile = @left_tile.top_tile
-        @left_tile.top_tile.right_tile = other
+      if l && l.t
+        o.l = l.t
+        l.t.r = other
       end
-      if @right_tile && @right_tile.top_tile
-        other.right_tile = @right_tile.top_tile
-        @right_tile.top_tile.left_tile = other
+      if r && r.t
+        other.r = r.t
+        r.t.l = other
       end
-      if other.left_tile && other.left_tile.bottom_tile
-        @left_tile = other.left_tile.bottom_tile
-        other.left_tile.bottom_tile.right = self
+      if other.l && other.l.b
+        l = other.l.b
+        other.l.b.r = self
       end
-      if other.right_tile && other.right_tile.bottom_tile
-        @right_tile = other.right_tile.bottom_tile
-        other.right_tile.bottom_tile.left = self
+      if other.r && other.r.b
+        r = other.r.b
+        other.r.b.l = self
       end
+
       return true
     end
 
-    if @right_tile.nil? && other.left_tile.nil? && @right == other.left
-      @right_tile = other
-      other.left_tile = self
+    if r.nil? && other.l.nil? && right == other.left
+      r = other
+      other.l = self
 
-      if @top_tile && @top_tile.right_tile
-        other.top_tile = @top_tile.right_tile
-        @top_tile.right_tile.bottom_tile = other
+      if t && t.r
+        other.t = t.r
+        t.r.b = other
       end
-      if @bottom_tile && @bottom_tile.right_tile
-        other.bottom_tile = @bottom_tile.right_tile
-        @bottom_tile.right_tile.top_tile = other
+
+      if b && b.r
+        other.b = b.r
+        b.r.t = other
       end
-      if other.top_tile && other.top_tile.left_tile
-        @top_tile = other.top_tile.left_tile
-        other.top_tile.left_tile.bottom_tile = self
+
+      if other.t && other.t.l
+        t = other.t.l
+        other.t.l.b = self
       end
-      if other.bottom_tile && other.bottom_tile.left_tile
-        @bottom_tile = other.bottom_tile.left_tile
-        other.bottom_tile.left_tile.top_tile = self
+
+      if other.b && other.b.l
+        b = other.b.l
+        other.b.l.t = self
       end
+
       return true
     end
 
-    if @bottom_tile.nil? && other.top_tile.nil? && @bottom == other.top
-      @bottom_tile = other
-      other.top_tile = self
+    if b.nil? && other.t.nil? && bottom == other.top
+      b = other
+      other.t = self
 
-      if @right_tile && @right_tile.bottom_tile
-        other.right_tile = @right_tile.bottom_tile
-        @right_tile.bottom_tile.left_tile = other
+      if l && l.b
+        other.l = l.b
+        l.b.r = other
       end
-      if @left_tile && @left_tile.bottom_tile
-        other.left_tile = @left_tile.bottom_tile
-        @left_tile.bottom_tile.right_tile = other
+      if r && r.b
+        other.r = r.b
+        r.b.l = other
       end
-      if other.right_tile && other.right_tile.top_tile
-        self.right_tile = other.right_tile.top_tile
-        other.right_tile.top_tile.left_tile = self
+      if other.l && other.l.t
+        l = other.l.t
+        other.l.t.r = self
       end
-      if other.left_tile && other.left_tile.top_tile
-        self.left_tile = other.left_tile.top_tile
-        other.left_tile.top_tile.right_tile = self
+      if other.r && other.r.t
+        r = other.r.t
+        other.r.t.l = self
       end
+
       return true
     end
 
-    if @left_tile.nil? && other.right_tile.nil? && @left == other.right
-      @left_tile = other
-      other.right_tile = self
+    if l.nil? && other.r.nil? && left == other.right
+      l = other
+      other.r = self
 
-      if @top_tile && @top_tile.left_tile
-        other.top_tile = @top_tile.left_tile
-        @top_tile.left_tile.bottom_tile = other
+      if t && t.l
+        other.t = t.l
+        t.l.b = other
       end
-      if @bottom_tile && @bottom_tile.left_tile
-        other.bottom_tile = @bottom_tile.left_tile
-        @bottom_tile.left_tile.top_tile = other
+      if b && b.l
+        other.b = b.l
+        b.l.t = other
       end
-      if other.top_tile && other.top_tile.right_tile
-        @top_tile = other.top_tile.right_tile
-        other.top_tile.right_tile = self
+      if other.t && other.t.r
+        t = other.t.r
+        other.t.r.b = self
       end
-      if other.bottom_tile && other.bottom_tile.right_tile
-        @bottom_tile = other.bottom_tile.right_tile
-        other.bottom_tile.right_tile.top_tile = self
+      if other.b && other.b.r
+        b = other.b.r
+        other.b.r.t = self
       end
       return true
     end
@@ -134,8 +154,7 @@ class Tile
     [top_tile, right_tile, bottom_tile, left_tile].compact.length
   end
 
-  # Does a 90-degree clockwise rotation and returns new [top, right, bottom,
-  # left].
+  # Does a 90-degree clockwise rotation.
   def rotate
     cache_key = [@top, @right, @bottom, @left]
     answer = @rotation_cache[cache_key]
@@ -146,13 +165,13 @@ class Tile
     @top, @right, @bottom, @left = *answer
   end
 
-  # Does a top/bottom flip and returns new [top, right, bottom, left].
-  def flip(top=@top, right=@right, bottom=@bottom, left=@left)
+  # Does a top/bottom flip.
+  def flip
     cache_key = [@top, @right, @bottom, @left]
-    answer = @rotation_cache[cache_key]
+    answer = @flip_cache[cache_key]
     if answer.nil?
       answer = [@bottom, reverse_number(@right), @top, reverse_number(@left)]
-      @rotation_cache[cache_key] = answer
+      @flip_cache[cache_key] = answer
     end
     @top, @right, @bottom, @left = *answer
   end
@@ -200,6 +219,8 @@ class Day20 < Day
     attach_tiles(tiles, Math.sqrt(tiles.length).to_i)
 
     corners = tiles.select { |t| t.attached_count == 2 }
+    pp tiles.length                                # DEBUG
+    pp tiles.map(&:attached_count).tally           # DEBUG
     $stderr.puts "found #{corners.length} corners" # DEBUG
     return corners.map(&:id).reduce(&:*)
   end
@@ -209,23 +230,23 @@ class Day20 < Day
   end
 
   def attach_tiles(tiles, square_size)
-    attached = []
-    unattached = tiles
-    attached << unattached.pop
-    until unattached.empty?
-      tile = attached.pop
+    queue = []
+    loose = tiles.dup
+    queue << loose.pop
+    until queue.empty?
+      current = queue.pop
       found = false
-      unattached.each do |other|
+      loose.each do |t|
         2.times do
           break if found
-          other.flip
+          t.flip
           4.times do
-            if tile.maybe_attach(other)
-              attached << unattached.delete(other)
+            if current.maybe_attach(t)
+              queue << loose.delete(t)
               found = true
               break
             end
-            other.rotate
+            t.rotate
           end
         end
       end
