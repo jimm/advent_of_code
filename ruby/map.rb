@@ -30,6 +30,12 @@ class Map
     at(@row, @col)
   end
 
+  # Sets char at `row`, `col` to `ch`.
+  def set(row=@row, col=@col, ch)
+    row, col = wrap(row, col)
+    @cells[row][col] = ch
+  end
+
   # Move to row and col. 
   def move_to(row, col)
     @row, @col = wrap(row, col)

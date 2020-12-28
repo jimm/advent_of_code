@@ -1,12 +1,64 @@
 # Jurassic Jigsaw
 
 require_relative '../map'
-require_relative '../utils'     # for debug{i,}
 
 
-class Integer
-  def to_b(len=10)
-    "%0#{len}b" % self
+class Image < Map
+  def top; @cells[0].join; end
+  def right; @cells.map { |row| row[@width - 1] }.join; end
+  def bottom; @cells[@height - 1].join; end
+  def left; @cells.map { |row| row[0] }.join; end
+
+  # Given a two-dimensional array of `images`, creates and returns a new
+  # image comprised of `images`. Assumes borders have been removed.
+  def self.from_images(images)
+    image_height = images[0][0].height
+    lines = Array.new(image_height * images.length) { String.new }
+    row_index = 0
+    images.each_with_index do |images_row|
+      images_row.each_with_index do |image|
+        cells = image.instance_variable_get(:@cells)
+        cells.each_with_index do |row, row_offset|
+          lines[row_index + row_offset] << row.join
+        end
+      end
+      row_index += image_height
+    end
+
+    new(lines)
+  end
+
+  # Does a 90-degree clockwise rotation.
+  def rotate
+    return if @frozen
+
+    n = @width
+    (0...n/2).each do |i|
+      (i...n-i-1).each do |j|
+        ni = n - 1 - i
+        nj = n - 1 - j
+        tmp = @cells[i][j]
+        @cells[i][j] = @cells[nj][i]
+        @cells[nj][i] = @cells[ni][nj]
+        @cells[ni][nj] = @cells[j][ni]
+        @cells[j][ni] = tmp
+      end
+    end
+  end
+
+  # Does a top/bottom flip.
+  def flip
+    @cells.reverse! unless @frozen
+  end
+
+  def remove_borders
+    @cells = @cells[1..-2].map { |row| row[1..-2] }
+    @width -= 2
+    @height -= 2
+  end
+
+  def count_pixels(ch)
+    @cells.flatten.select { |x| x == ch }.count
   end
 end
 
@@ -14,22 +66,23 @@ end
 class Tile
   @@reversals = {}
 
-  attr_reader :id, :top, :right, :bottom, :left
+  attr_reader :id, :image
   attr_accessor :top_tile, :right_tile, :bottom_tile, :left_tile
 
   # Given an `id` number and `lines` of text, creates a Map and initializes
   # the numerical representations of the four sides' characters.
   def initialize(id, lines)
     @id = id
-    @map = Map.new(lines)
-    @top = row_to_number(0)
-    @right = column_to_number(@map.width - 1)
-    @bottom = row_to_number(@map.height - 1)
-    @left = column_to_number(0)
-    @rotation_cache = {}
-    @flip_cache = {}
+    @image = Image.new(lines)
     @frozen = false
   end
+
+  # Define *_border methods
+  %i(top right bottom left).each do |sym|
+    define_method("#{sym}_border".to_sym) { @image.send(sym) }
+  end
+
+  def remove_borders; @image.remove_borders; end
 
   def freeze_orientation
     @frozen = true
@@ -44,25 +97,25 @@ class Tile
   end
 
   def maybe_attach_top(other)
-    return false unless @top_tile.nil? && other.bottom_tile.nil? && @top == other.bottom
+    return false unless top_tile.nil? && other.bottom_tile.nil? && top_border == other.bottom_border
 
     @top_tile = other
     other.bottom_tile = self
 
-    if @left_tile && @left_tile.top_tile
-      other.left_tile = @left_tile.top_tile
-      @left_tile.top_tile.right_tile = other
+    if left_tile && left_tile.top_tile
+      other.left_tile = left_tile.top_tile
+      left_tile.top_tile.right_tile = other
     end
-    if @right_tile && @right_tile.top_tile
-      other.right_tile = @right_tile.top_tile
-      @right_tile.top_tile.left_tile = other
+    if right_tile && right_tile.top_tile
+      other.right_tile = right_tile.top_tile
+      right_tile.top_tile.left_tile = other
     end
     if other.left_tile && other.left_tile.bottom_tile
-      @left_tile = other.left_tile.bottom_tile
+      left_tile = other.left_tile.bottom_tile
       other.left_tile.bottom_tile.right_tile = self
     end
     if other.right_tile && other.right_tile.bottom_tile
-      @right_tile = other.right_tile.bottom_tile
+      right_tile = other.right_tile.bottom_tile
       other.right_tile.bottom_tile.left_tile = self
     end
 
@@ -70,28 +123,25 @@ class Tile
   end
 
   def maybe_attach_right(other)
-    return false unless @right_tile.nil? && other.left_tile.nil? && @right == other.left
+    return false unless right_tile.nil? && other.left_tile.nil? && right_border == other.left_border
 
     @right_tile = other
     other.left_tile = self
 
-    if @top_tile && @top_tile.right_tile
-      other.top_tile = @top_tile.right_tile
-      @top_tile.right_tile.bottom_tile = other
+    if top_tile && top_tile.right_tile
+      other.top_tile = top_tile.right_tile
+      top_tile.right_tile.bottom_tile = other
     end
-
-    if @bottom_tile && @bottom_tile.right_tile
-      other.bottom_tile = @bottom_tile.right_tile
-      @bottom_tile.right_tile.top_tile = other
+    if bottom_tile && bottom_tile.right_tile
+      other.bottom_tile = bottom_tile.right_tile
+      bottom_tile.right_tile.top_tile = other
     end
-
     if other.top_tile && other.top_tile.left_tile
-      @top_tile = other.top_tile.left_tile
+      top_tile = other.top_tile.left_tile
       other.top_tile.left_tile.bottom_tile = self
     end
-
     if other.bottom_tile && other.bottom_tile.left_tile
-      @bottom_tile = other.bottom_tile.left_tile
+      bottom_tile = other.bottom_tile.left_tile
       other.bottom_tile.left_tile.top_tile = self
     end
 
@@ -99,25 +149,25 @@ class Tile
   end
 
   def maybe_attach_bottom(other)
-    return false unless @bottom_tile.nil? && other.top_tile.nil? && @bottom == other.top
+    return false unless bottom_tile.nil? && other.top_tile.nil? && bottom_border == other.top_border
 
     @bottom_tile = other
     other.top_tile = self
 
-    if @left_tile && @left_tile.bottom_tile
-      other.left_tile = @left_tile.bottom_tile
-      @left_tile.bottom_tile.right_tile = other
+    if left_tile && left_tile.bottom_tile
+      other.left_tile = left_tile.bottom_tile
+      left_tile.bottom_tile.right_tile = other
     end
-    if @right_tile && @right_tile.bottom_tile
-      other.right_tile = @right_tile.bottom_tile
-      @right_tile.bottom_tile.left_tile = other
+    if right_tile && right_tile.bottom_tile
+      other.right_tile = right_tile.bottom_tile
+      right_tile.bottom_tile.left_tile = other
     end
     if other.left_tile && other.left_tile.top_tile
-      @left_tile = other.left_tile.top_tile
+      left_tile = other.left_tile.top_tile
       other.left_tile.top_tile.right_tile = self
     end
     if other.right_tile && other.right_tile.top_tile
-      @right_tile = other.right_tile.top_tile
+      right_tile = other.right_tile.top_tile
       other.right_tile.top_tile.left_tile = self
     end
 
@@ -125,25 +175,25 @@ class Tile
   end
 
   def maybe_attach_left(other)
-    return false unless @left_tile.nil? && other.right_tile.nil? && @left == other.right
+    return false unless left_tile.nil? && other.right_tile.nil? && left_border == other.right_border
 
     @left_tile = other
     other.right_tile = self
 
-    if @top_tile && @top_tile.left_tile
-      other.top_tile = @top_tile.left_tile
-      @top_tile.left_tile.bottom_tile = other
+    if top_tile && top_tile.left_tile
+      other.top_tile = top_tile.left_tile
+      top_tile.left_tile.bottom_tile = other
     end
-    if @bottom_tile && @bottom_tile.left_tile
-      other.bottom_tile = @bottom_tile.left_tile
-      @bottom_tile.left_tile.top_tile = other
+    if bottom_tile && bottom_tile.left_tile
+      other.bottom_tile = bottom_tile.left_tile
+      bottom_tile.left_tile.top_tile = other
     end
     if other.top_tile && other.top_tile.right_tile
-      @top_tile = other.top_tile.right_tile
+      top_tile = other.top_tile.right_tile
       other.top_tile.right_tile.bottom_tile = self
     end
     if other.bottom_tile && other.bottom_tile.right_tile
-      @bottom_tile = other.bottom_tile.right_tile
+      bottom_tile = other.bottom_tile.right_tile
       other.bottom_tile.right_tile.top_tile = self
     end
     return true
@@ -154,64 +204,35 @@ class Tile
   end
 
   def attached_count
-    [@top_tile, @right_tile, @bottom_tile, @left_tile].compact.length
+    [top_tile, right_tile, bottom_tile, left_tile].compact.length
   end
 
-  # Does a 90-degree clockwise rotation.
-  def rotate
-    return if @frozen
-
-    cache_key = [@top, @right, @bottom, @left]
-    answer = @rotation_cache[cache_key]
-    if answer.nil?
-      answer = [reverse_number(@left), @top, reverse_number(@right), @bottom]
-      @rotation_cache[cache_key] = answer
-    end
-    @top, @right, @bottom, @left = *answer
-  end
-
-  # Does a top/bottom flip.
-  def flip
-    return if @frozen
-
-    cache_key = [@top, @right, @bottom, @left]
-    answer = @flip_cache[cache_key]
-    if answer.nil?
-      answer = [@bottom, reverse_number(@right), @top, reverse_number(@left)]
-      @flip_cache[cache_key] = answer
-    end
-    @top, @right, @bottom, @left = *answer
+  def to_s
+    puts "Tile #@id:"
+    puts @image
   end
 
   # ================ helpers ================
 
-  def row_to_number(n)
-    chars_to_number(@map.cells[n])
+  def rotate
+    @image.rotate unless @frozen
   end
 
-  def column_to_number(n)
-    chars_to_number(@map.cells.map { |row| row[n] })
-  end
-
-  def chars_to_number(chars)
-    chars.join().gsub('.', '0').gsub('#', '1').to_i(2)
-  end
-
-  def reverse_number(n)
-    answer = @@reversals[n]
-    if answer.nil?
-      answer = ("%0#{@map.width}b" % n).reverse.to_i(2)
-      @@reversals[n] = answer
-    end
-    answer
-  end
-
-  def p_sides
+  def flip
+    @image.flip unless @frozen
   end
 end
 
 
 class Day20 < Day
+  MONSTER = [
+    "                  # ",
+    "#    ##    ##    ###",
+    " #  #  #  #  #  #   "
+  ]
+  MONSTER_HEIGHT = MONSTER.length
+  MONSTER_WIDTH = MONSTER[0].length
+
   def part1
     answer = do_part1()
     puts(answer)
@@ -226,7 +247,7 @@ class Day20 < Day
 
   def do_part1
     tiles = parse()
-    attach_tiles(tiles, Math.sqrt(tiles.length).to_i)
+    attach_tiles(tiles)
 
     corners = tiles.select(&:corner?)
 
@@ -237,10 +258,53 @@ class Day20 < Day
   end
 
   def part2
-    lines = data_lines(1)
+    answer = do_part2()
+    # dammit 2787 is too high
+    puts(answer)
   end
 
-  def attach_tiles(tiles, square_size)
+  def part2_tests
+    run_one_test(273) do |expected|
+      answer = do_part2()
+      [answer == expected, answer]
+    end
+  end
+
+  def do_part2
+    tiles = parse()
+    attach_tiles(tiles)
+    tiles.each(&:remove_borders)
+
+    # Create one image from many
+    image_matrix = []
+    top_left_corner = tiles.detect { |t| t.top_tile.nil? && t.left_tile.nil? }
+    t = top_left_corner
+    while t do
+      row = []
+      row_start = t
+      while t do
+        row << t.image
+        t = t.right_tile
+      end
+      image_matrix << row
+      t = row_start.bottom_tile
+    end
+    image = Image.from_images(image_matrix)
+
+    # Detect monsters
+    offsets = monster_segment_offsets
+    locs = find_two_monsters(image, offsets)
+    locs.each do |row, col|
+      offsets.each do |row_offset, col_offset|
+        image.set(row + row_offset, col + col_offset, 'O')
+      end
+    end
+
+    # Return number of remaining waves
+    image.count_pixels('#')
+  end
+
+  def attach_tiles(tiles)
     loose = tiles.dup
     queue = [loose.shift]
     until queue.empty?
@@ -264,6 +328,44 @@ class Day20 < Day
       t2.flip
     end
     false
+  end
+
+  def monster_segment_offsets
+    offsets = []
+    MONSTER.each_with_index do |chars, row_offset|
+      chars.split('').each_with_index do |ch, col_offset|
+        offsets << [row_offset, col_offset] if ch == '#'
+      end
+    end
+    offsets
+  end
+
+  def find_two_monsters(image, offsets)
+    2.times do
+      4.times do
+        locs = find_monsters_in_image(image, offsets)
+        return locs if locs
+        image.rotate
+      end
+      image.flip
+    end
+    nil
+  end
+
+  def find_monsters_in_image(image, offsets)
+    locs = []
+    (0..image.height - MONSTER_HEIGHT).each do |row|
+      (0..image.width - MONSTER_WIDTH).each do |col|
+        locs << [row, col] if monster_at(image, offsets, row, col)
+      end
+    end
+    locs.empty? ? nil : locs
+  end
+
+  def monster_at(image, offsets, row, col)
+    offsets.all? do |offset|
+      image.at(row + offset[0], col + offset[1]) == '#'
+    end
   end
 
   def parse
