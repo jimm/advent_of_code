@@ -4,14 +4,14 @@ require_relative '../map'
 require_relative '../utils'     # for debug{i,}
 
 
-class Tile
-  NUM_ORIENTATIONS = 8
-  # OPPOSITES = {top: :bottom, bottom: :top, right: :left, left: :right}
-  # ORTHOGONAL = {
-  #   top: [:left, :right], bottom: [:left, :right],
-  #   left: [:top, :bottom], right: [:top, :bottom]
-  # }
+class Integer
+  def to_b(len=10)
+    "%0#{len}b" % self
+  end
+end
 
+
+class Tile
   @@reversals = {}
 
   attr_reader :id, :top, :right, :bottom, :left
@@ -24,142 +24,147 @@ class Tile
     @map = Map.new(lines)
     @top = row_to_number(0)
     @right = column_to_number(@map.width - 1)
-    @bottom = reverse_number(row_to_number(@map.height - 1))
-    @left = reverse_number(column_to_number(0))
+    @bottom = row_to_number(@map.height - 1)
+    @left = column_to_number(0)
     @rotation_cache = {}
     @flip_cache = {}
+    @frozen = false
   end
 
-  def l; @left_tile; end
-  def r; @right_tile; end
-  def t; @top_tile; end
-  def b; @bottom_tile; end
-  def l=(t); @left_tile = t; end
-  def r=(t); @right_tile = t; end
-  def t=(t); @top_tile = t; end
-  def b=(t); @bottom_tile = t; end
+  def freeze_orientation
+    @frozen = true
+  end
 
   def maybe_attach(other)
-    if t.nil? && other.b.nil? && top == other.bottom
-      t = other
-      other.b = self
-
-      if l && l.t
-        o.l = l.t
-        l.t.r = other
-      end
-      if r && r.t
-        other.r = r.t
-        r.t.l = other
-      end
-      if other.l && other.l.b
-        l = other.l.b
-        other.l.b.r = self
-      end
-      if other.r && other.r.b
-        r = other.r.b
-        other.r.b.l = self
-      end
-
-      return true
-    end
-
-    if r.nil? && other.l.nil? && right == other.left
-      r = other
-      other.l = self
-
-      if t && t.r
-        other.t = t.r
-        t.r.b = other
-      end
-
-      if b && b.r
-        other.b = b.r
-        b.r.t = other
-      end
-
-      if other.t && other.t.l
-        t = other.t.l
-        other.t.l.b = self
-      end
-
-      if other.b && other.b.l
-        b = other.b.l
-        other.b.l.t = self
-      end
-
-      return true
-    end
-
-    if b.nil? && other.t.nil? && bottom == other.top
-      b = other
-      other.t = self
-
-      if l && l.b
-        other.l = l.b
-        l.b.r = other
-      end
-      if r && r.b
-        other.r = r.b
-        r.b.l = other
-      end
-      if other.l && other.l.t
-        l = other.l.t
-        other.l.t.r = self
-      end
-      if other.r && other.r.t
-        r = other.r.t
-        other.r.t.l = self
-      end
-
-      return true
-    end
-
-    if l.nil? && other.r.nil? && left == other.right
-      l = other
-      other.r = self
-
-      if t && t.l
-        other.t = t.l
-        t.l.b = other
-      end
-      if b && b.l
-        other.b = b.l
-        b.l.t = other
-      end
-      if other.t && other.t.r
-        t = other.t.r
-        other.t.r.b = self
-      end
-      if other.b && other.b.r
-        b = other.b.r
-        other.b.r.t = self
-      end
-      return true
-    end
-
+    return true if maybe_attach_top(other)
+    return true if maybe_attach_right(other)
+    return true if maybe_attach_bottom(other)
+    return true if maybe_attach_left(other)
     false
   end
 
-  def clear_connections
-    @top_tile = @right_tile = @bottom_tile = @left_tile = nil
+  def maybe_attach_top(other)
+    return false unless @top_tile.nil? && other.bottom_tile.nil? && @top == other.bottom
+
+    @top_tile = other
+    other.bottom_tile = self
+
+    if @left_tile && @left_tile.top_tile
+      other.left_tile = @left_tile.top_tile
+      @left_tile.top_tile.right_tile = other
+    end
+    if @right_tile && @right_tile.top_tile
+      other.right_tile = @right_tile.top_tile
+      @right_tile.top_tile.left_tile = other
+    end
+    if other.left_tile && other.left_tile.bottom_tile
+      @left_tile = other.left_tile.bottom_tile
+      other.left_tile.bottom_tile.right_tile = self
+    end
+    if other.right_tile && other.right_tile.bottom_tile
+      @right_tile = other.right_tile.bottom_tile
+      other.right_tile.bottom_tile.left_tile = self
+    end
+
+    true
   end
 
-  # Returns true if this tile is attached to any other tile.
-  def attached?
-    attached_count > 0
+  def maybe_attach_right(other)
+    return false unless @right_tile.nil? && other.left_tile.nil? && @right == other.left
+
+    @right_tile = other
+    other.left_tile = self
+
+    if @top_tile && @top_tile.right_tile
+      other.top_tile = @top_tile.right_tile
+      @top_tile.right_tile.bottom_tile = other
+    end
+
+    if @bottom_tile && @bottom_tile.right_tile
+      other.bottom_tile = @bottom_tile.right_tile
+      @bottom_tile.right_tile.top_tile = other
+    end
+
+    if other.top_tile && other.top_tile.left_tile
+      @top_tile = other.top_tile.left_tile
+      other.top_tile.left_tile.bottom_tile = self
+    end
+
+    if other.bottom_tile && other.bottom_tile.left_tile
+      @bottom_tile = other.bottom_tile.left_tile
+      other.bottom_tile.left_tile.top_tile = self
+    end
+
+    return true
+  end
+
+  def maybe_attach_bottom(other)
+    return false unless @bottom_tile.nil? && other.top_tile.nil? && @bottom == other.top
+
+    @bottom_tile = other
+    other.top_tile = self
+
+    if @left_tile && @left_tile.bottom_tile
+      other.left_tile = @left_tile.bottom_tile
+      @left_tile.bottom_tile.right_tile = other
+    end
+    if @right_tile && @right_tile.bottom_tile
+      other.right_tile = @right_tile.bottom_tile
+      @right_tile.bottom_tile.left_tile = other
+    end
+    if other.left_tile && other.left_tile.top_tile
+      @left_tile = other.left_tile.top_tile
+      other.left_tile.top_tile.right_tile = self
+    end
+    if other.right_tile && other.right_tile.top_tile
+      @right_tile = other.right_tile.top_tile
+      other.right_tile.top_tile.left_tile = self
+    end
+
+    return true
+  end
+
+  def maybe_attach_left(other)
+    return false unless @left_tile.nil? && other.right_tile.nil? && @left == other.right
+
+    @left_tile = other
+    other.right_tile = self
+
+    if @top_tile && @top_tile.left_tile
+      other.top_tile = @top_tile.left_tile
+      @top_tile.left_tile.bottom_tile = other
+    end
+    if @bottom_tile && @bottom_tile.left_tile
+      other.bottom_tile = @bottom_tile.left_tile
+      @bottom_tile.left_tile.top_tile = other
+    end
+    if other.top_tile && other.top_tile.right_tile
+      @top_tile = other.top_tile.right_tile
+      other.top_tile.right_tile.bottom_tile = self
+    end
+    if other.bottom_tile && other.bottom_tile.right_tile
+      @bottom_tile = other.bottom_tile.right_tile
+      other.bottom_tile.right_tile.top_tile = self
+    end
+    return true
+  end
+
+  def corner?
+    attached_count == 2
   end
 
   def attached_count
-    [top_tile, right_tile, bottom_tile, left_tile].compact.length
+    [@top_tile, @right_tile, @bottom_tile, @left_tile].compact.length
   end
 
   # Does a 90-degree clockwise rotation.
   def rotate
+    return if @frozen
+
     cache_key = [@top, @right, @bottom, @left]
     answer = @rotation_cache[cache_key]
     if answer.nil?
-      answer = reverse_number(@left), @top, reverse_number(@right), @bottom
+      answer = [reverse_number(@left), @top, reverse_number(@right), @bottom]
       @rotation_cache[cache_key] = answer
     end
     @top, @right, @bottom, @left = *answer
@@ -167,6 +172,8 @@ class Tile
 
   # Does a top/bottom flip.
   def flip
+    return if @frozen
+
     cache_key = [@top, @right, @bottom, @left]
     answer = @flip_cache[cache_key]
     if answer.nil?
@@ -192,11 +199,14 @@ class Tile
 
   def reverse_number(n)
     answer = @@reversals[n]
-    return answer if answer
-
-    answer = ("%0#{@map.width}b" % n).reverse.to_i(2)
-    @@reversals[n] = answer
+    if answer.nil?
+      answer = ("%0#{@map.width}b" % n).reverse.to_i(2)
+      @@reversals[n] = answer
+    end
     answer
+  end
+
+  def p_sides
   end
 end
 
@@ -218,10 +228,11 @@ class Day20 < Day
     tiles = parse()
     attach_tiles(tiles, Math.sqrt(tiles.length).to_i)
 
-    corners = tiles.select { |t| t.attached_count == 2 }
-    pp tiles.length                                # DEBUG
-    pp tiles.map(&:attached_count).tally           # DEBUG
-    $stderr.puts "found #{corners.length} corners" # DEBUG
+    corners = tiles.select(&:corner?)
+
+    top_lefts = tiles.select { |t| t.top_tile.nil? && t.left_tile.nil? && t.bottom_tile && t.right_tile }
+    top_left = top_lefts.first
+
     return corners.map(&:id).reduce(&:*)
   end
 
@@ -230,27 +241,29 @@ class Day20 < Day
   end
 
   def attach_tiles(tiles, square_size)
-    queue = []
     loose = tiles.dup
-    queue << loose.pop
+    queue = [loose.shift]
     until queue.empty?
-      current = queue.pop
-      found = false
+      current = queue.shift
+      current.freeze_orientation
       loose.each do |t|
-        2.times do
-          break if found
-          t.flip
-          4.times do
-            if current.maybe_attach(t)
-              queue << loose.delete(t)
-              found = true
-              break
-            end
-            t.rotate
-          end
+        if maybe_attach(current, t)
+          queue << loose.delete(t)
+          t.freeze_orientation
         end
       end
     end
+  end
+
+  def maybe_attach(t1, t2)
+    2.times do
+      4.times do
+        return true if t1.maybe_attach(t2)
+        t2.rotate
+      end
+      t2.flip
+    end
+    false
   end
 
   def parse
