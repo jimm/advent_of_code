@@ -28,7 +28,7 @@ defmodule Y2015.Day16 do
   defp parse(line) do
     [nstr | attrs] = Regex.run(@parse_regex, line) |> tl
 
-    Enum.reduce(attrs |> Enum.chunk(2), %{num: String.to_integer(nstr)}, fn [attr, nstr], acc ->
+    Enum.reduce(attrs |> Enum.chunk_every(2), %{num: String.to_integer(nstr)}, fn [attr, nstr], acc ->
       Map.put(acc, String.to_atom(attr), String.to_integer(nstr))
     end)
   end

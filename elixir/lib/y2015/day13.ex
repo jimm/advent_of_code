@@ -66,7 +66,7 @@ defmodule Y2015.Day13 do
 
   defp path_length(distances, path) do
     path
-    |> Enum.chunk(2, 1)
+    |> Enum.chunk_every(2, 1)
     |> Enum.map(fn [src, dest] -> distances[src][dest] + distances[dest][src] end)
     |> Enum.sum()
   end

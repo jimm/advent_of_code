@@ -8,8 +8,8 @@ choose.
 
 ## Running the Solutions
 
-The script `aoc` in this directory will run any solution or test for any
-year. Run `aoc -h` to get help.
+The bash script `aoc` in this directory will run any solution or test for
+any year. Run `aoc -h` to get help.
 
 The `makeup` command used by the `-m` flag is a script of mine that finds
 the nearest Makefile, Rakefile, or similar build file and runs the
