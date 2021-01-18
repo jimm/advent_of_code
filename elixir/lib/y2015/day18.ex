@@ -71,7 +71,7 @@ defmodule Y2015.Day18 do
           col <- 0..(cols - 1) do
         next_state(board, row, col, cell_rules)
       end
-      |> Enum.chunk(cols)
+      |> Enum.chunk_every(cols)
 
     {cells, rows, cols}
   end

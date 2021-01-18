@@ -26,7 +26,7 @@ defmodule Y2015.Day06 do
   end
 
   def sum_after_applying(funcmap) do
-    grid = List.duplicate(0, @num_rows * @row_len) |> Enum.chunk(@row_len)
+    grid = List.duplicate(0, @num_rows * @row_len) |> Enum.chunk_every(@row_len)
 
     default_input_path()
     |> File.stream!()

@@ -36,10 +36,11 @@ defmodule Y2016.Day19 do
   end
 
   def run1(input \\ @input) do
-    first_elf = build_elves(input)
+    _first_elf = build_elves(input)
+    # TODO
   end
 
-  defp build_elves(input) do
+  defp build_elves(_input) do
     # TODO
     nil
   end
