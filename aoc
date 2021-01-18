@@ -8,7 +8,8 @@ usage: $(basename $0) [-m] [-y year] [-d day] [-l lang] [-L] [-t] [-h] part_num
 
   -m       Run \`makeup\` first (a personal cross-language build script)
   -a dir   Advent of Code root directory. Default is this script's directory
-  -y year  Default is current year
+  -y year  Default is current year or, if negative, offset from
+           current year (-1 == last year)
   -d day   Default is current day of the month or, if negative,
            offset from current day (for example, -1 == yesterday)
   -l lang  Required only if more than one lang for a year
@@ -43,7 +44,8 @@ find_lang_for_year() {
 }
 
 dir="$(cd $(dirname "$0") && pwd)"
-year=$(date "+%Y")
+this_year=$(date "+%Y")
+year=$this_year
 today=$(date "+%d" | sed -e 's/^0//')
 day=$today
 makeup=0
@@ -56,7 +58,12 @@ while getopts "may:d:l:Ltnh" opt ; do
     case $opt in
         m) makeup=1 ;;
         a) dir="$OPTARG" ;;
-        y) year="$OPTARG" ;;
+        y)
+            year="$OPTARG"
+            if [ $year -le 0 ] ; then
+                year=$(( this_year + year ))
+            fi
+            ;;
         d)
             day="$OPTARG"
             if [ $day -le 0 ] ; then
