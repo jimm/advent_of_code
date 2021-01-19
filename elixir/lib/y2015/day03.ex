@@ -1,8 +1,11 @@
+# Perfectly Spherical Houses in a Vacuum
+
 defmodule Y2015.Day03 do
   use Common.File
   require Integer
 
-  def received_present_count do
+  # received_present_count
+  def run1 do
     default_input_path()
     |> File.read!()
     |> String.codepoints()
@@ -11,7 +14,8 @@ defmodule Y2015.Day03 do
     |> length
   end
 
-  def santa_plus_robo_present_count do
+  # santa_plus_robo_present_count
+  def run2 do
     directions_with_indexes =
       default_input_path()
       |> File.read!()
@@ -48,6 +52,3 @@ defmodule Y2015.Day03 do
   defp move({x, y}, c) when c == "v", do: {x, y - 1}
   defp move({x, y}, c) when c == "<", do: {x - 1, y}
 end
-
-# Y2015.Day03.received_present_count
-# Y2015.Day03.santa_plus_robo_present_count

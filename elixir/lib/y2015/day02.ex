@@ -1,11 +1,15 @@
+# I Was Told There Would Be No Math
+
 defmodule Y2015.Day02 do
   use Common.File
 
-  def total_paper_area_needed do
+  # total_paper_area_needed
+  def run1 do
     calculate_need(&paper_area_needed/1)
   end
 
-  def total_ribbon_length_needed do
+  # total_ribbon_length_needed
+  def run2 do
     calculate_need(&ribbon_length_needed/1)
   end
 
@@ -54,6 +58,3 @@ defmodule Y2015.Day02 do
 
   defp cubic_volume(l, w, h), do: l * w * h
 end
-
-# Y2015.Day02.total_paper_area_needed
-# Y2015.Day02.total_ribbon_length_needed

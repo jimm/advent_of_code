@@ -1,9 +1,11 @@
 defmodule Y2015.Day09 do
   use Common.File
 
-  def shortest, do: run(&Enum.min/1)
+  # shortest
+  def run1, do: run(&Enum.min/1)
 
-  def longest, do: run(&Enum.max/1)
+  # longest
+  def run2, do: run(&Enum.max/1)
 
   defp run(f) do
     distances =
@@ -45,14 +47,8 @@ defmodule Y2015.Day09 do
 
   defp path_length(distances, path) do
     path
-    |> Enum.chunk_every(2, 1)
+    |> Enum.chunk_every(2, 1, :discard)
     |> Enum.map(fn [src, dest] -> distances[src][dest] end)
     |> Enum.sum()
   end
 end
-
-# Y2015.Day09.shortest
-# # => 207
-
-# Y2015.Day09.longest
-# # => 804

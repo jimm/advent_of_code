@@ -1,9 +1,12 @@
+# Medicine for Rudolph
+
 defmodule Y2015.Day19 do
   use Common.File
 
   @input_file default_input_path()
 
-  def single_sub_uniq_count(input_file \\ @input_file) do
+  # single sub unique count
+  def run1(input_file \\ @input_file) do
     {replacements, start} = parse(input_file)
 
     replacements
@@ -79,6 +82,3 @@ defmodule Y2015.Day19 do
     end
   end
 end
-
-# Y2015.Day19.single_sub_uniq_count
-# => 576 too low

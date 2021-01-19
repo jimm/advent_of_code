@@ -1,12 +1,16 @@
+# JSAbacusFramework.io
+
 defmodule Y2015.Day12 do
   use Common.File
 
-  def sum do
+  # sum
+  def run1 do
     sum(fn _ -> true end)
   end
 
-  def color_filter(color \\ "red") do
-    sum(fn vals -> !Enum.member?(vals, color) end)
+  # color filter
+  def run2 do
+    sum(fn vals -> !Enum.member?(vals, "red") end)
   end
 
   defp sum(filter) do
@@ -40,9 +44,3 @@ defmodule Y2015.Day12 do
   defp filtered_numbers(val, _) when is_integer(val), do: val
   defp filtered_numbers(_, _), do: []
 end
-
-# Y2015.Day12.sum
-# # => 119433
-
-# Y2015.Day12.color_filter
-# # => 68466

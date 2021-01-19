@@ -130,7 +130,7 @@ defmodule Y2017.Day18 do
       case run_until_receive_or_error(program, memory) do
         {:error, new_memory} ->
           new_memory
-        {:receive, new_memory} ->
+        {:receive, _new_memory} ->
           receive do
             {:other_cpu_pid, other_pid} ->
               IO.puts "pid #{inspect(self())} received :other_cpu_pid, other pid = #{inspect(other_pid)}" # DEBUG

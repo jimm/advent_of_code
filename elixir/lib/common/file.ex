@@ -21,7 +21,7 @@ defmodule Common.File do
       "data/y2016/day_08.txt"
 
       iex> Common.File.default_input_path(Y2016.Day08, 2)
-      "data/y2016/day_08_part2.txt"
+      "data/y2016/day_08_2.txt"
   """
   def default_input_path(mod) do
     path =
@@ -37,7 +37,7 @@ defmodule Common.File do
 
   def default_input_path(mod, part) do
     path = default_input_path(mod)
-    part_str = if part, do: "_part#{part}", else: ""
+    part_str = if part, do: "#{part}", else: ""
     path |> String.replace(".txt", "#{part_str}.txt")
   end
 

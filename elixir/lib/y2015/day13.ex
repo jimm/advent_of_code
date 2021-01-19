@@ -1,10 +1,13 @@
+# Knights of the Dinner Table
+
 defmodule Y2015.Day13 do
   use Common.File
 
   @input_file default_input_path()
   @parse_regex ~r{(\w+) would (\w+) (\d+) happiness units by sitting next to (\w+)\.}
 
-  def happiest do
+  # happiest
+  def run1 do
     File.stream!(@input_file)
     |> Enum.reduce(%{}, fn line, acc ->
       [src, dest, dist] = parse(line)
@@ -13,7 +16,8 @@ defmodule Y2015.Day13 do
     |> max_distance
   end
 
-  def happiest_including_me do
+  # happiest including me
+  def run2 do
     File.stream!(@input_file)
     |> Enum.reduce(%{}, fn line, acc ->
       [src, dest, dist] = parse(line)
@@ -66,14 +70,8 @@ defmodule Y2015.Day13 do
 
   defp path_length(distances, path) do
     path
-    |> Enum.chunk_every(2, 1)
+    |> Enum.chunk_every(2, 1, :discard)
     |> Enum.map(fn [src, dest] -> distances[src][dest] + distances[dest][src] end)
     |> Enum.sum()
   end
 end
-
-# Y2015.Day13.happiest
-# # => 733
-
-# Y2015.Day13.happiest_including_me
-# # => 725

@@ -1,16 +1,18 @@
+# Not Quite Lisp
+
 defmodule Y2015.Day01 do
   use Common.File
 
-  def destination_floor do
-    # DEBUG
+  # destination floor
+  def run1 do
     default_input_path()
     |> File.read!()
     |> String.split("", trim: true)
-    |> IO.inspect(label: "codepoints")
     |> Enum.reduce(0, fn c, acc -> acc + move(c) end)
   end
 
-  def first_basement_index do
+  # first basement index
+  def run2 do
     default_input_path()
     |> File.read!()
     |> String.codepoints()
@@ -31,6 +33,3 @@ defmodule Y2015.Day01 do
     first_negative_one(rest, floor - 1, index + 1)
   end
 end
-
-# Y2015.Day01.destination_floor
-# Y2015.Day01.first_basement_index

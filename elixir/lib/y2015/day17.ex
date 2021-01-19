@@ -1,3 +1,5 @@
+# No Such Thing as Too Much
+
 defmodule Y2015.Day17 do
   use Common.File
 
@@ -6,7 +8,7 @@ defmodule Y2015.Day17 do
 
   alias Common.Set
 
-  def run(liters \\ @liters, input_file \\ @input_file) do
+  def run1(liters \\ @liters, input_file \\ @input_file) do
     containers =
       File.stream!(input_file)
       |> Enum.map(&(&1 |> String.trim() |> String.to_integer()))
@@ -14,7 +16,8 @@ defmodule Y2015.Day17 do
     fit_count(containers, liters)
   end
 
-  def min_container_count(liters \\ @liters, input_file \\ @input_file) do
+  # min container count
+  def run2(liters \\ @liters, input_file \\ @input_file) do
     containers =
       File.stream!(input_file)
       |> Enum.map(&(&1 |> String.trim() |> String.to_integer()))
@@ -63,11 +66,3 @@ defmodule Y2015.Day17 do
     end
   end
 end
-
-# Y2015.Day17.fit_count([20, 15, 10, 5, 5], 25)
-
-# Y2015.Day17.run
-# => 1638
-
-# Y2015.Day17.min_container_count
-# => 17

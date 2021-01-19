@@ -1,3 +1,5 @@
+# Like a GIF For Your Yard
+
 defmodule Y2015.Day18 do
   use Common.File
 
@@ -22,7 +24,8 @@ defmodule Y2015.Day18 do
 
   A board is a list of char lists.
   """
-  def run(steps \\ 100, input_file \\ @input_file) do
+
+  def run1(steps \\ 100, input_file \\ @input_file) do
     cells = read_board(input_file)
     life(cells, steps, &life_rules/5)
   end
@@ -33,7 +36,8 @@ defmodule Y2015.Day18 do
       iex> Y2015.Day18.stuck_lights(5, "test.txt")
       17
   """
-  def stuck_lights(steps \\ 100, input_file \\ @input_file) do
+  # stuck lights
+  def run2(steps \\ 100, input_file \\ @input_file) do
     cells =
       read_board(input_file)
       |> turn_on_corner_lights
@@ -144,12 +148,3 @@ defmodule Y2015.Day18 do
     l |> Enum.drop(1) |> Enum.reverse() |> Enum.drop(1) |> Enum.reverse()
   end
 end
-
-# Y2015.Day18.run(4, "test.txt")
-# #=> 814
-
-# Y2015.Day18.stuck_lights
-# #=> 861 is too low
-
-# My bug: need to start out with all four turned on, so need to modify
-# reader or modify board after it is read.

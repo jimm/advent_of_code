@@ -1,3 +1,5 @@
+# Probably a Fire Hazard
+
 defmodule Y2015.Day06 do
   use Common.File
 
@@ -5,7 +7,8 @@ defmodule Y2015.Day06 do
   @num_rows 1000
   @row_len 1000
 
-  def count_lights do
+  # count lights
+  def run1 do
     sum_after_applying(%{
       "turn on" => fn _ -> 1 end,
       "turn off" => fn _ -> 0 end,
@@ -13,7 +16,8 @@ defmodule Y2015.Day06 do
     })
   end
 
-  def total_brightness do
+  # total brightness
+  def run2 do
     sum_after_applying(%{
       "turn on" => fn brightness -> brightness + 1 end,
       "turn off" => fn
@@ -62,9 +66,3 @@ defmodule Y2015.Day06 do
     ])
   end
 end
-
-# Y2015.Day06.count_lights
-# => 569999
-
-# Y2015.Day06.total_brightness
-# # => 17836115

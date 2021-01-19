@@ -1,3 +1,5 @@
+# Doesn't He Have Intern-Elves For This?
+
 defmodule Y2015.Day05 do
   use Common.File
 
@@ -7,6 +9,18 @@ defmodule Y2015.Day05 do
   @pairs_doubled ~r{(..).*\1}
   @repeat_one_between ~r{(.).\1}
 
+  def run1 do
+    count_nice(fn s ->
+      !Regex.match?(@forbidden, s) && Regex.match?(@doubled, s) && Regex.match?(@three_vowels, s)
+    end)
+  end
+
+  def run2 do
+    count_nice(fn s ->
+      Regex.match?(@pairs_doubled, s) && Regex.match?(@repeat_one_between, s)
+    end)
+  end
+
   def count_nice(f) do
     input_lines()
     |> Stream.map(&String.trim/1)
@@ -14,15 +28,4 @@ defmodule Y2015.Day05 do
     |> Enum.to_list()
     |> length
   end
-
-  def nice1(s) do
-    !Regex.match?(@forbidden, s) && Regex.match?(@doubled, s) && Regex.match?(@three_vowels, s)
-  end
-
-  def nice2(s) do
-    Regex.match?(@pairs_doubled, s) && Regex.match?(@repeat_one_between, s)
-  end
 end
-
-# Y2015.Day05.count_nice(&Y2015.Day05.nice1/1)
-# Y2015.Day05.count_nice(&Y2015.Day05.nice2/1)

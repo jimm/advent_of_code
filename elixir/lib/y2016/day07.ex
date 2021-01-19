@@ -24,7 +24,7 @@ defmodule Y2016.Day07 do
   defp parse_addrs(line) do
     line
     |> String.split(~r{[\[\]]}, trim: true)
-    |> Enum.chunk(2, 2, [nil])
+    |> Enum.chunk_every(2, 2, [nil])
     |> Enum.reduce({[], []}, fn [w1, w2], {outies, innies} ->
       new_innies = if w2, do: [w2 | innies], else: innies
       {[w1 | outies], new_innies}
@@ -75,7 +75,7 @@ defmodule Y2016.Day07 do
   defp chunks_matching(word, chunk_len, f) do
     word
     |> to_charlist
-    |> Enum.chunk(chunk_len, 1)
+    |> Enum.chunk_every(chunk_len, 1)
     |> Enum.filter(f)
   end
 end

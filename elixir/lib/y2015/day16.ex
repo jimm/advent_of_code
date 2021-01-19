@@ -1,3 +1,5 @@
+# Aunt Sue
+
 defmodule Y2015.Day16 do
   use Common.File
 
@@ -15,6 +17,9 @@ defmodule Y2015.Day16 do
     cars: 2,
     perfumes: 1
   }
+
+  def run1, do: run(&match1/1)
+  def run2, do: run(&updated_retroencabulator_match/1)
 
   def run(matcher) do
     File.stream!(@input_file)
@@ -63,9 +68,3 @@ defmodule Y2015.Day16 do
     num_matches == 0
   end
 end
-
-# Y2015.Day16.run(&Y2015.Day16.match1/1)
-# #=> 103
-
-# Y2015.Day16.run(&Y2015.Day16.updated_retroencabulator_match/1)
-# #=> 405

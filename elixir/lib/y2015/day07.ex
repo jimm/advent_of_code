@@ -1,8 +1,10 @@
+# Some Assembly Required
+
 defmodule Y2015.Day07 do
   use Common.File
   use Bitwise
 
-  def run, do: run(& &1)
+  def run1, do: run(& &1)
 
   def run2, do: run(&reset_and_rerun/1)
 
@@ -147,9 +149,3 @@ defmodule Y2015.Day07 do
   defp value_of(_, i) when is_integer(i), do: i
   defp value_of(memory, var), do: Map.get(memory, var)
 end
-
-# Y2015.Day07.run
-# # => 46065
-
-# Y2015.Day07.run2
-# # => 14134

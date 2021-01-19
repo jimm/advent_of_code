@@ -1,7 +1,12 @@
+# Corporate Policy
+
 defmodule Y2015.Day11 do
   @start "cqjxjnds"
   @illegal_chars_regex ~r/[iol]/
   @two_pair_regex ~r/(.)\1.*(.)\2/
+
+  def run1, do: next_good_password(1)
+  def run2, do: next_good_password(2)
 
   def next_good_password(nth \\ 1) do
     good_passwords()
@@ -65,9 +70,3 @@ defmodule Y2015.Day11 do
     end
   end
 end
-
-# Y2015.Day11.next_good_password
-# # => cqjxxyzz
-
-# Y2015.Day11.next_good_password(2)
-# # => cqkaabcc

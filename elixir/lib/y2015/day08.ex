@@ -1,3 +1,5 @@
+# Matchsticks
+
 defmodule Y2015.Day08 do
   use Common.File
 
@@ -42,9 +44,3 @@ defmodule Y2015.Day08 do
     escape_chars_count(rest, len)
   end
 end
-
-# Y2015.Day08.run1
-# # => 1350
-
-# Y2015.Day08.run2
-# # => 2085

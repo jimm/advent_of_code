@@ -1,3 +1,5 @@
+# Science for Hungry People
+
 defmodule Y2015.Day15 do
   use Common.File
 
@@ -6,7 +8,8 @@ defmodule Y2015.Day15 do
 
   defstruct [:name, :capacity, :durability, :flavor, :texture, :calories]
 
-  def max_attributes do
+  # max attributes
+  def run1 do
     ingredients = read_ingredients()
 
     all_possible_measures(length(ingredients), 100)
@@ -15,7 +18,8 @@ defmodule Y2015.Day15 do
     |> Enum.max()
   end
 
-  def best_500_calorie do
+  # best 500 calorie
+  def run2 do
     ingredients = read_ingredients()
 
     all_possible_measures(length(ingredients), 100)
@@ -84,9 +88,3 @@ defmodule Y2015.Day15 do
     end)
   end
 end
-
-# Y2015.Day15.max_attributes
-# #=> 222870
-
-# Y2015.Day15.best_500_calorie
-# #=> 117936

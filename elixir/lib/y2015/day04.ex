@@ -1,29 +1,24 @@
+# The Ideal Stocking Stuffer
+
 defmodule Y2015.Day04 do
   @key "iwrupvqb"
 
+  def run1 do
+    mine_coin(fn hash ->
+      <<first_n :: size(20), _ :: size(4), _ :: binary>> = hash
+      first_n == 0
+    end)
+  end
+
+  def run2 do
+    mine_coin(fn hash ->
+      <<first_n :: size(24), _ :: binary>> = hash
+      first_n == 0
+    end)
+  end
+
   def mine_coin(f, key \\ @key) do
     Stream.iterate(1, &(&1 + 1))
-    |> Stream.map(fn i ->
-      <<a, b, c, _::binary>> = :crypto.hash(:md5, "#{key}#{i}")
-      {i, {a, b, c}}
-    end)
-    |> Stream.filter(f)
-    |> Enum.take(1)
+    |> Enum.find(fn i -> f.(:crypto.hash(:md5, "#{key}#{i}")) end)
   end
 end
-
-# # five
-# Y2015.Day04.mine_coin(fn {_, {a, b, c}}
-#         when is_integer(a) and a == 0
-#          and is_integer(b) and b == 0
-#          and is_integer(c) and c < 16 -> true
-#       _ -> false
-#     end)
-
-# six
-# Y2015.Day04.mine_coin(fn {_, {a, b, c}}
-#         when is_integer(a) and a == 0
-#          and is_integer(b) and b == 0
-#          and is_integer(c) and c == 0 -> true
-#       _ -> false
-#     end)

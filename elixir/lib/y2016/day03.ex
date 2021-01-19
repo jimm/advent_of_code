@@ -33,7 +33,7 @@ defmodule Y2016.Day03 do
 
   defp read_file2(file) do
     input_lines(file)
-    |> Enum.chunk(3)
+    |> Enum.chunk_every(3)
     |> Enum.map(fn three ->
       [{a0, a1, a2}, {b0, b1, b2}, {c0, c1, c2}] =
         three

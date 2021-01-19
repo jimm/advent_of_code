@@ -1,26 +1,41 @@
+# Reindeer Olympics
+
 defmodule Y2015.Day14 do
   use Common.File
 
+  @race_duration 2503
   @parse_regex ~r{(\w+) can fly (\d+) km/s for (\d+) seconds, but then must rest for (\d+) seconds\.}
 
   defstruct [:name, :speed, :duration, :rest, :state, :time_in_state, :dist_travelled, :points]
 
-  def max_dist do
+  # max dist
+  def run1 do
     read_reindeer()
-    |> Enum.map(&distance_at(&1, 2503))
+    |> Enum.map(&distance_at(&1, @race_duration))
     |> Enum.max()
   end
 
-  def winning_points(race_duration \\ 2503) do
+  def run1_test do
+    read_reindeer(true)
+    |> Enum.map(&distance_at(&1, 1000))
+    |> Enum.max()
+  end
+
+  # wining points
+  def run2 do
     read_reindeer()
-    |> race(race_duration - 1)
+    |> race(@race_duration - 1)
     |> Enum.map(& &1.points)
     |> IO.inspect()
     |> Enum.max()
   end
 
-  defp read_reindeer do
-    input_lines()
+  defp read_reindeer(test \\ false) do
+    if test do
+      input_lines(default_input_path(__MODULE__, "_test"))
+    else
+      input_lines()
+    end
     |> Enum.reduce([], fn line, acc ->
       [name, speed, dur, rest] = parse(line)
 
@@ -120,7 +135,7 @@ defmodule Y2015.Day14 do
 end
 
 # Y2015.Day14.max_dist
-# # => 2653 WRONG
+# # => 2653 WRONG, too low
 
 # Y2015.Day14.winning_points
 # # => 1102, 1635 is too high, 519 too low
