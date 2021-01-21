@@ -10,27 +10,30 @@ defmodule Y2015.Day19 do
     {replacements, start} = parse(input_file)
 
     replacements
-    |> Enum.map(fn [key, val] ->
-      start |> String.split(key) |> make_subs(key, val)
-    end)
+    |> Enum.map(fn [key, val] -> start |> String.split(key) |> make_subs(key, val) end)
     |> List.flatten()
     |> Enum.uniq()
     |> length
   end
 
+  # "e" to medicine
   # Will it help to work backwards? Start with longest substitutions?
-  def e_to_medicine(input_file \\ @input_file) do
+  def run2(input_file \\ @input_file) do
     {replacements, medicine} = parse(input_file)
     reverse_replacements = replacements |> Enum.map(fn [k, v] -> [v, k] end)
     by_length = reverse_replacements |> Enum.group_by(fn [k, _] -> String.length(k) end)
-    IO.puts("starting length of medicine = #{String.length(medicine)}")
     reduce_to_e(medicine, by_length, by_length |> Map.keys() |> Enum.max(), 0)
   end
 
   def parse(input_file) do
     lines = File.read!(input_file) |> String.split("\n")
     {replacement_lines, end_lines} = lines |> Enum.split(length(lines) - 2)
-    {replacement_lines |> Enum.map(&String.split(&1, " => ")), end_lines |> tl |> hd}
+    {
+      replacement_lines
+      |> Enum.reject(&(&1 == ""))
+      |> Enum.map(&String.split(&1, " => ")),
+      end_lines |> hd
+    }
   end
 
   def make_subs(split_points, key, val) do
@@ -49,13 +52,10 @@ defmodule Y2015.Day19 do
   # ================ reduction ================
 
   def reduce_to_e("e", _, _, num_steps) do
-    IO.puts("**************** ding ding ding ****************")
-    IO.puts("num steps = #{num_steps}")
+    num_steps
   end
 
   def reduce_to_e(s, mappings, 0, num_steps) do
-    IO.puts("reduced to this pass = #{s}")
-    IO.puts("num steps = #{num_steps}")
     reduce_to_e(s, mappings, mappings |> Map.keys() |> Enum.max(), num_steps)
   end
 

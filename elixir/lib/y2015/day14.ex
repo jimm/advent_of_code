@@ -6,7 +6,16 @@ defmodule Y2015.Day14 do
   @race_duration 2503
   @parse_regex ~r{(\w+) can fly (\d+) km/s for (\d+) seconds, but then must rest for (\d+) seconds\.}
 
-  defstruct [:name, :speed, :duration, :rest, :state, :time_in_state, :dist_travelled, :points]
+  defstruct [
+    :name,
+    :speed,
+    :fly_duration,
+    :rest_duration,
+    :state,
+    :time_in_state,
+    :dist_travelled,
+    :points
+  ]
 
   # max dist
   def run1 do
@@ -37,14 +46,14 @@ defmodule Y2015.Day14 do
       input_lines()
     end
     |> Enum.reduce([], fn line, acc ->
-      [name, speed, dur, rest] = parse(line)
+      [name, speed, dur, rest_duration] = parse(line)
 
       [
-        %Y2015.Day14{
+        %__MODULE__{
           name: name,
           speed: String.to_integer(speed),
-          duration: String.to_integer(dur),
-          rest: String.to_integer(rest),
+          fly_duration: String.to_integer(dur),
+          rest_duration: String.to_integer(rest_duration),
           state: :flying,
           time_in_state: 0,
           dist_travelled: 0,
@@ -66,36 +75,28 @@ defmodule Y2015.Day14 do
   end
 
   defp distance_at(reindeer, dist_travelled, :fly, secs) do
-    if reindeer.duration >= secs do
-      dist_travelled + reindeer.speed * (reindeer.duration - secs)
+    if reindeer.fly_duration >= secs do
+      dist_travelled + reindeer.speed * secs
     else
       distance_at(
         reindeer,
-        dist_travelled + reindeer.speed * reindeer.duration,
-        :rest,
-        secs - reindeer.duration
+        dist_travelled + reindeer.speed * reindeer.fly_duration,
+        :rest_duration,
+        secs - reindeer.fly_duration
       )
     end
   end
 
-  defp distance_at(reindeer, dist_travelled, :rest, secs) do
-    if reindeer.rest >= secs do
+  defp distance_at(reindeer, dist_travelled, :rest_duration, secs) do
+    if reindeer.rest_duration >= secs do
       dist_travelled
     else
-      distance_at(reindeer, dist_travelled, :fly, secs - reindeer.rest)
+      distance_at(reindeer, dist_travelled, :fly, secs - reindeer.rest_duration)
     end
   end
 
   # ================ method two ================
 
-  # Yes I could count down instead of up but this helps with debugging
-  # defp race(reindeer, t, t), do: reindeer
-  # defp race(reindeer, t, race_duration) do
-  #   reindeer = reindeer |> Enum.map(&update/1)
-  #   max_dist = reindeer |> Enum.map(&(&1.dist_travelled)) |> Enum.max
-  #   reindeer = reindeer |> Enum.map(&(give_points(&1, max_dist)))
-  #   race(reindeer, t+1, race_duration)
-  # end
   defp race(reindeer, 0), do: reindeer
 
   defp race(reindeer, secs) do
@@ -105,15 +106,15 @@ defmodule Y2015.Day14 do
     race(reindeer, secs - 1)
   end
 
-  defp update(%Y2015.Day14{state: :flying, time_in_state: t, duration: t} = reindeer) do
+  defp update(%__MODULE__{state: :flying, time_in_state: t, fly_duration: t} = reindeer) do
     %{reindeer | state: :resting, time_in_state: 1}
   end
 
-  defp update(%Y2015.Day14{state: :flying, time_in_state: t} = reindeer) do
+  defp update(%__MODULE__{state: :flying, time_in_state: t} = reindeer) do
     %{reindeer | dist_travelled: reindeer.dist_travelled + reindeer.speed, time_in_state: t + 1}
   end
 
-  defp update(%Y2015.Day14{state: :resting, time_in_state: t, rest: t} = reindeer) do
+  defp update(%__MODULE__{state: :resting, time_in_state: t, rest_duration: t} = reindeer) do
     %{
       reindeer
       | state: :flying,
@@ -122,11 +123,11 @@ defmodule Y2015.Day14 do
     }
   end
 
-  defp update(%Y2015.Day14{state: :resting} = reindeer) do
+  defp update(%__MODULE__{state: :resting} = reindeer) do
     %{reindeer | time_in_state: reindeer.time_in_state + 1}
   end
 
-  defp give_points(%Y2015.Day14{dist_travelled: d, points: p} = reindeer, max_dist)
+  defp give_points(%__MODULE__{dist_travelled: d, points: p} = reindeer, max_dist)
        when d == max_dist do
     %{reindeer | points: p + 1}
   end
