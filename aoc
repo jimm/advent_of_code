@@ -108,8 +108,12 @@ case $lang in
     ;;
     elixir)
         day=$(printf '%02d' $day)
+        test=""
+        if [ -n "$testing" ] ; then
+            test="_test"
+        fi
         $no_execute iex -S mix <<EOS
-Y$year.Day$day.run$part_num
+Y$year.Day$day.run$part_num$test
 System.halt(0)
 EOS
     ;;
