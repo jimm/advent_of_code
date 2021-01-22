@@ -1,8 +1,6 @@
 # Infinite Elves and Infinite Houses
 
 defmodule Y2015.Day20 do
-  use Common.File
-
   @puzzle_input 36000000
 
   def run1 do
