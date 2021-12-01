@@ -4,21 +4,30 @@
 
 usage() {
     cat <<EOS
-usage: $(basename $0) [-m] [-y year] [-d day] [-l lang] [-L] [-t] [-h] part_num
+usage: $(basename $0) [-m] [-y year] [-d day] [-l lang] [-Y] [-L] [-t] [-h] part_num
 
-  -m       Run \`makeup\` first (a personal cross-language build script)
-  -a dir   Advent of Code root directory. Default is this script's directory
+  -m       Run \`makeup\` first
+  -a dir   Advent of Code root directory. Default is \$aoc
+  -i       Initialize the current/specified day (language specific)
   -y year  Default is current year or, if negative, offset from
            current year (-1 == last year)
   -d day   Default is current day of the month or, if negative,
-           offset from current day (for example, -1 == yesterday)
+           offset from current day (-1 == yesterday)
   -l lang  Required only if more than one lang for a year
+  -Y       List years
   -L       List languages available for the year and exit
   -t       Testing
   -n       Print commands but do not run them
   -h       Print this help and exit
 EOS
     exit "$1"
+}
+
+list_years() {
+    find . -type d -name 'y[0-9][0-9][0-9][0-9]' \
+        | map basename \
+        | sed -e 's/y//' \
+        | sort -u
 }
 
 list_langs() {
@@ -43,21 +52,24 @@ find_lang_for_year() {
     echo ${langs[0]}
 }
 
-dir="$(cd $(dirname "$0") && pwd)"
+dir="$aoc"
 this_year=$(date "+%Y")
 year=$this_year
 today=$(date "+%d" | sed -e 's/^0//')
 day=$today
 makeup=0
+init=0
+list_years=no
 list_langs=no
 lang=""
 testing=""
 no_execute=""
 
-while getopts "may:d:l:Ltnh" opt ; do
+while getopts "maiy:d:l:YLtnh" opt ; do
     case $opt in
         m) makeup=1 ;;
         a) dir="$OPTARG" ;;
+        i) init=1 ;;
         y)
             year="$OPTARG"
             if [ $year -le 0 ] ; then
@@ -71,6 +83,7 @@ while getopts "may:d:l:Ltnh" opt ; do
             fi
             ;;
         l) lang="$OPTARG" ;;
+        Y) list_years=yes ;;
         L) list_langs=yes ;;
         t) testing=1 ;;
         n) no_execute="echo" ;;
@@ -80,11 +93,16 @@ while getopts "may:d:l:Ltnh" opt ; do
 done
 shift $((OPTIND-1))
 part_num=$1
-if [ -z "$part_num" ] && [ $list_langs = "no" ] ; then
+if [ -z "$part_num" ] && [ $list_years = "no" ] && [ $list_langs = "no" ] && [ $init = 0 ]; then
     usage 1
 fi
 
 cd $dir
+
+if [ $list_years = "yes" ] ; then
+    list_years
+    exit 0
+fi
 
 if [ $list_langs = "yes" ] ; then
     list_langs $year
@@ -96,9 +114,49 @@ if [ -z "$lang" ] ; then
 fi
 
 cd $dir/$lang
+if [ $init == 1 ] ; then
+    two_digit_day="$(printf '%02d' $day)"
+    f=""
+    case $lang in
+        crystal)
+            mkdir -p "src/y${year}"
+            f="src/y${year}/day${two_digit_day}.ex"
+            m4 -DYEARNAME="Year${year}" -DDAYNAME="Day${two_digit_day}" src/template.cr > $f
+            ;;
+        elixir)
+            mkdir -p "lib/y${year}"
+            f="y${year}/day${two_digit_day}.ex"
+            m4 -DYEARNAME="Y${year}" -DDAYNAME="Day${two_digit_day}" lib/template.ex > $f
+            ;;
+        lisp)
+            mkdir -p "y${year}"
+            f="y${year}/day${two_digit_day}.lisp"
+            m4 -DYEAR=$year -DDAY=$day template.lisp > $f
+            ;;
+        python)
+            mkdir -p "y${year}"
+            f="y${year}/day${two_digit_day}.py"
+            cp template.py $f
+            ;;
+        ruby)
+            mkdir -p "y${year}"
+            f="y${year}/day${two_digit_day}.rb"
+            m4 -DDAYNAME="Day${two_digit_day}" template.rb > $f
+            ;;
+    esac
+    if [ -n "$f" ] ; then
+        echo "$f"
+        exit 0
+    else
+        echo language "'${lang}'" not found
+        exit 1
+    fi
+fi
+
 if [ $makeup == 1 ] ; then
     makeup || exit 1
 fi
+
 case $lang in
     crystal)
         if [ -n "$testing" ] ; then
