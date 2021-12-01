@@ -10,12 +10,12 @@ class Day
 
   def run
     fname = "part#{@part_number}"
-    fname += "_tests" if @testing
+    fname += '_tests' if @testing
     send(fname.to_sym)
   end
 
   def part1
-    raise "subclasses must implement"
+    raise 'subclasses must implement'
   end
 
   def part1_tests
@@ -23,7 +23,7 @@ class Day
   end
 
   def part2
-    raise "subclasses must implement"
+    raise 'subclasses must implement'
   end
 
   def part2_tests
@@ -49,7 +49,7 @@ class Day
   # Given an optional part number, reads each test chunk and yields the
   # expected value as a string and the data lines. The block must return a
   # [boolean, answer] pair. Prints success or failure for all the tests.
-  def run_chunk_tests(part_number=@part_number)
+  def run_chunk_tests(part_number = @part_number)
     errors = []
     test_chunks(part_number).each do |expected, lines|
       ok, answer = yield(expected, lines)
@@ -60,7 +60,7 @@ class Day
         errors << [expected, answer]
       end
     end
-    puts()
+    puts
     if errors.empty?
       puts('ok')
     else
@@ -70,7 +70,7 @@ class Day
 
   def no_tests
     if @testing
-      puts("no tests available")
+      puts('no tests available')
       exit(0)
     end
   end
@@ -80,9 +80,10 @@ class Day
   # Returns the contents of a data file as an array of lines with line
   # endings stripped. File is found using year, day, part number and
   # the testing flag.
-  def read_data_file(part_number=@part_number)
-    fname = "day#{'%02d' % @day}"
-    fname += "_#{part_number}_test" if @testing
+  def read_data_file(part_number = @part_number)
+    fname = "day#{format('%02d', @day)}"
+    fname += "_#{part_number}"
+    fname += '_test' if @testing
     path = File.join(__dir__, "../data/y#{@year}", "#{fname}.txt")
     IO.readlines(path).map(&:chomp!)
   end
@@ -92,7 +93,7 @@ class Day
   #
   # Normally, empty lines are skipped but if `skip_empty_lines` is false
   # then they're returned as well.
-  def data_lines(part_number=@part_number, skip_empty_lines=true)
+  def data_lines(part_number = @part_number, skip_empty_lines = true)
     lines = read_data_file(part_number)
     lines.reject!(&:empty?) if skip_empty_lines
     lines
@@ -106,7 +107,7 @@ class Day
   # element is the '#' line, minus the '#' and any leading whitespace, and
   # the second element is the array of strings contains the data lines for
   # that test.
-  def test_chunks(part_number=@part_number)
+  def test_chunks(part_number = @part_number)
     chunks = []
     chunk_index = -1
     data_lines(part_number).each do |line|
