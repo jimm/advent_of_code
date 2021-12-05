@@ -1,4 +1,4 @@
-# A two-dimensional map where each cell is a character. There is also a
+# A two-dimensional map where each cell is a single value. There is also a
 # single convenience "cursor" consisting of writable row and column indexes.
 #
 # [0, 0] is at the top left of the map. @row increases down, @col increases
@@ -11,7 +11,7 @@ class Map
   # Assumes all lines are the same length.
   #
   # `wrap_type` may be nil, :both, :row, or :col.
-  def initialize(lines, wrap_type=nil)
+  def initialize(lines, wrap_type = nil)
     @cells = lines.map { |line| line.split('') }
     @wrap_type = wrap_type
     @height = @cells.length
@@ -20,7 +20,7 @@ class Map
   end
 
   # Returns the character at [row][col].
-  def at(row=@row, col=@col)
+  def at(row = @row, col = @col)
     row, col = wrap(row, col)
     @cells[row][col]
   end
@@ -31,12 +31,12 @@ class Map
   end
 
   # Sets char at `row`, `col` to `ch`.
-  def set(row=@row, col=@col, ch)
+  def set(row = @row, col = @col, ch)
     row, col = wrap(row, col)
     @cells[row][col] = ch
   end
 
-  # Move to row and col. 
+  # Move to row and col.
   def move_to(row, col)
     @row, @col = wrap(row, col)
   end
@@ -46,7 +46,7 @@ class Map
     @row, @col = wrap(row + row_delta, col + col_delta)
   end
 
-  def in_bounds?(row=@row, col=@col)
+  def in_bounds?(row = @row, col = @col)
     row >= 0 && row < @height && col >= 0 && col < @width
   end
 
