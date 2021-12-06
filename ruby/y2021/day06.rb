@@ -12,30 +12,23 @@ class Day06 < Day
   def do_part(num_generations)
     lines = data_lines(1)
     fish = lines.first.split(',').map(&:to_i)
-    fish = simulate_generations(fish, num_generations)
-    puts fish.length
+    phases = [0] * 9
+    fish.each { |f| phases[f] += 1 }
+    phases = simulate_generations(phases, num_generations)
+    puts phases.sum
   end
 
-  def simulate_generations(fish, n)
+  def simulate_generations(phases, n)
     n.times do
-      fish = simulate_generation(fish)
+      phases = simulate_generation(phases)
     end
-    fish
+    phases
   end
 
-  def simulate_generation(fish)
-    new_fish = []
-    num_births = 0
-    fish.each do |f|
-      case f
-      when 0
-        new_fish << 6
-        num_births += 1
-      else
-        new_fish << f - 1
-      end
-    end
-    new_fish += [8] * num_births
-    new_fish
+  def simulate_generation(phases)
+    new_phases = phases[1..-1]
+    new_phases[8] = phases[0]       # num births
+    new_phases[6] += phases[0]      # 0 => 6
+    new_phases
   end
 end
