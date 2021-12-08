@@ -85,6 +85,8 @@ class Day
     fname += "_#{part_number}"
     fname += '_test' if @testing
     path = File.join(__dir__, "../data/y#{@year}", "#{fname}.txt")
+    raise "File #{path} does not exist" unless File.exist?(path)
+
     IO.readlines(path).map(&:chomp!)
   end
 
@@ -95,6 +97,7 @@ class Day
   # then they're returned as well.
   def data_lines(part_number = @part_number, skip_empty_lines = true)
     lines = read_data_file(part_number)
+    lines = lines[0..-2] if lines[-1].nil? # no newline at end of file
     lines.reject!(&:empty?) if skip_empty_lines
     lines
   end
