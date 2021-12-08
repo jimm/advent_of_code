@@ -7,6 +7,30 @@ class Day08 < Day
     abdfg abdefg acf abcdefg abcdfg
   ]
 
+  #  aaaa
+  # b    c
+  # b    c
+  #  dddd
+  # e    f
+  # e    f
+  #  gggg
+  #
+  # Unique digits are
+  # - 1 (c, f)
+  # - 7 (a, c, f)
+  # - 4 (b, c, d, f)
+  # - 8 (a, b, c, d, e, f, g)
+  #
+  # c, f are the two right segments.
+  #
+  # Other digits and the segments they have
+  # - 2 (5) (common a,d,g; uses c,e)
+  # - 3 (5) (common a,d,g; uses c,f) (same as 1)
+  # - 5 (5) (common a,d,g; uses b,f) (same as 4)
+  # - 0 (6) (common a,b,f,g; uses c,e)
+  # - 6 (6) (common a,b,f,g; uses d,e) (same as 4)
+  # - 9 (6) (common a,b,f,g; uses c,d) (contains all of "4")
+
   class Digit
     def initialize(value, segments)
     end
@@ -30,91 +54,42 @@ class Day08 < Day
     lines = data_lines(1)
     total = 0
     lines.each do |line|
-      inputs, output_four_digits = line.split('|').map(&:strip).map(&:split)
-      total += unscramble(inputs, output_four_digits)
+      inputs, output_digits = line.split('|').map(&:strip).map(&:split)
+      val = unscramble(inputs, output_digits)
+      total += val
     end
     puts total
   end
 
-  def unscramble(inputs, output_four_digits)
-    warn '' # DEBUG
-    warn '' # DEBUG
-    warn "inputs = #{inputs}" # DEBUG
-    warn "output_four_digits = #{output_four_digits}" # DEBUG
+  def unscramble(inputs, output_digits)
+    # Order segments alphabetically. We don't NEED to do this, but it might
+    # speed things up a bit.
+    inputs.map! { |s| s.split('').sort }
+    output_digits.map! { |s| s.split('').sort }
 
-    # unique digits are
-    # - 1 (c, f)
-    # - 4 (b, c, d, f)
-    # - 7 (a, c, f)
-    # - 8 (a, b, c, d, e, f, g)
-    #
-    # c, f are the two right segments
+    inputs_by_len = inputs.group_by { |s| s.length }
+    # index = real digit, value = array of segment chars that matches
+    digit_map = []
+    digit_map[1] = inputs_by_len[2][0]
+    digit_map[7] = inputs_by_len[3][0]
+    digit_map[4] = inputs_by_len[4][0]
+    digit_map[8] = inputs_by_len[7][0]
+    four_diff = digit_map[4] - digit_map[1]
 
-    # key = real letter, value = possible mixed inputs that match
-    constrained = {}
-    'a'.upto('g') { |ch| constrained[ch] = %w[a b c d e f g] }
+    len_group = inputs_by_len[5]
+    digit_map[3] = len_group.detect { |s| digit_map[1].all? { |ch| s.include?(ch) } }
+    digit_map[5] = len_group.detect { |s| four_diff.all? { |ch| s.include?(ch) } }
+    digit_map[2] = len_group.reject { |s| s == digit_map[3] || s == digit_map[5] }[0]
 
-    # unique segment lengths
-    inputs.sort_by { |s| s.length }.each do |input|
-      segments = input.split('')
-      case input.length
-      when 2 # digit 1
-        %w[c f].each { |ch| constrained[ch] &= segments }
-        %w[a b d e g].each { |ch| constrained[ch] -= segments }
-      when 3 # digit 7
-        if constrained['c'].length == 2 # I've already seen a 1
-          # we now know that the third segment must be 'a'
-          constrained['a'] = segments - constrained['c']
-        end
-        %w[a c f].each { |ch| constrained[ch] &= segments }
-        %w[b d e g].each { |ch| constrained[ch] -= segments }
-      when 4 # digit 4
-        %w[b c d f].each { |ch| constrained[ch] &= segments }
-        %w[a e g].each { |ch| constrained[ch] -= segments }
-      end
+    len_group = inputs_by_len[6]
+    digit_map[9] = len_group.detect { |s| digit_map[4].all? { |ch| s.include?(ch) } }
+    digit_map[6] = len_group.detect { |s| four_diff.all? { |ch| s.include?(ch) } && s != digit_map[9] }
+    digit_map[0] = len_group.reject { |s| s == digit_map[9] || s == digit_map[6] }[0]
+
+    output_digits.map! do |chars|
+      digit_map.index(chars)
     end
-    warn "after unique seg lengths, constrained = #{constrained}" # DEBUG
-    reserve_uniques(constrained)
-    warn "after reserve_uniques, constrained = #{constrained}" # DEBUG
-    # DEBUG
-    return 1234
-
-    # if all keys have one value, we are done
-    until segments_unscrambled?(constrained)
-      inputs
-
-      unscrambled = output_four_digits.each do |s|
-        str = ''
-        s.each_char do |ch|
-          str << constrained[ch][0]
-        end
-        CORRECT.index(str)
-      end
-    end
-
-    unscrambled[0] * 1000 + unscrambled[1] * 100 + unscrambled[2] * 10 + unscrambled[3]
-  end
-
-  def segments_unscrambled?(constrained)
-    constrained.keys.all? { |k| constrained[k].length == 1 }
-  end
-
-  # Whenever any key has one value, remove it from all other values
-  def reserve_uniques(constrained)
-    num_changed = 1
-    while num_changed > 0
-      num_changed = 0
-      constrained.keys.each do |k|
-        val = constrained[k]
-        next unless val.length == 1
-
-        val_to_remove = val[0]
-        constrained.keys.each do |k2|
-          next if k2 == k
-
-          num_changed += 1 if constrained[k2].delete(val_to_remove)
-        end
-      end
-    end
+    output_digits[0] * 1000 + output_digits[1] * 100 +
+      output_digits[2] * 10 + output_digits[3]
   end
 end
