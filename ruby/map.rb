@@ -22,6 +22,8 @@ class Map
   # Returns the character at [row][col].
   def at(row = @row, col = @col)
     row, col = wrap(row, col)
+    return nil unless in_bounds?(row, col)
+
     @cells[row][col]
   end
 
