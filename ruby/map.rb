@@ -19,6 +19,16 @@ class Map
     @row = @col = 0
   end
 
+  # Converts each cell's character, presumably a single digit char, to an
+  # integer.
+  def cells_to_ints!
+    @height.times do |row|
+      @width.times do |col|
+        @cells[row][col] = @cells[row][col].to_i
+      end
+    end
+  end
+
   # Returns the character at [row][col].
   def at(row = @row, col = @col)
     row, col = wrap(row, col)
@@ -36,6 +46,12 @@ class Map
   def set(row = @row, col = @col, ch)
     row, col = wrap(row, col)
     @cells[row][col] = ch
+  end
+
+  # Updates value at `row`, `col` by yielding its value and storing the
+  # result.
+  def update(row = @row, col = @col)
+    @cells[row][col] = yield at(row, col)
   end
 
   # Move to row and col.

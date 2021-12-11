@@ -5,7 +5,7 @@ require_relative '../map'
 
 class Day09 < Day
   def part1
-    map = map_from_data(data_lines(1))
+    map = Map.new(lines).tap(&:cells_to_ints!)
     low_point_vals = []
     map.height.times do |row|
       map.width.times do |col|
@@ -23,7 +23,7 @@ class Day09 < Day
   end
 
   def part2
-    map = map_from_data(data_lines(1))
+    map = Map.new(lines).tap(&:cells_to_ints!)
     basin_cells = Set.new
     basin_sizes = []
     map.height.times do |row|
@@ -38,16 +38,6 @@ class Day09 < Day
       end
     end
     puts basin_sizes.sort.reverse[0, 3].reduce(&:*)
-  end
-
-  def map_from_data(lines)
-    map = Map.new(lines)
-    map.height.times do |row|
-      map.width.times do |col|
-        map.set(row, col, map.at(row, col).to_i)
-      end
-    end
-    map
   end
 
   # Returns an array of [row, col] cell coordinates that make up the basin.
