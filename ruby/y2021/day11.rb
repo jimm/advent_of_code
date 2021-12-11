@@ -33,6 +33,13 @@ class Day11 < Day
   def part2
     lines = data_lines(1)
     map = Map.new(lines).tap(&:cells_to_ints!)
+    num_cells = map.height * map.width
+    step_num = 0
+    while true
+      step_num += 1
+      break if step(map) == num_cells
+    end
+    puts step_num
   end
 
   # Run one step and return the number of flashes.
