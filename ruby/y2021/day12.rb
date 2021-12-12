@@ -62,7 +62,6 @@ class Day12 < Day
         c0.add(c1)
         c1.add(c0)
       end
-      prune_dead_ends
     end
 
     def num_paths(max_small_cave_revisits = 0)
@@ -111,17 +110,6 @@ class Day12 < Day
       end
     end
 
-    def prune_dead_ends
-      dead_ends = find_dead_ends
-      until dead_ends.empty?
-        dead_ends.each do |c|
-          c.remove_self
-          @caves.delete(c.name)
-        end
-        dead_ends = find_dead_ends
-      end
-    end
-
     def find_dead_ends
       @caves.values
             .select { |c| c.dead_end? }
@@ -141,14 +129,6 @@ class Day12 < Day
       num_paths = cave_system.num_paths
       [num_paths == expected, num_paths]
     end
-  end
-
-  def part1_test(lines)
-    expected = lines[0][5..-1].to_i
-    cave_system = build_caves(lines[1..-1])
-    num_paths = cave_system.num_paths
-
-    puts "expected #{expected}, got #{num_paths}" unless num_paths == expected
   end
 
   def part2
