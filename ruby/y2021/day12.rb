@@ -123,12 +123,7 @@ class Day12 < Day
   end
 
   def part1_tests
-    run_chunk_tests(1) do |expected_str, lines|
-      expected = expected_str.split(',').first.to_i
-      cave_system = CaveSystem.new(lines)
-      num_paths = cave_system.num_paths
-      [num_paths == expected, num_paths]
-    end
+    tests(0, :first)
   end
 
   def part2
@@ -137,10 +132,14 @@ class Day12 < Day
   end
 
   def part2_tests
+    tests(1, :last)
+  end
+
+  def tests(max_small_cave_revisits, expected_extractor_sym)
     run_chunk_tests(1) do |expected_str, lines|
-      expected = expected_str.split(',').last.to_i
+      expected = expected_str.split(',').send(expected_extractor_sym).to_i
       cave_system = CaveSystem.new(lines)
-      num_paths = cave_system.num_paths(1)
+      num_paths = cave_system.num_paths(max_small_cave_revisits)
       [num_paths == expected, num_paths]
     end
   end
