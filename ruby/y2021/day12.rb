@@ -1,4 +1,4 @@
-# Puzzle Name
+# Passage Pathing
 
 class Day12 < Day
   class Cave
