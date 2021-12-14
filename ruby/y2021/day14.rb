@@ -9,6 +9,10 @@ class Day14 < Day
     do_part(40)
   end
 
+  def zero_hash
+    Hash.new { |h, k| h[k] = 0 }
+  end
+
   def do_part(steps)
     lines = data_lines(1)
     polymer_template = lines.shift
@@ -17,26 +21,34 @@ class Day14 < Day
       line =~ /(..) -> (.)/
       rules[Regexp.last_match(1)] = Regexp.last_match(2)
     end
-    steps.times { |_| polymer_template = apply_rules(polymer_template, rules) }
-    puts score(polymer_template)
-  end
-
-  def apply_rules(str, rules)
-    new_str = ''
-    (0..str.length - 2).each do |i|
-      two_chars = str[i, 2]
-      middle = rules[two_chars]
-      new_str << str[i] + middle
+    data = zero_hash
+    polymer_template.split('').each_cons(2) { |a, b| data[a + b] += 1 }
+    steps.times do |_|
+      data = apply_rules(data, rules)
     end
-    new_str << str[-1]
-    new_str
+    puts score(data)
   end
 
-  def score(str)
-    groups = str.split('').group_by { |ch| ch }
-    lens = groups.values.map(&:length)
-    min_len = lens.min
-    max_len = lens.max
+  def apply_rules(data, rules)
+    new_data = zero_hash
+    data.each do |key, val|
+      new_data[key[0] + rules[key]] += val
+      new_data[rules[key] + key[1]] += val
+    end
+    new_data
+  end
+
+  def score(data)
+    letter_freqs = zero_hash
+    data.each do |key, val|
+      letter_freqs[key[0]] += val
+      letter_freqs[key[1]] += val
+    end
+
+    # Each letter is counted twice except the ends. The (x+1)/2 compensates
+    # for that.
+    min_len = (letter_freqs.values.min + 1) / 2
+    max_len = (letter_freqs.values.max + 1) / 2
     max_len - min_len
   end
 end
