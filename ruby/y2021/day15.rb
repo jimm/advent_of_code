@@ -1,4 +1,4 @@
-# Puzzle Name
+# Chiton
 
 require 'set'
 require_relative '../map'
