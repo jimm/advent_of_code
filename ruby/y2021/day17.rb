@@ -4,9 +4,23 @@ class Day17 < Day
   def part1
     lines = data_lines(1)
     target = read_target(lines)
-    x_velocity_range = calc_x_range(target[:x])
-    max_heights = x_velocity_range.map { |x| max_height(target, x) }
+
+    max_heights = []
+    (0..100).each do |x_velocity|
+      (0..100).each do |y_velocity|
+        max_heights << max_height_for_trajectory(target, x_velocity, y_velocity)
+      end
+    end
+    max_heights.compact!
     puts max_heights.max
+
+    # pp target                   # DEBUG
+    # x_velocity_range = calc_x_range(target[:x])
+    # x_velocity_range = (0..100) # DEBUG
+    # puts x_velocity_range       # DEBUG
+    # max_heights = x_velocity_range.map { |x| max_height(target, x) }
+    # puts max_heights.inspect    # DEBUG
+    # puts max_heights.max
   end
 
   def part1_tests
@@ -21,6 +35,16 @@ class Day17 < Day
 
   def part2
     lines = data_lines(1)
+    target = read_target(lines)
+
+    max_heights = []
+    (-200..200).each do |x_velocity|
+      (-200..200).each do |y_velocity|
+        max_heights << max_height_for_trajectory(target, x_velocity, y_velocity)
+      end
+    end
+    max_heights.compact!.uniq!
+    puts max_heights.length
   end
 
   def read_target(lines)
