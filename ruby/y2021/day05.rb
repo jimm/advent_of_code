@@ -1,24 +1,8 @@
 # Hydrothermal Venture
 
 require_relative '../map'
+require_relative '../point'
 require_relative '../utils'
-
-class Point
-  attr_accessor :x, :y
-
-  def initialize(x = 0, y = 0)
-    @x = x
-    @y = y
-  end
-
-  def ==(other)
-    @x == other.x && @y == other.y
-  end
-
-  def to_s
-    "Point(x=#{x}, y=#{y})"
-  end
-end
 
 class SegmentMap < Map
   def initialize(segments, rook_moves_only: false)
