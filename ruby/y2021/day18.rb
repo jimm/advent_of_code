@@ -2,9 +2,9 @@
 
 class Day18 < Day
   class SnailfishNumber
-    attr_accessor :parent, :left, :right, :is_left
+    attr_accessor :parent, :is_left
 
-    def self.from_array(arr, parent = nil)
+    def self.from_array(arr)
       left = if arr[0].instance_of?(Integer)
                SnailfishInteger.new(arr[0])
              else
@@ -15,27 +15,49 @@ class Day18 < Day
               else
                 from_array(arr[1])
               end
-      n = SnailfishNumber.new(left, right)
-      left.parent = n
-      right.parent = n
-      n
+      SnailfishPair.new(left, right)
     end
+
+    def left?
+      @is_left
+    end
+
+    def right?
+      !@is_left
+    end
+
+    def to_s
+      self.class.name
+    end
+
+    def inspect
+      to_s
+    end
+  end
+
+
+  class SnailfishPair < SnailfishNumber
+    attr_accessor :left, :right
 
     def initialize(left, right)
       @left = left
       @left.is_left = true
+      @left.parent = self
+
       @right = right
       @right.is_left = false
-      @parent = nil
+      @right.parent = self
     end
 
     def ==(other)
-      @left == other.left && @right == other.right
+      return false unless self.class == other.class
+      (@left.object_id == other.left.object_id || @left == other.left) &&
+        (@right.object_id == other.right.object_id || @right == other.right)
     end
 
-    # Returns a new SnailfishNumber that is the sum of this one and `other`.
+    # Returns a new SnailfishPair that is the sum of this one and `other`.
     def add(other)
-      SnailfishNumber.new(self, other).reduce
+      SnailfishPair.new(self, other).reduce
     end
 
     def magnitude
@@ -46,38 +68,18 @@ class Day18 < Day
       false
     end
 
-    def number?
-      !integer?
-    end
-
-    def left?
-      @is_left
-    end
-
-    def right?
-      !left?
-    end
-
     def number_to_left
-      if right? && @parent
-        left = @parent&.left
-        return left if left&.integer?
-
-        return left.last_number
-      end
-
-      @parent&.number_to_left
+      raise "parent of self" if @parent&.object_id == object_id # check
+      return nil unless @parent
+      return @parent.left.last_number if right?
+      @parent.number_to_left
     end
 
     def number_to_right
-      if left? && @parent
-        right = @parent.right
-        return right if right&.integer?
-
-        return right.first_number
-      end
-
-      @parent&.number_to_right
+      raise "parent of self" if @parent&.object_id == object_id # check
+      return nil unless @parent
+      return @parent.right.first_number if left?
+      @parent.number_to_right
     end
 
     def first_number
@@ -86,18 +88,6 @@ class Day18 < Day
 
     def last_number
       @right.last_number
-    end
-
-    def to_a
-      [@left.to_a, @right.to_a]
-    end
-
-    def to_s
-      to_a.to_s
-    end
-
-    def inspect
-      to_s
     end
 
     def reduce
@@ -109,13 +99,10 @@ class Day18 < Day
         end
 
         deep_ten = find_first_large_integer
-        break unless deep_ten
-
-        parent = deep_ten.parent
-        if deep_ten == parent.left
-          parent.left = deep_ten.split
+        if deep_ten
+          deep_ten.split
         else
-          parent.right = deep_ten.split
+          break
         end
       end
       self
@@ -123,14 +110,18 @@ class Day18 < Day
 
     # Replaces `old_child` with `new_child` and returns the new child.
     def replace(old_child, new_child)
-      if old_child == @left
+      if @left.object_id == old_child.object_id
         @left = new_child
         @left.is_left = true
-      else
+      elsif @right.object_id == old_child.object_id
         @right = new_child
         @right.is_left = false
+      else
+        raise "old child is not existing child"
       end
       new_child.parent = self
+      # just in case
+      old_child.parent = nil
     end
 
     def find_first_deep_child(level)
@@ -151,17 +142,15 @@ class Day18 < Day
       r.value += @right.value if r
       @parent.replace(self, SnailfishInteger.new(0))
     end
-
-    def split
-      self
-    end
   end
+
 
   class SnailfishInteger < SnailfishNumber
     attr_accessor :value
 
     def initialize(val)
       @value = val
+      @parent = nil
     end
 
     def ==(other)
@@ -208,24 +197,34 @@ class Day18 < Day
       @value.to_s
     end
 
-    def explode
-      self
-    end
-
     def split
-      @parent.replace(self,
-                      SnailfishNumber.new(
-                        SnailfishInteger.new(@value / 2),
-                        SnailfishInteger.new((@value.to_f / 2.0).ceil)
-                      ))
+      left = SnailfishInteger.new(@value / 2)
+      right = SnailfishInteger.new((@value.to_f / 2.0).ceil)
+      sn = SnailfishPair.new(left, right)
+      left.parent = sn
+      right.parent = sn
+      @parent.replace(self, sn)
     end
   end
 
+  # ================================================================
+
   def part1
-    lines = data_lines(1)
+    sum = data_lines(1)
+            .map { |line| parse_snailfish_num(line) }
+            .reduce { |sum, sn| sum.add(sn) }
+    magnitude = sum.magnitude
+    puts magnitude
   end
 
   def part1_tests
+    test_find_and_split([[[[0,7],4],[15,[0,13]]],[1,1]],
+                        [[[[0,7],4],[[7,8],[0,13]]],[1,1]],
+                        15)
+    test_find_and_split([[[[0,7],4],[[7,8],[0,13]]],[1,1]],
+                        [[[[0,7],4],[[7,8],[0,[6,7]]]],[1,1]],
+                        13)
+
     test_explode([[[[[9, 8], 1], 2], 3], 4],
                  [[[[0, 9], 2], 3], 4],
                  [9, 8], nil, 1)
@@ -242,28 +241,28 @@ class Day18 < Day
                  [[3, [2, [8, 0]]], [9, [5, [7, 0]]]],
                  [3, 2], 4, nil)
 
+    # magnitude
+    puts
+    sn = SnailfishNumber.from_array([[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]])
+    magnitude = sn.magnitude
+    if magnitude == 3488
+      puts 'magnitude check ok'
+    else
+      puts "magnitude check error: expected 3488, got #{magnitude}"
+    end
+
+    test_reduce([[[[[4,3],4],4],[7,[[8,4],9]]], [1,1]],
+                [[[[0,7],4],[[7,8],[6,0]]],[8,1]])
+
     run_chunk_tests(1) do |expected, lines|
-      s1, s2 = expected.split(':')
-      expected_magnitude = s1.to_i
-      expected_sum = parse_sailfish_num(s2)
+      expected = eval(expected)
+      expected[:sum] = SnailfishNumber.from_array(expected[:sum])
 
-      sum = lines.map { |line| parse_sailfish_num(line) }
-                 .reduce do |sum, sn|
-        warn "sum = #{sum}" # DEBUG
-        warn "adding sn = #{sn}" # DEBUG
-        sum.add(sn)
-      end
+      sum = lines.map { |line| parse_snailfish_num(line) }
+              .reduce { |sum, sn| sum.add(sn) }
       magnitude = sum.magnitude
-
-      puts sum
-      puts expected_sum
-      puts magnitude
-      puts expected_magnitude
-
-      [
-        sum == expected_sum && magnitude == expected_magnitude,
-        [sum, magnitude]
-      ]
+      answer = {sum: sum, magnitude: expected[:magnitude] ? magnitude : nil}
+      [answer == expected, answer]
     end
   end
 
@@ -289,18 +288,78 @@ class Day18 < Day
 
     deep_one.explode
     if start != expected
-      puts "  error: after explode dest = #{dest}"
+      puts "  error: after explode start = #{start}, expected #{expected}"
       return
     end
 
     puts '  ok'
   end
 
-  def part2
-    lines = data_lines(1)
+  def test_find_and_split(src, dest, first_large)
+    puts
+    puts "test_find_and_split #{src}"
+    start = SnailfishNumber.from_array(src)
+    expected = SnailfishNumber.from_array(dest)
+
+    deep_ten = start.find_first_large_integer
+    if deep_ten.value != first_large
+      puts "  error: expected first large #{first_large}, found #{deep_ten}"
+      return
+    end
+
+    deep_ten.split
+    if start != expected
+      puts "  error: after explode start = #{start}, expected #{expected}"
+    end
+
+    puts '  ok'
   end
 
-  def parse_sailfish_num(line)
+  def test_reduce(src, dest)
+    puts
+    puts "test_reduce #{src}"
+    start = SnailfishNumber.from_array(src)
+    expected = SnailfishNumber.from_array(dest)
+
+    if start.reduce != expected
+      puts "  error: after reduce start = #{start}, expected #{expected}"
+    end
+
+    puts '  ok'
+  end
+
+  # 4490 too high
+  def part2
+    numbers = data_lines(1).map { |line| parse_snailfish_num(line) }
+    max_magnitude = 0
+    numbers.combination(2) do |combination|
+      a, b = *combination
+      mag = a.add(b).magnitude
+      max_magnitude = mag if mag > max_magnitude
+      mag = b.add(a).magnitude
+      max_magnitude = mag if mag > max_magnitude
+    end
+    puts max_magnitude
+  end
+
+  def part2_tests
+    run_chunk_tests(2) do |expected, lines|
+      numbers = lines.map { |line| parse_snailfish_num(line) }
+      max_magnitude = 0
+      numbers.combination(2) do |combination|
+        a, b = *combination
+
+        mag = a.add(b).magnitude
+        max_magnitude = mag if mag > max_magnitude
+
+        mag = b.add(a).magnitude
+        max_magnitude = mag if mag > max_magnitude
+      end
+      [max_magnitude == expected.to_i, max_magnitude]
+    end
+  end
+
+  def parse_snailfish_num(line)
     SnailfishNumber.from_array(eval(line))
   end
 end
