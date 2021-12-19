@@ -330,29 +330,34 @@ class Day18 < Day
 
   # 4490 too high
   def part2
-    numbers = data_lines(1).map { |line| parse_snailfish_num(line) }
     max_magnitude = 0
-    numbers.combination(2) do |combination|
-      a, b = *combination
-      mag = a.add(b).magnitude
+    data_lines(1).combination(2) do |line_a, line_b|
+      mag = parse_snailfish_num(line_a)
+              .add(parse_snailfish_num(line_b))
+              .magnitude
       max_magnitude = mag if mag > max_magnitude
-      mag = b.add(a).magnitude
+
+      mag = parse_snailfish_num(line_b)
+              .add(parse_snailfish_num(line_a))
+              .magnitude
       max_magnitude = mag if mag > max_magnitude
     end
     puts max_magnitude
   end
 
+  # 4490 too high (also right answer for someone else
   def part2_tests
     run_chunk_tests(2) do |expected, lines|
-      numbers = lines.map { |line| parse_snailfish_num(line) }
       max_magnitude = 0
-      numbers.combination(2) do |combination|
-        a, b = *combination
-
-        mag = a.add(b).magnitude
+      lines.combination(2) do |line_a, line_b|
+        mag = parse_snailfish_num(line_a)
+                .add(parse_snailfish_num(line_b))
+                .magnitude
         max_magnitude = mag if mag > max_magnitude
 
-        mag = b.add(a).magnitude
+        mag = parse_snailfish_num(line_b)
+                .add(parse_snailfish_num(line_a))
+                .magnitude
         max_magnitude = mag if mag > max_magnitude
       end
       [max_magnitude == expected.to_i, max_magnitude]
