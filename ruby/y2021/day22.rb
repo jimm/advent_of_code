@@ -4,7 +4,7 @@ require 'set'
 
 class Day22 < Day
   class Solid
-    attr_reader :state, :x, :y, :z
+    attr_reader :state, :x, :y, :z, :subtracted
 
     def initialize(state, x_range, y_range, z_range)
       @state = state
@@ -18,23 +18,50 @@ class Day22 < Day
       @subtracted << solid
     end
 
+    def size
+      @x.size * @y.size * @z.size
+    end
+
     def volume
-      vol = 0
-      @x.each do |x|
-        @y.each do |y|
-          @z.each do |z|
-            vol += 1 if contains?(x, y, z)
+      vol = size
+      return vol if @subtracted.empty?
+      return vol - @subtracted[0].size if @subtracted.size == 1
+
+      warn
+      warn
+      warn "calcuating volume of #{@x}, #{@y}, #{@z}" # DEBUG
+      independents = @subtracted.select do |sub|
+        (@subtracted - [sub]).all? { |osub| !osub.intersects?(sub) }
+      end
+      warn "  #{@subtracted.size} subs, #{independents.size} independents" # DEBUG
+
+      sub_bounds = Solid.new(:off,
+                             (@subtracted.map { |s| s.x.min }.min..@subtracted.map { |s| s.x.max }.max),
+                             (@subtracted.map { |s| s.y.min }.min..@subtracted.map { |s| s.y.max }.max),
+                             (@subtracted.map { |s| s.z.min }.min..@subtracted.map { |s| s.z.max }.max))
+      warn "my size #{vol}, sub_bounds size #{sub_bounds.size}"
+      return vol
+
+      sub_bounds.x.each do |x|
+        sub_bounds.y.each do |y|
+          sub_bounds.z.each do |z|
+            vol -= 1 unless contains?(x, y, z)
           end
         end
       end
       vol
     end
 
-    def contains?(x, y, z)
+    def subtracted?(x, y, z)
       @subtracted.each do |s|
-        return false if s.x.include?(x) && s.y.include?(y) && s.z.include?(z)
+        return true if s.x.include?(x) && s.y.include?(y) && s.z.include?(z)
       end
-      @x.include?(x) && @y.include?(y) && @z.include?(z)
+      false
+    end
+
+    def contains?(x, y, z)
+      !subtracted?(x, y, z) &&
+        @x.include?(x) && @y.include?(y) && @z.include?(z)
     end
 
     def intersects?(other)
@@ -78,6 +105,10 @@ class Day22 < Day
       expected = eval(expected)[:on]
       init_bricks = parse(lines, min_val, max_val)
       on_bricks = run_init(init_bricks)
+      warn 'on_bricks info' # DEBUG
+      on_bricks.each do |ob| # DEBUG
+        warn "  ob.size = #{ob.size}, ob.subtracted.size = #{ob.subtracted.size}" # DEBUG
+      end
       num_on_pixels = on_bricks.map(&:volume).sum
       [expected == num_on_pixels, num_on_pixels]
     end
