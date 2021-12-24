@@ -11,57 +11,14 @@ class Day22 < Day
       @x = x_range
       @y = y_range
       @z = z_range
-      @subtracted = []
     end
 
     def subtract(solid)
       @subtracted << solid
     end
 
-    def size
-      @x.size * @y.size * @z.size
-    end
-
     def volume
-      vol = size
-      return vol if @subtracted.empty?
-      return vol - @subtracted[0].size if @subtracted.size == 1
-
-      warn
-      warn
-      warn "calcuating volume of #{@x}, #{@y}, #{@z}" # DEBUG
-      independents = @subtracted.select do |sub|
-        (@subtracted - [sub]).all? { |osub| !osub.intersects?(sub) }
-      end
-      warn "  #{@subtracted.size} subs, #{independents.size} independents" # DEBUG
-
-      sub_bounds = Solid.new(:off,
-                             (@subtracted.map { |s| s.x.min }.min..@subtracted.map { |s| s.x.max }.max),
-                             (@subtracted.map { |s| s.y.min }.min..@subtracted.map { |s| s.y.max }.max),
-                             (@subtracted.map { |s| s.z.min }.min..@subtracted.map { |s| s.z.max }.max))
-      warn "my size #{vol}, sub_bounds size #{sub_bounds.size}"
-      return vol
-
-      sub_bounds.x.each do |x|
-        sub_bounds.y.each do |y|
-          sub_bounds.z.each do |z|
-            vol -= 1 unless contains?(x, y, z)
-          end
-        end
-      end
-      vol
-    end
-
-    def subtracted?(x, y, z)
-      @subtracted.each do |s|
-        return true if s.x.include?(x) && s.y.include?(y) && s.z.include?(z)
-      end
-      false
-    end
-
-    def contains?(x, y, z)
-      !subtracted?(x, y, z) &&
-        @x.include?(x) && @y.include?(y) && @z.include?(z)
+      @x.size * @y.size * @z.size
     end
 
     def intersects?(other)
@@ -77,6 +34,42 @@ class Day22 < Day
                 ([@x.min, other.x.min].max..[@x.max, other.x.max].min),
                 ([@y.min, other.y.min].max..[@y.max, other.y.max].min),
                 ([@z.min, other.z.min].max..[@z.max, other.z.max].min))
+    end
+
+    # Remove `remove` from `brick` by splitting it up into smaller bricks and
+    # returning those.
+    def split_up(remove)
+      new_bricks = []
+      if @x.min < remove.x.min
+        new_bricks << Solid.new(:on, (@x.min .. (remove.x.min-1)), @y, @z)
+        @x = (remove.x.min..@x.max)
+      end
+      if remove.x.max < @x.max
+        new_bricks << Solid.new(:on, ((remove.x.max + 1) .. @x.max), @y, @z)
+        @x = (@x.min .. remove.x.max)
+      end
+
+      if @y.min < remove.y.min
+        new_bricks << Solid.new(:on, @x, (@y.min .. (remove.y.min-1)), @z)
+        @y = (remove.y.min..@y.max)
+      end
+      if remove.y.max < @y.max
+        new_bricks << Solid.new(:on, @x, ((remove.y.max + 1) .. @y.max), @z)
+        @y = (@y.min .. remove.y.max)
+      end
+
+      if @z.min < remove.z.min
+        new_bricks << Solid.new(:on, @x, @y, (@z.min .. (remove.z.min-1)))
+        @z = (remove.z.min..@z.max)
+      end
+      if remove.z.max < @z.max
+        new_bricks << Solid.new(:on, @x, @y, ((remove.z.max + 1) .. @z.max))
+        @z = (@z.min .. remove.z.max)
+      end
+      if @x != remove.x || @y != remove.y || @z != remove.z
+        raise "error"
+      end
+      new_bricks
     end
   end
 
@@ -105,10 +98,6 @@ class Day22 < Day
       expected = eval(expected)[:on]
       init_bricks = parse(lines, min_val, max_val)
       on_bricks = run_init(init_bricks)
-      warn 'on_bricks info' # DEBUG
-      on_bricks.each do |ob| # DEBUG
-        warn "  ob.size = #{ob.size}, ob.subtracted.size = #{ob.subtracted.size}" # DEBUG
-      end
       num_on_pixels = on_bricks.map(&:volume).sum
       [expected == num_on_pixels, num_on_pixels]
     end
@@ -117,10 +106,16 @@ class Day22 < Day
   def run_init(init_bricks)
     prev_bricks = []
     init_bricks.each do |brick|
+      new_prev_bricks = []
       prev_bricks.each do |b|
         i_brick = b.intersection(brick)
-        b.subtract(i_brick) if i_brick
+        if i_brick
+          new_prev_bricks += b.split_up(i_brick)
+        else
+          new_prev_bricks << b
+        end
       end
+      prev_bricks = new_prev_bricks
       prev_bricks << brick if brick.state == :on
     end
     prev_bricks
