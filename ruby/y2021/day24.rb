@@ -25,52 +25,42 @@ class Day24 < Day
 
     attr_accessor :registers
 
+    def initialize
+      @cache = {}
+    end
+
     def load(instructions)
       @instructions = instructions
     end
 
     def run(inputs)
-      x = 0
-      y = 0
       @z = 0
-      inputs.each_with_index do |digit, i|
-        x = @z % 26 + X_ADDS[i]
-        @z /= DIVS[i] if DIVS[i] != 1
-        x = x == digit ? 0 : 1
-        y = (25 * x) + 1 # 1 if x == digit, else 26
-        @z *= y
-        @z += (digit + Y_ADDS[i]) if x == 1 # that is, if x != digit
+      13.downto(0).each do |i|
+        val = @cache[inputs[0..i]]
+        if val
+          @z = val
+          inputs = inputs[i+1..]
+          break
+        end
       end
-
-      # @inputs = inputs
-      # @instructions.each { |i| run_instruction(i) }
+      inputs.each_with_index do |digit, i|
+        x = (@z & 0xff) + X_ADDS[i]
+        @z >>= 8 if DIVS[i] != 1
+        @z = (@z << 8) + digit + Y_ADDS[i] if x != digit
+        @cache[inputs[0..i]] = @z
+      end
     end
-
-    # def run_instruction(instruction)
-    #   opcode = instruction[0]
-    #   dest_reg = instruction[1]
-    #   operand = instruction[2]
-    #   operand = @registers[operand] if operand.instance_of?(Symbol)
-    #   @registers[dest_reg] = case opcode
-    #                          when :inp
-    #                            @inputs.shift
-    #                          when :add
-    #                            @registers[dest_reg] + operand
-    #                          when :mul
-    #                            @registers[dest_reg] * operand
-    #                          when :div
-    #                            val = @registers[dest_reg].abs / operand.abs
-    #                            val = -val if @registers[dest_reg].negative? != operand.negative?
-    #                            val
-    #                          when :mod
-    #                            @registers[dest_reg] % operand
-    #                          when :eql
-    #                            @registers[dest_reg] == operand ? 1 : 0
-    #                          end
-    # end
 
     def valid?
       @z == 0
+    end
+
+    def get_cache(inputs, i)
+      @cache[inputs[0..i]]
+    end
+
+    def set_cache(inputs, i, val)
+      @cache[inputs[0..i]] = val
     end
   end
 
