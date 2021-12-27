@@ -1,6 +1,17 @@
 # Dirac Dice
 
 class Day21 < Day
+  ROLL_LOOKUPS = []
+  (1..3).each do |roll1|
+    lookup1 = roll1 << 4
+    (1..3).each do |roll2|
+      lookup2 = lookup1 + (roll2 << 2)
+      (1..3).each do |roll3|
+        ROLL_LOOKUPS << lookup2 + roll3
+      end
+    end
+  end
+
   class Pawn
     attr_reader :loc, :score
 
@@ -64,10 +75,15 @@ class Day21 < Day
 
     outcomes = {}
     (1..3).each do |roll1|
+      lookup1 = roll1 << 4
       (1..3).each do |roll2|
+        lookup2 = lookup1 + (roll2 << 2)
         (1..3).each do |roll3|
+          lookup = lookup2 + roll3
+          raise 'lookup build error' unless ROLL_LOOKUPS.include?(lookup)
+
           move = roll1 + roll2 + roll3
-          outcomes[[roll1, roll2, roll3]] = moves[move]
+          outcomes[lookup] = moves[move]
         end
       end
     end
@@ -85,21 +101,23 @@ class Day21 < Day
 
   # FIXME
   def calc_wins(pawns, turn, win_counts, outcomes)
-    (1..3).each do |roll1|
-      (1..3).each do |roll2|
-        (1..3).each do |roll3|
-          loc, score = pawns[turn]
-          new_loc = outcomes[[roll1, roll2, roll3]][loc]
-          new_score = score + (new_loc + 1)
+    # DEBUG this check only valid for test mode
+    if win_counts[0] + win_counts[1] > (444_356_092_776_315 + 341_960_390_180_808 + 1)
+      raise 'logic error: too many universes visited'
+    end
 
-          if new_score >= 21 # pawn wins
-            win_counts[turn] += 1
-          else
-            copy = pawns.dup
-            copy[turn] = [new_loc, score + new_loc + 1]
-            calc_wins(copy, 1 - turn, win_counts, outcomes)
-          end
-        end
+    ROLL_LOOKUPS.each do |lookup|
+      loc, score = pawns[turn]
+      new_loc = outcomes[lookup][loc]
+      new_score = score + (new_loc + 1)
+
+      if new_score >= 21 # pawn wins
+        win_counts[turn] += 1
+      else
+        copy = [0, 0]
+        copy[turn] = [new_loc, score + new_loc + 1]
+        copy[1 - turn] = [pawns[1 - turn][0], pawns[1 - turn][1]]
+        calc_wins(copy, 1 - turn, win_counts, outcomes)
       end
     end
     win_counts
