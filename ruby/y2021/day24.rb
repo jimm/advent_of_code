@@ -26,7 +26,13 @@ class Day24 < Day
     attr_accessor :registers
 
     def initialize
-      @cache = {}
+      @cache = []
+      (0...14).each do |place|
+        @cache[place] = []
+        (1..9).each do |digit|
+          @cache[place][digit] = {}
+        end
+      end
     end
 
     def load(instructions)
@@ -35,19 +41,17 @@ class Day24 < Day
 
     def run(inputs)
       @z = 0
-      13.downto(0).each do |i|
-        val = @cache[inputs[0..i]]
+      inputs.each_with_index do |digit, i|
+        val = get_cache(digit, i, @z)
         if val
           @z = val
-          inputs = inputs[i+1..]
-          break
+        else
+          z_val = @z
+          x = (@z & 0xff) + X_ADDS[i]
+          @z >>= 8 if DIVS[i] != 1
+          @z = (@z << 8) + digit + Y_ADDS[i] if x != digit
+          set_cache(digit, i, @z)
         end
-      end
-      inputs.each_with_index do |digit, i|
-        x = (@z & 0xff) + X_ADDS[i]
-        @z >>= 8 if DIVS[i] != 1
-        @z = (@z << 8) + digit + Y_ADDS[i] if x != digit
-        @cache[inputs[0..i]] = @z
       end
     end
 
@@ -55,12 +59,12 @@ class Day24 < Day
       @z == 0
     end
 
-    def get_cache(inputs, i)
-      @cache[inputs[0..i]]
+    def get_cache(digit, place, z_val)
+      @cache[place][digit][z_val]
     end
 
-    def set_cache(inputs, i, val)
-      @cache[inputs[0..i]] = val
+    def set_cache(digit, place, z_val)
+      @cache[place][digit][z_val] = @z
     end
   end
 
