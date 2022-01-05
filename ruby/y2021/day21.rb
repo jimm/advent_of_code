@@ -103,7 +103,7 @@ class Day21 < Day
   def calc_wins(pawns, turn, win_counts, outcomes)
     # DEBUG this check only valid for test mode
     if win_counts[0] + win_counts[1] > (444_356_092_776_315 + 341_960_390_180_808 + 1)
-      raise 'logic error: too many universes visited'
+      raise 'reality error: too many universes visited'
     end
 
     ROLL_LOOKUPS.each do |lookup|
