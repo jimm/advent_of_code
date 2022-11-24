@@ -30,7 +30,7 @@
 (defvar *input-file-format* "../../data/y~a/day~2,'0D.txt")
 
 (defun input-lines-from (path &key (keep-blank-lines nil))
-  "INPUT-LINES reads the speicified file and returns a list containing the
+  "INPUT-LINES reads the specified file and returns a list containing the
 lines in the file, without newlines. Does not return blank lines unless
 `:keep-blank-lines` is true."
   (with-open-file (f path)
