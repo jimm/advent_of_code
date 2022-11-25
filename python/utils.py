@@ -18,6 +18,7 @@ def file_day(path):
 
 
 def read_data_file(year=None, day=None, part_num=1, testing=False):
+    """Returns the contents of a data file as a string."""
     now = datetime.datetime.today()
     if not day:
         day = now.day
@@ -35,6 +36,7 @@ def read_data_file(year=None, day=None, part_num=1, testing=False):
 
 
 def data_file_lines(year=None, day=None, part_num=1, testing=False):
+    """Returns a list of lines from a data file with blank lines skipped."""
     return [
         line
         for line in read_data_file(year, day, part_num, testing).split("\n")
@@ -43,6 +45,7 @@ def data_file_lines(year=None, day=None, part_num=1, testing=False):
 
 
 def minmax(xs):
+    """Given an iterable, returns a (min, max) tuple."""
     min_val = None
     max_val = None
     for x in xs:
@@ -62,7 +65,9 @@ pause_continue = False
 
 
 def pause():
-    """Writes a message and waits for input."""
+    """Writes a message and waits for input.
+
+    Does nothing if the global `pause_continue` is True."""
     global pause_continue
     if pause_continue:
         return
