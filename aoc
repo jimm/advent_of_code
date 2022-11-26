@@ -4,7 +4,8 @@
 
 usage() {
     cat <<EOS
-usage: $(basename $0) [-m] [-y year] [-d day] [-l lang] [-Y] [-L] [-t] [-h] part_num
+usage: $(basename $0) [-m] [-i] [-y year] [-d day] [-l lang] [-Y] [-L] \\
+           [-t] [-h] part_num
 
   -m       Run \`makeup\` first
   -a dir   Advent of Code root directory. Default is \$aoc
@@ -15,17 +16,20 @@ usage: $(basename $0) [-m] [-y year] [-d day] [-l lang] [-Y] [-L] [-t] [-h] part
            offset from current day (-1 == yesterday)
   -l lang  Required only if more than one lang for a year
   -Y       List years
-  -L       List languages available for the year and exit
+  -L       List languages available for the current year and exit
   -t       Testing
   -n       Print commands but do not run them
   -h       Print this help and exit
+
+A few options don't require \`part_num\`: \`-Y\` (list years), \`-L\` (list
+languages), and \`-i\` (init).
 EOS
     exit "$1"
 }
 
 list_years() {
-    find . -type d -name 'y[0-9][0-9][0-9][0-9]' \
-        | map basename \
+    find . -type d -name 'y[0-9][0-9][0-9][0-9]' -print \
+        | xargs basename \
         | sed -e 's/y//' \
         | sort -u
 }
@@ -50,6 +54,13 @@ find_lang_for_year() {
         exit 1
     fi
     echo ${langs[0]}
+}
+
+exit_if_exists() {
+    if [ -e "$1" ] ; then
+        echo "$(pwd)/$1"
+        exit 0
+    fi
 }
 
 dir="$aoc"
@@ -113,7 +124,8 @@ if [ -z "$lang" ] ; then
     lang=$(find_lang_for_year $year $lang)
 fi
 
-cd $dir/$lang
+cd $lang > /dev/null 2>&1 || ( echo "error: language required" ; exit 1 )
+
 if [ $init == 1 ] ; then
     two_digit_day="$(printf '%02d' $day)"
     f=""
@@ -121,31 +133,40 @@ if [ $init == 1 ] ; then
         crystal)
             mkdir -p "src/y${year}"
             f="src/y${year}/day${two_digit_day}.ex"
+            exit_if_exists "$f"
             m4 -DYEARNAME="Year${year}" -DDAYNAME="Day${two_digit_day}" src/template.cr > $f
             ;;
         elixir)
             mkdir -p "lib/y${year}"
             f="y${year}/day${two_digit_day}.ex"
+            exit_if_exists "$f"
             m4 -DYEARNAME="Y${year}" -DDAYNAME="Day${two_digit_day}" lib/template.ex > $f
             ;;
         lisp)
             mkdir -p "y${year}"
             f="y${year}/day${two_digit_day}.lisp"
+            exit_if_exists "$f"
             m4 -DYEAR=$year -DDAY=$day template.lisp > $f
             ;;
         python)
             mkdir -p "y${year}"
             f="y${year}/day${two_digit_day}.py"
-            cp template.py $f
+            exit_if_exists "$f"
+            m4 -DYEARNAME="$year" -DDAYNAME="$day" template.py > $f
             ;;
         ruby)
             mkdir -p "y${year}"
             f="y${year}/day${two_digit_day}.rb"
+            exit_if_exists "$f"
             m4 -DDAYNAME="Day${two_digit_day}" template.rb > $f
+            ;;
+        *)
+            echo error: language required
+            exit 1
             ;;
     esac
     if [ -n "$f" ] ; then
-        echo "$f"
+        echo "$(pwd)/$f"
         exit 0
     else
         echo language "'${lang}'" not found
@@ -154,7 +175,7 @@ if [ $init == 1 ] ; then
 fi
 
 if [ $makeup == 1 ] ; then
-    makeup || exit 1
+   makeup || exit 1
 fi
 
 case $lang in
