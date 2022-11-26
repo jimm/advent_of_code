@@ -29,7 +29,7 @@ class Map
     end
   end
 
-  # Returns the character at [row][col].
+  # Returns the value at [row][col].
   def at(row = @row, col = @col)
     row, col = wrap(row, col)
     return nil unless in_bounds?(row, col)
@@ -42,10 +42,10 @@ class Map
     at(@row, @col)
   end
 
-  # Sets char at `row`, `col` to `ch`.
-  def set(row = @row, col = @col, ch)
+  # Sets value at `row`, `col` to `val`.
+  def set(row = @row, col = @col, val)
     row, col = wrap(row, col)
-    @cells[row][col] = ch
+    @cells[row][col] = val
   end
 
   # Updates value at `row`, `col` by yielding its value and storing the
