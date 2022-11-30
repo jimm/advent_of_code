@@ -1,4 +1,4 @@
-# Puzzle Name
+# PUZZLENAME
 
 from utils import *
 

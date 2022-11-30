@@ -129,36 +129,42 @@ cd $lang > /dev/null 2>&1 || ( echo "error: language required" ; exit 1 )
 if [ $init == 1 ] ; then
     two_digit_day="$(printf '%02d' $day)"
     f=""
+    puzzle_name=$(curl --silent "https://adventofcode.com/$year/day/$day" | grep -- '--- Day' | sed -e 's/.*--- Day [0-9]*: //' -e 's/ ---.*//')
     case $lang in
         crystal)
             mkdir -p "src/y${year}"
             f="src/y${year}/day${two_digit_day}.ex"
             exit_if_exists "$f"
-            m4 -DYEARNAME="Year${year}" -DDAYNAME="Day${two_digit_day}" src/template.cr > $f
+            m4 -DPUZZLENAME="$puzzle_name" -DYEARNAME="Year${year}" \
+               -DDAYNAME="Day${two_digit_day}" src/template.cr > $f
             ;;
         elixir)
             mkdir -p "lib/y${year}"
             f="y${year}/day${two_digit_day}.ex"
             exit_if_exists "$f"
-            m4 -DYEARNAME="Y${year}" -DDAYNAME="Day${two_digit_day}" lib/template.ex > $f
+            m4 -DPUZZLENAME="$puzzle_name" -DYEARNAME="Y${year}" \
+               -DDAYNAME="Day${two_digit_day}" lib/template.ex > $f
             ;;
         lisp)
             mkdir -p "y${year}"
             f="y${year}/day${two_digit_day}.lisp"
             exit_if_exists "$f"
-            m4 -DYEAR=$year -DDAY=$day template.lisp > $f
+            m4 -DPUZZLENAME="$puzzle_name" -DYEAR=$year -DDAY=$day \
+               template.lisp > $f
             ;;
         python)
             mkdir -p "y${year}"
             f="y${year}/day${two_digit_day}.py"
             exit_if_exists "$f"
-            m4 -DYEARNAME="$year" -DDAYNAME="$day" template.py > $f
+            m4 -DPUZZLENAME="$puzzle_name" -DYEARNAME="$year" -DDAYNAME="$day" \
+               template.py > $f
             ;;
         ruby)
             mkdir -p "y${year}"
             f="y${year}/day${two_digit_day}.rb"
             exit_if_exists "$f"
-            m4 -DDAYNAME="Day${two_digit_day}" template.rb > $f
+            m4 -DPUZZLENAME="$puzzle_name" -DDAYNAME="Day${two_digit_day}" \
+               template.rb > $f
             ;;
         *)
             echo error: language required

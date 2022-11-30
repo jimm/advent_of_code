@@ -1,5 +1,7 @@
 require "../day"
 
+# PUZZLENAME
+
 module YEARNAME
   class DAYNAME < Day
     def part1

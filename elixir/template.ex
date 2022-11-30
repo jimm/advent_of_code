@@ -1,4 +1,4 @@
-# Puzzle Name
+# PUZZLENAME
 
 defmodule YEARNAME.DAYNAME do
   use Common.File
