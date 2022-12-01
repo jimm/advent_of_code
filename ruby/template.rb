@@ -1,4 +1,4 @@
-# PUZZLENAME
+PUZZLENAME
 
 class DAYNAME < Day
   def part1

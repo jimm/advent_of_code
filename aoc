@@ -58,6 +58,7 @@ find_lang_for_year() {
 
 exit_if_exists() {
     if [ -e "$1" ] ; then
+        echo file already exists, no changes made >&2
         echo "$(pwd)/$1"
         exit 0
     fi
@@ -135,14 +136,14 @@ if [ $init == 1 ] ; then
             mkdir -p "src/y${year}"
             f="src/y${year}/day${two_digit_day}.ex"
             exit_if_exists "$f"
-            m4 -DPUZZLENAME="$puzzle_name" -DYEARNAME="Year${year}" \
+            m4 -DPUZZLENAME="# $puzzle_name" -DYEARNAME="Year${year}" \
                -DDAYNAME="Day${two_digit_day}" src/template.cr > $f
             ;;
         elixir)
             mkdir -p "lib/y${year}"
             f="y${year}/day${two_digit_day}.ex"
             exit_if_exists "$f"
-            m4 -DPUZZLENAME="$puzzle_name" -DYEARNAME="Y${year}" \
+            m4 -DPUZZLENAME="# $puzzle_name" -DYEARNAME="Y${year}" \
                -DDAYNAME="Day${two_digit_day}" lib/template.ex > $f
             ;;
         lisp)
@@ -156,14 +157,14 @@ if [ $init == 1 ] ; then
             mkdir -p "y${year}"
             f="y${year}/day${two_digit_day}.py"
             exit_if_exists "$f"
-            m4 -DPUZZLENAME="$puzzle_name" -DYEARNAME="$year" -DDAYNAME="$day" \
+            m4 -DPUZZLENAME="# $puzzle_name" -DYEARNAME="$year" -DDAYNAME="$day" \
                template.py > $f
             ;;
         ruby)
             mkdir -p "y${year}"
             f="y${year}/day${two_digit_day}.rb"
             exit_if_exists "$f"
-            m4 -DPUZZLENAME="$puzzle_name" -DDAYNAME="Day${two_digit_day}" \
+            m4 -DPUZZLENAME="# $puzzle_name" -DDAYNAME="Day${two_digit_day}" \
                template.rb > $f
             ;;
         *)
