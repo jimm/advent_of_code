@@ -48,16 +48,20 @@ class Day
 
   # Given an optional part number, reads each test chunk and yields the
   # expected value as a string and the data lines. The block must return a
-  # [boolean, answer] pair. Prints success or failure for all the tests.
+  # [boolean, answer] pair or [boolean, answer, expected] triplet. Prints
+  # success or failure for all the tests.
+  #
+  # A test chunk starts with a line starting with '# <expected>' and ends at
+  # the next such line or the end of the file.
   def run_chunk_tests(part_number = @part_number)
     errors = []
     test_chunks(part_number).each do |expected, lines|
-      ok, answer = yield(expected, lines)
+      ok, answer, optional_expected = yield(expected, lines)
       if ok
         print('.')
       else
         print('F')
-        errors << [expected, answer]
+        errors << [optional_expected || expected, answer]
       end
     end
     puts
