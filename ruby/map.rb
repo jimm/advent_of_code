@@ -23,9 +23,7 @@ class Map
   # integer.
   def cells_to_ints!
     @height.times do |row|
-      @width.times do |col|
-        @cells[row][col] = @cells[row][col].to_i
-      end
+      @cells[row].map!(&:to_i)
     end
   end
 
@@ -40,6 +38,24 @@ class Map
   # A convenience method that returns `at(@row, @col)`
   def here
     at(@row, @col)
+  end
+
+  def row(row = @row)
+    @cells[row]
+  end
+
+  def col(col = @col)
+    @cells.map { |row| row[col] }
+  end
+
+  # For each row and column, yields the row number, column number, and
+  # value.
+  def each
+    @cells.each_with_index do |row, ir|
+      row.each_with_index do |val, ic|
+        yield ir, ic, val
+      end
+    end
   end
 
   # Sets value at `row`, `col` to `val`.

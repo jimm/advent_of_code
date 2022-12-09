@@ -11,8 +11,35 @@ class Point
     @x == other.x && @y == other.y && @z == other.z
   end
 
+  def distance_squared(other)
+    dx = (other.x - @x)
+    dy = (other.y - @y)
+    dz = (other.z - @z)
+    (dx * dx) + (dy * dy) + (dz * dz)
+  end
+
+  def distance(other)
+    Math.sqrt(distance_squared(other))
+  end
+
+  def manhattan_distance(other)
+    (other.x - @x).abs + (other.y - @y).abs + (other.z - @z).abs
+  end
+
+  def to_a
+    [@x, @y, @z]
+  end
+
+  def hash
+    to_a.hash
+  end
+
+  def eql?(other)
+    self == other
+  end
+
   def to_s
-    "(#{x}, #{y}, #{z})"
+    "(#{@x}, #{@y}, #{@z})"
   end
 
   def inspect
