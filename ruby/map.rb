@@ -101,4 +101,9 @@ class Map
   def to_s
     @cells.map(&:join).join("\n")
   end
+
+  # Stretches out each row so that a square map prints closer to a square.
+  def to_s_corrected
+    @cells.map { |row| row.join(' ') }.join("\n")
+  end
 end
