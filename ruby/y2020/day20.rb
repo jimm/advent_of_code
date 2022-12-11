@@ -1,13 +1,26 @@
+#!/usr/bin/env ruby
+#
 # Jurassic Jigsaw
 
+require_relative '../day'
 require_relative '../map'
 
-
 class Image < Map
-  def top; @cells[0].join; end
-  def right; @cells.map { |row| row[@width - 1] }.join; end
-  def bottom; @cells[@height - 1].join; end
-  def left; @cells.map { |row| row[0] }.join; end
+  def top
+    @cells[0].join
+  end
+
+  def right
+    @cells.map { |row| row[@width - 1] }.join
+  end
+
+  def bottom
+    @cells[@height - 1].join
+  end
+
+  def left
+    @cells.map { |row| row[0] }.join
+  end
 
   # Given a two-dimensional array of `images`, creates and returns a new
   # image comprised of `images`. Assumes borders have been removed.
@@ -15,8 +28,8 @@ class Image < Map
     image_height = images[0][0].height
     lines = Array.new(image_height * images.length) { String.new }
     row_index = 0
-    images.each_with_index do |images_row|
-      images_row.each_with_index do |image|
+    images.each do |images_row|
+      images_row.each do |image|
         cells = image.instance_variable_get(:@cells)
         cells.each_with_index do |row, row_offset|
           lines[row_index + row_offset] << row.join
@@ -33,8 +46,8 @@ class Image < Map
     return if @frozen
 
     n = @width
-    (0...n/2).each do |i|
-      (i...n-i-1).each do |j|
+    (0...n / 2).each do |i|
+      (i...n - i - 1).each do |j|
         ni = n - 1 - i
         nj = n - 1 - j
         tmp = @cells[i][j]
@@ -62,7 +75,6 @@ class Image < Map
   end
 end
 
-
 class Tile
   @@reversals = {}
 
@@ -78,11 +90,13 @@ class Tile
   end
 
   # Define *_border methods
-  %i(top right bottom left).each do |sym|
+  %i[top right bottom left].each do |sym|
     define_method("#{sym}_border".to_sym) { @image.send(sym) }
   end
 
-  def remove_borders; @image.remove_borders; end
+  def remove_borders
+    @image.remove_borders
+  end
 
   def freeze_orientation
     @frozen = true
@@ -93,6 +107,7 @@ class Tile
     return true if maybe_attach_right(other)
     return true if maybe_attach_bottom(other)
     return true if maybe_attach_left(other)
+
     false
   end
 
@@ -145,7 +160,7 @@ class Tile
       other.bottom_tile.left_tile.top_tile = self
     end
 
-    return true
+    true
   end
 
   def maybe_attach_bottom(other)
@@ -171,7 +186,7 @@ class Tile
       other.right_tile.top_tile.left_tile = self
     end
 
-    return true
+    true
   end
 
   def maybe_attach_left(other)
@@ -196,7 +211,7 @@ class Tile
       bottom_tile = other.bottom_tile.right_tile
       other.bottom_tile.right_tile.top_tile = self
     end
-    return true
+    true
   end
 
   def corner?
@@ -208,7 +223,7 @@ class Tile
   end
 
   def to_s
-    puts "Tile #@id:"
+    puts "Tile #{@id}:"
     puts @image
   end
 
@@ -223,30 +238,29 @@ class Tile
   end
 end
 
-
 class Day20 < Day
   MONSTER = [
-    "                  # ",
-    "#    ##    ##    ###",
-    " #  #  #  #  #  #   "
+    '                  # ',
+    '#    ##    ##    ###',
+    ' #  #  #  #  #  #   '
   ]
   MONSTER_HEIGHT = MONSTER.length
   MONSTER_WIDTH = MONSTER[0].length
 
   def part1
-    answer = do_part1()
+    answer = do_part1
     puts(answer)
   end
 
   def part1_tests
-    run_one_test(20899048083289) do |expected|
-      answer = do_part1()
+    run_one_test(20_899_048_083_289) do |expected|
+      answer = do_part1
       [answer == expected, answer]
     end
   end
 
   def do_part1
-    tiles = parse()
+    tiles = parse
     attach_tiles(tiles)
 
     corners = tiles.select(&:corner?)
@@ -254,24 +268,24 @@ class Day20 < Day
     top_lefts = tiles.select { |t| t.top_tile.nil? && t.left_tile.nil? && t.bottom_tile && t.right_tile }
     top_left = top_lefts.first
 
-    return corners.map(&:id).reduce(&:*)
+    corners.map(&:id).reduce(&:*)
   end
 
   def part2
-    answer = do_part2()
+    answer = do_part2
     # dammit 2787 is too high
     puts(answer)
   end
 
   def part2_tests
     run_one_test(273) do |expected|
-      answer = do_part2()
+      answer = do_part2
       [answer == expected, answer]
     end
   end
 
   def do_part2
-    tiles = parse()
+    tiles = parse
     attach_tiles(tiles)
     tiles.each(&:remove_borders)
 
@@ -279,10 +293,10 @@ class Day20 < Day
     image_matrix = []
     top_left_corner = tiles.detect { |t| t.top_tile.nil? && t.left_tile.nil? }
     t = top_left_corner
-    while t do
+    while t
       row = []
       row_start = t
-      while t do
+      while t
         row << t.image
         t = t.right_tile
       end
@@ -323,6 +337,7 @@ class Day20 < Day
     2.times do
       4.times do
         return true if t1.maybe_attach(t2)
+
         t2.rotate
       end
       t2.flip
@@ -345,6 +360,7 @@ class Day20 < Day
       4.times do
         locs = find_monsters_in_image(image, offsets)
         return locs if locs
+
         image.rotate
       end
       image.flip
@@ -374,10 +390,8 @@ class Day20 < Day
     lines = []
     data_lines(1).each do |line|
       if line =~ /Tile (\d+)/
-        if tile_id
-          tiles << Tile.new(tile_id, lines)
-        end
-        tile_id = $1.to_i
+        tiles << Tile.new(tile_id, lines) if tile_id
+        tile_id = ::Regexp.last_match(1).to_i
         lines = []
       else
         lines << line
@@ -385,4 +399,10 @@ class Day20 < Day
     end
     tiles << Tile.new(tile_id, lines)
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

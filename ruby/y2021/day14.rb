@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Extended Polymerization
+
+require_relative '../day'
 
 class Day14 < Day
   def part1
@@ -51,4 +55,10 @@ class Day14 < Day
     max_len = (letter_freqs.values.max + 1) / 2
     max_len - min_len
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

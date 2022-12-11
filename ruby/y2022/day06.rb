@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Tuning Trouble
+
+require_relative '../day'
 
 class Day06 < Day
   PART_PATTERN_LENGTH = [4, 14]
@@ -36,4 +40,10 @@ class Day06 < Day
       return i + n if chars[i, n].uniq.length == n
     end
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

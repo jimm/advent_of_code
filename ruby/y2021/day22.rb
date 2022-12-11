@@ -1,6 +1,9 @@
+#!/usr/bin/env ruby
+#
 # Reactor Reboot
 
 require 'set'
+require_relative '../day'
 
 class Day22 < Day
   class Solid
@@ -41,34 +44,33 @@ class Day22 < Day
     def split_up(remove)
       new_bricks = []
       if @x.min < remove.x.min
-        new_bricks << Solid.new(:on, (@x.min .. (remove.x.min-1)), @y, @z)
+        new_bricks << Solid.new(:on, (@x.min..(remove.x.min - 1)), @y, @z)
         @x = (remove.x.min..@x.max)
       end
       if remove.x.max < @x.max
-        new_bricks << Solid.new(:on, ((remove.x.max + 1) .. @x.max), @y, @z)
-        @x = (@x.min .. remove.x.max)
+        new_bricks << Solid.new(:on, ((remove.x.max + 1)..@x.max), @y, @z)
+        @x = (@x.min..remove.x.max)
       end
 
       if @y.min < remove.y.min
-        new_bricks << Solid.new(:on, @x, (@y.min .. (remove.y.min-1)), @z)
+        new_bricks << Solid.new(:on, @x, (@y.min..(remove.y.min - 1)), @z)
         @y = (remove.y.min..@y.max)
       end
       if remove.y.max < @y.max
-        new_bricks << Solid.new(:on, @x, ((remove.y.max + 1) .. @y.max), @z)
-        @y = (@y.min .. remove.y.max)
+        new_bricks << Solid.new(:on, @x, ((remove.y.max + 1)..@y.max), @z)
+        @y = (@y.min..remove.y.max)
       end
 
       if @z.min < remove.z.min
-        new_bricks << Solid.new(:on, @x, @y, (@z.min .. (remove.z.min-1)))
+        new_bricks << Solid.new(:on, @x, @y, (@z.min..(remove.z.min - 1)))
         @z = (remove.z.min..@z.max)
       end
       if remove.z.max < @z.max
-        new_bricks << Solid.new(:on, @x, @y, ((remove.z.max + 1) .. @z.max))
-        @z = (@z.min .. remove.z.max)
+        new_bricks << Solid.new(:on, @x, @y, ((remove.z.max + 1)..@z.max))
+        @z = (@z.min..remove.z.max)
       end
-      if @x != remove.x || @y != remove.y || @z != remove.z
-        raise "error"
-      end
+      raise 'error' if @x != remove.x || @y != remove.y || @z != remove.z
+
       new_bricks
     end
   end
@@ -143,4 +145,10 @@ class Day22 < Day
       ([zmin, min_val].max..[zmax, max_val].min)
     ]
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

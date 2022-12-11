@@ -1,26 +1,30 @@
+#!/usr/bin/env ruby
+#
 # Rain Risk
+
+require_relative '../day'
 
 class Ship
   HEADING_TO_DELTA = {
-    :north => [0, 1],
-    :south => [0, -1],
-    :east => [1, 0],
-    :west => [-1, 0]
+    north: [0, 1],
+    south: [0, -1],
+    east: [1, 0],
+    west: [-1, 0]
   }
   HEADING_TURNS = {
-    [:north, 'L'] => [:west, :south, :east, :north],
-    [:north, 'R'] => [:east, :south, :west, :north],
-    [:south, 'L'] => [:east, :north, :west, :south],
-    [:south, 'R'] => [:west, :north, :east, :south],
-    [:east, 'L'] => [:north, :west, :south, :east],
-    [:east, 'R'] => [:south, :west, :north, :east],
-    [:west, 'L'] => [:south, :east, :north, :west],
-    [:west, 'R'] => [:north, :east, :south, :west]
+    [:north, 'L'] => %i[west south east north],
+    [:north, 'R'] => %i[east south west north],
+    [:south, 'L'] => %i[east north west south],
+    [:south, 'R'] => %i[west north east south],
+    [:east, 'L'] => %i[north west south east],
+    [:east, 'R'] => %i[south west north east],
+    [:west, 'L'] => %i[south east north west],
+    [:west, 'R'] => %i[north east south west]
   }
 
   def initialize
     @x = @y = 0
-    @wx = 10              # waypoint
+    @wx = 10 # waypoint
     @wy = 1
     @heading = :east
   end
@@ -75,12 +79,10 @@ class Ship
           else                  # lower right -> lower left
             @wx, @wy = @wy, -@wx
           end
-        else                    # left half
-          if @wx >= 0           # upper left -> upper right
-            @wx, @wy = -@wy, @wx
-          else                  # lower left -> upper left
-            @wx, @wy = @wy, -@wx
-          end
+        elsif @wx >= 0 # left half
+          @wx, @wy = -@wy, @wx # upper left -> upper right
+        else                  # lower left -> upper left
+          @wx, @wy = @wy, -@wx
         end
       end
     end
@@ -105,4 +107,10 @@ class Day12 < Day
     data_lines(1).each { |line| ship.move(line, func_sym) }
     puts(ship.manhattan_distance_from_origin)
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

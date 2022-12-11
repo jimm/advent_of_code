@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Snailfish
+
+require_relative '../day'
 
 class Day18 < Day
   class SnailfishNumber
@@ -35,7 +39,6 @@ class Day18 < Day
     end
   end
 
-
   class SnailfishPair < SnailfishNumber
     attr_accessor :left, :right
 
@@ -51,8 +54,9 @@ class Day18 < Day
 
     def ==(other)
       return false unless self.class == other.class
-      (@left.object_id == other.left.object_id || @left == other.left) &&
-        (@right.object_id == other.right.object_id || @right == other.right)
+
+      (@left.equal?(other.left) || @left == other.left) &&
+        (@right.equal?(other.right) || @right == other.right)
     end
 
     # Returns a new SnailfishPair that is the sum of this one and `other`.
@@ -69,16 +73,18 @@ class Day18 < Day
     end
 
     def number_to_left
-      raise "parent of self" if @parent&.object_id == object_id # check
+      raise 'parent of self' if @parent&.object_id == object_id # check
       return nil unless @parent
       return @parent.left.last_number if right?
+
       @parent.number_to_left
     end
 
     def number_to_right
-      raise "parent of self" if @parent&.object_id == object_id # check
+      raise 'parent of self' if @parent&.object_id == object_id # check
       return nil unless @parent
       return @parent.right.first_number if left?
+
       @parent.number_to_right
     end
 
@@ -110,14 +116,14 @@ class Day18 < Day
 
     # Replaces `old_child` with `new_child` and returns the new child.
     def replace(old_child, new_child)
-      if @left.object_id == old_child.object_id
+      if @left.equal?(old_child)
         @left = new_child
         @left.is_left = true
-      elsif @right.object_id == old_child.object_id
+      elsif @right.equal?(old_child)
         @right = new_child
         @right.is_left = false
       else
-        raise "old child is not existing child"
+        raise 'old child is not existing child'
       end
       new_child.parent = self
       # just in case
@@ -143,7 +149,6 @@ class Day18 < Day
       @parent.replace(self, SnailfishInteger.new(0))
     end
   end
-
 
   class SnailfishInteger < SnailfishNumber
     attr_accessor :value
@@ -211,18 +216,18 @@ class Day18 < Day
 
   def part1
     sum = data_lines(1)
-            .map { |line| parse_snailfish_num(line) }
-            .reduce { |sum, sn| sum.add(sn) }
+          .map { |line| parse_snailfish_num(line) }
+          .reduce { |sum, sn| sum.add(sn) }
     magnitude = sum.magnitude
     puts magnitude
   end
 
   def part1_tests
-    test_find_and_split([[[[0,7],4],[15,[0,13]]],[1,1]],
-                        [[[[0,7],4],[[7,8],[0,13]]],[1,1]],
+    test_find_and_split([[[[0, 7], 4], [15, [0, 13]]], [1, 1]],
+                        [[[[0, 7], 4], [[7, 8], [0, 13]]], [1, 1]],
                         15)
-    test_find_and_split([[[[0,7],4],[[7,8],[0,13]]],[1,1]],
-                        [[[[0,7],4],[[7,8],[0,[6,7]]]],[1,1]],
+    test_find_and_split([[[[0, 7], 4], [[7, 8], [0, 13]]], [1, 1]],
+                        [[[[0, 7], 4], [[7, 8], [0, [6, 7]]]], [1, 1]],
                         13)
 
     test_explode([[[[[9, 8], 1], 2], 3], 4],
@@ -243,7 +248,7 @@ class Day18 < Day
 
     # magnitude
     puts
-    sn = SnailfishNumber.from_array([[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]])
+    sn = SnailfishNumber.from_array([[[[8, 7], [7, 7]], [[8, 6], [7, 7]]], [[[0, 7], [6, 6]], [8, 7]]])
     magnitude = sn.magnitude
     if magnitude == 3488
       puts 'magnitude check ok'
@@ -251,17 +256,17 @@ class Day18 < Day
       puts "magnitude check error: expected 3488, got #{magnitude}"
     end
 
-    test_reduce([[[[[4,3],4],4],[7,[[8,4],9]]], [1,1]],
-                [[[[0,7],4],[[7,8],[6,0]]],[8,1]])
+    test_reduce([[[[[4, 3], 4], 4], [7, [[8, 4], 9]]], [1, 1]],
+                [[[[0, 7], 4], [[7, 8], [6, 0]]], [8, 1]])
 
     run_chunk_tests(1) do |expected, lines|
       expected = eval(expected)
       expected[:sum] = SnailfishNumber.from_array(expected[:sum])
 
       sum = lines.map { |line| parse_snailfish_num(line) }
-              .reduce { |sum, sn| sum.add(sn) }
+                 .reduce { |sum, sn| sum.add(sn) }
       magnitude = sum.magnitude
-      answer = {sum: sum, magnitude: expected[:magnitude] ? magnitude : nil}
+      answer = { sum: sum, magnitude: expected[:magnitude] ? magnitude : nil }
       [answer == expected, answer]
     end
   end
@@ -308,9 +313,7 @@ class Day18 < Day
     end
 
     deep_ten.split
-    if start != expected
-      puts "  error: after explode start = #{start}, expected #{expected}"
-    end
+    puts "  error: after explode start = #{start}, expected #{expected}" if start != expected
 
     puts '  ok'
   end
@@ -321,9 +324,7 @@ class Day18 < Day
     start = SnailfishNumber.from_array(src)
     expected = SnailfishNumber.from_array(dest)
 
-    if start.reduce != expected
-      puts "  error: after reduce start = #{start}, expected #{expected}"
-    end
+    puts "  error: after reduce start = #{start}, expected #{expected}" if start.reduce != expected
 
     puts '  ok'
   end
@@ -333,13 +334,13 @@ class Day18 < Day
     max_magnitude = 0
     data_lines(1).combination(2) do |line_a, line_b|
       mag = parse_snailfish_num(line_a)
-              .add(parse_snailfish_num(line_b))
-              .magnitude
+            .add(parse_snailfish_num(line_b))
+            .magnitude
       max_magnitude = mag if mag > max_magnitude
 
       mag = parse_snailfish_num(line_b)
-              .add(parse_snailfish_num(line_a))
-              .magnitude
+            .add(parse_snailfish_num(line_a))
+            .magnitude
       max_magnitude = mag if mag > max_magnitude
     end
     puts max_magnitude
@@ -351,13 +352,13 @@ class Day18 < Day
       max_magnitude = 0
       lines.combination(2) do |line_a, line_b|
         mag = parse_snailfish_num(line_a)
-                .add(parse_snailfish_num(line_b))
-                .magnitude
+              .add(parse_snailfish_num(line_b))
+              .magnitude
         max_magnitude = mag if mag > max_magnitude
 
         mag = parse_snailfish_num(line_b)
-                .add(parse_snailfish_num(line_a))
-                .magnitude
+              .add(parse_snailfish_num(line_a))
+              .magnitude
         max_magnitude = mag if mag > max_magnitude
       end
       [max_magnitude == expected.to_i, max_magnitude]
@@ -367,4 +368,10 @@ class Day18 < Day
   def parse_snailfish_num(line)
     SnailfishNumber.from_array(eval(line))
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

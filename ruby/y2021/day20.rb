@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Trench Map
+
+require_relative '../day'
 
 class Day20 < Day
   class Image
@@ -94,7 +98,11 @@ class Day20 < Day
     image = Image.parse(data_lines(1))
     puts
     puts image
-    2.times { image.sharpen!; puts; puts image }
+    2.times do
+      image.sharpen!
+      puts
+      puts image
+    end
     # test ok but 4697 too low; 5133 too high (as is 5940)
     puts image.num_on_pixels
   end
@@ -105,4 +113,10 @@ class Day20 < Day
 
   def parse(lines)
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Binary Diagnostic
+
+require_relative '../day'
 
 class Day03 < Day
   def part1
@@ -69,4 +73,10 @@ class Day03 < Day
     end
     most_common
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

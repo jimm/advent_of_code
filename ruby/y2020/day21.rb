@@ -1,16 +1,20 @@
+#!/usr/bin/env ruby
+#
 # Allergen Assessment
+
+require_relative '../day'
 
 class Food
   attr_reader :ingredients, :allergens
 
   def initialize(line)
     line =~ /(.*) \(contains (.*)\)/
-    ingredients, contains = $1, $2
-    @ingredients = $1.split(' ')
-    @allergens = $2.split(', ')
+    ingredients = ::Regexp.last_match(1)
+    contains = ::Regexp.last_match(2)
+    @ingredients = ::Regexp.last_match(1).split(' ')
+    @allergens = ::Regexp.last_match(2).split(', ')
   end
 end
-
 
 class Day21 < Day
   def part1
@@ -51,8 +55,8 @@ class Day21 < Day
 
     uniquify_allergen_ingredients!(allergen_ingredients)
     sorted_ingredients = allergen_ingredients.keys.sort
-                           .map { |k| allergen_ingredients[k].first }
-    puts(sorted_ingredients.join(","))
+                                             .map { |k| allergen_ingredients[k].first }
+    puts(sorted_ingredients.join(','))
   end
 
   def part2_tests
@@ -62,13 +66,17 @@ class Day21 < Day
   def uniquify_allergen_ingredients!(h)
     while h.values.any? { |vals| vals.length > 1 }
       unique_vals = h.keys
-                      .select { |k| h[k].length == 1 }
-                      .map { |k| h[k].first }
+                     .select { |k| h[k].length == 1 }
+                     .map { |k| h[k].first }
       h.each_key do |k|
-        if h[k].length > 1
-          h[k] = h[k] - unique_vals
-        end
+        h[k] = h[k] - unique_vals if h[k].length > 1
       end
     end
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Lanternfish
+
+require_relative '../day'
 
 class Day06 < Day
   def part1
@@ -31,4 +35,10 @@ class Day06 < Day
     new_phases[6] += phases[0]      # 0 => 6
     new_phases
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

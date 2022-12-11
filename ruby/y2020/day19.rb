@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Monster Messages
+
+require_relative '../day'
 
 class Day19 < Day
   def part1
@@ -33,7 +37,7 @@ class Day19 < Day
         # This is a bogus test because we don't know if the string matched
         # by rule 42 is longer than the string matched by 31. However, it
         # produces the correct answer :-)
-        the_42s != nil && the_31s != nil && the_42s.length > the_31s.length
+        !the_42s.nil? && !the_31s.nil? && the_42s.length > the_31s.length
       else
         false
       end
@@ -58,19 +62,19 @@ class Day19 < Day
       index, rule = line.split(': ')
       index = index.to_i
 
-      if rule[0] == '"'
-        rule = rule[1]
-      else
-        rule = [:or] + rule.split('|').map do |num_text|
-          [:cat] + num_text.split(' ').map(&:to_i)
-        end
-      end
+      rule = if rule[0] == '"'
+               rule[1]
+             else
+               [:or] + rule.split('|').map do |num_text|
+                 [:cat] + num_text.split(' ').map(&:to_i)
+               end
+             end
       rules[index.to_i] = rule
     end
     [rules, inputs]
   end
 
-  def reduce(rules, rule=rules[0])
+  def reduce(rules, rule = rules[0])
     case rule
     when Symbol, String
       rule
@@ -83,6 +87,7 @@ class Day19 < Day
 
   def reduced_to_regex_str(reduced)
     return reduced if reduced.instance_of?(String)
+
     sym, *rest = reduced
     if sym == :cat
       rest.map { |r| reduced_to_regex_str(r) }.join('')
@@ -100,4 +105,10 @@ class Day19 < Day
   def count_matches(regex, inputs)
     inputs.select { |input| regex =~ input }.length
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

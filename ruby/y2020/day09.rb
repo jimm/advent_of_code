@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Encoding Error
+
+require_relative '../day'
 
 class Day09 < Day
   def part1
@@ -12,14 +16,16 @@ class Day09 < Day
   end
 
   def invalid_number(input, window_size)
-    window, data = input[0..window_size-1], input[window_size..-1]
-    while !data.empty?
-      return data[0] if !sum_of_two_previous_different(window, data[0])
+    window = input[0..window_size - 1]
+    data = input[window_size..-1]
+    until data.empty?
+      return data[0] unless sum_of_two_previous_different(window, data[0])
+
       window.shift(1)
       window.push(data[0])
       data.shift(1)
     end
-    raise "invalid number not found"
+    raise 'invalid number not found'
   end
 
   def sum_of_two_previous_different(window, val)
@@ -39,7 +45,7 @@ class Day09 < Day
 
   def do_part2(data, window_size)
     n = invalid_number(data, window_size)
-    while !data.empty?
+    until data.empty?
       sum_end_index = find_sum_end_index(n, data)
       if sum_end_index
         min, max = data[0..sum_end_index].minmax
@@ -55,8 +61,15 @@ class Day09 < Day
     while sum < n
       sum += data[i]
       return i if sum == n
+
       i += 1
     end
     nil
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Report Repair
+
+require_relative '../day'
 
 class Day01 < Day
   def part1
@@ -16,4 +20,10 @@ class Day01 < Day
       .detect { |vals| vals.sum == 2020 }
       .reduce(:*)
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

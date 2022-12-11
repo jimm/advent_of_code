@@ -1,6 +1,9 @@
+#!/usr/bin/env ruby
+#
 # Treetop Tree House
 
 require 'set'
+require_relative '../day'
 require_relative '../map'
 
 class Day08 < Day
@@ -102,4 +105,10 @@ class Day08 < Day
 
     distances.reduce(&:*)
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Binary Boarding
+
+require_relative '../day'
 
 class Day05 < Day
   def part1
@@ -18,19 +22,22 @@ class Day05 < Day
   end
 
   def part2
-    no_tests()
+    no_tests
 
     entries = data_lines(1)
     seats = {}
-    entries.each { |entry| num = seat_num_from_code(entry); seats[num] = num }
+    entries.each do |entry|
+      num = seat_num_from_code(entry)
+      seats[num] = num
+    end
     min, max = seats.keys.minmax
-    (min+1...max).each do |seat_num|
+    (min + 1...max).each do |seat_num|
       if seats[seat_num].nil? && !seats[seat_num - 1].nil? && !seats[seat_num + 1].nil?
         puts(seat_num)
         exit(0)
       end
     end
-    puts("seat not found")
+    puts('seat not found')
   end
 
   def seat_num_from_code(code)
@@ -39,4 +46,10 @@ class Day05 < Day
       .gsub(/[FL]/, '0')
       .to_i(2)
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

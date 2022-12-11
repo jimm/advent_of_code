@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Rucksack Reorganization
+
+require_relative '../day'
 
 class Day03 < Day
   def part1
@@ -68,4 +72,10 @@ class Day03 < Day
   def letter_score(letter)
     ('a'..'z').include?(letter) ? (letter.ord - 'a'.ord + 1) : (letter.ord - 'A'.ord + 27)
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

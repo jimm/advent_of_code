@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Dirac Dice
+
+require_relative '../day'
 
 class Day21 < Day
   ROLL_LOOKUPS = []
@@ -66,7 +70,7 @@ class Day21 < Day
     moves = []
     (3..9).each do |move|
       moves[move] = []
-      (0..9).each do |start_loc|
+      10.times do |start_loc|
         end_loc = (start_loc + move) % 10
         moves[move] << end_loc
         # score increment = end_loc + 1 (locs 0-9, score vals 1-10)
@@ -122,4 +126,10 @@ class Day21 < Day
     end
     win_counts
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

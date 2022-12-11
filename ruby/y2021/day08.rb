@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Seven Segment Search
+
+require_relative '../day'
 
 class Day08 < Day
   # Digits 0-9 encoded as seven-segment displays as described in the puzzle
@@ -92,4 +96,10 @@ class Day08 < Day
     output_digits[0] * 1000 + output_digits[1] * 100 +
       output_digits[2] * 10 + output_digits[3]
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

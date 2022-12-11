@@ -1,13 +1,16 @@
+#!/usr/bin/env ruby
+#
 # Combo Breaker
 
 require 'bigdecimal/util'
+require_relative '../day'
 
 class Day25 < Day
   SEED = 7
 
   def part1
-    card_public_key = 8987316
-    door_public_key = 14681524
+    card_public_key = 8_987_316
+    door_public_key = 14_681_524
 
     # one way
     card_loop_size = find_loop_size(SEED, card_public_key)
@@ -20,31 +23,31 @@ class Day25 < Day
   end
 
   def part1_tests
-    card_public_key = 5764801
-    door_public_key = 17807724
+    card_public_key = 5_764_801
+    door_public_key = 17_807_724
     card_loop_size = 8
     door_loop_size = 11
-    expected_encryption_key = 14897079
+    expected_encryption_key = 14_897_079
 
     errors = []
     test(card_public_key, transform(SEED, card_loop_size),
-         "transform card", errors)
+         'transform card', errors)
     test(door_public_key, transform(SEED, door_loop_size),
-         "transform door", errors)
+         'transform door', errors)
     test(card_loop_size, find_loop_size(SEED, card_public_key),
-         "find card loop", errors)
+         'find card loop', errors)
     test(door_loop_size, find_loop_size(SEED, door_public_key), "
 find door loop", errors)
 
     card_loop_size = find_loop_size(SEED, card_public_key)
     test(expected_encryption_key, transform(door_public_key, card_loop_size),
-         "find key w/door", errors)
+         'find key w/door', errors)
     test(expected_encryption_key, transform(card_public_key, door_loop_size),
-         "find key w/card", errors)
+         'find key w/card', errors)
 
     puts
     if errors.empty?
-      puts "ok"
+      puts 'ok'
     else
       errors.each do |err|
         puts "error: #{err[2]} expected #{err[0]}, got #{err[1]}"
@@ -66,11 +69,11 @@ find door loop", errors)
 
     # Efficient computation with integer exponents (from Wikipedia's
     # Exponentiation page)
-    powers = {}                 # key = power, val = num ** power
+    powers = {} # key = power, val = num ** power
     val = num
     powers[1] = val
 
-    max_exp_needed = 2 ** Math.log(loop_size, 2).ceil
+    max_exp_needed = 2**Math.log(loop_size, 2).ceil
 
     exp = 2
     while exp <= max_exp_needed
@@ -82,12 +85,10 @@ find door loop", errors)
 
     answer = 1
     ('%b' % loop_size).reverse.split('').map(&:to_i).each_with_index do |bit, i|
-      if bit == 1
-        answer *= powers[2**i]
-      end
+      answer *= powers[2**i] if bit == 1
     end
 
-    answer.remainder(20201227)
+    answer.remainder(20_201_227)
   end
 
   def find_loop_size(num, public_key)
@@ -95,7 +96,7 @@ find door loop", errors)
     (1...).each do |i|
       val *= 7
       # return i if val.remainder(20201227) == public_key
-      val -= 20201227 while val > 20201227
+      val -= 20_201_227 while val > 20_201_227
       return i if val == public_key
     end
   end
@@ -103,4 +104,10 @@ find door loop", errors)
   def part2
     lines = data_lines(1)
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

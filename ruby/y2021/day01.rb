@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Sonar Sweep
+
+require_relative '../day'
 
 class Day01 < Day
   def part1
@@ -20,4 +24,10 @@ class Day01 < Day
     end
     num_increases
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

@@ -1,5 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Beacon Scanner
 
+require_relative '../day'
 require_relative '../point'
 
 class Day19 < Day
@@ -56,4 +59,10 @@ class Day19 < Day
     end
     scanners
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

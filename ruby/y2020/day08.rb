@@ -1,10 +1,13 @@
+#!/usr/bin/env ruby
+#
 # Handheld Halting
 
 require_relative '../cpu'
+require_relative '../day'
 
 class LoopDetective < CPU
   attr_reader :infinite_loop_detected
-  alias :infinite_loop_detected? :infinite_loop_detected
+  alias infinite_loop_detected? infinite_loop_detected
 
   def initialize
     super
@@ -66,9 +69,13 @@ class Day08 < Day
 
   def next_instruction_to_modify(cpu, modified_pc)
     modified_pc += 1
-    while ![:nop, :jmp].include?(cpu.instructions[modified_pc].op)
-      modified_pc += 1
-    end
+    modified_pc += 1 until %i[nop jmp].include?(cpu.instructions[modified_pc].op)
     modified_pc
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

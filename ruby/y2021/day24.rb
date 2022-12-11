@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Arithmetic Logic Unit
+
+require_relative '../day'
 #
 # w = x = y = z = 0
 # loop
@@ -27,7 +31,7 @@ class Day24 < Day
 
     def initialize
       @cache = []
-      (0...14).each do |place|
+      14.times do |place|
         @cache[place] = []
         (1..9).each do |digit|
           @cache[place][digit] = {}
@@ -135,4 +139,10 @@ class Day24 < Day
       instruction
     end
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

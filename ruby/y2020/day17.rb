@@ -1,5 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Conway Cubes
 
+require_relative '../day'
 require_relative './conway_cube'
 
 class Day17 < Day
@@ -17,4 +20,10 @@ class Day17 < Day
     6.times { |_| cube.next_generation }
     puts(cube.alive_count)
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

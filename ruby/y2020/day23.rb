@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Crab Cups
+
+require_relative '../day'
 
 class Node
   attr_accessor :val, :left, :right
@@ -8,9 +12,8 @@ class Node
   end
 end
 
-
 class CrabCups
-  def initialize(cups, max_cup=0)
+  def initialize(cups, max_cup = 0)
     cups = cups.split('').map(&:to_i)
     @min_cup, @max_cup = cups.minmax
     while @max_cup < max_cup
@@ -20,10 +23,10 @@ class CrabCups
 
     cups = cups.map { |i| Node.new(i) }
     cups.each_with_index do |cup, i|
-      cup.left = cups[i-1]
-      cups[i-1].right = cup
+      cup.left = cups[i - 1]
+      cups[i - 1].right = cup
 
-      idx = (i+1) % cups.length
+      idx = (i + 1) % cups.length
       cup.right = cups[idx]
       cups[idx].left = cup
     end
@@ -43,13 +46,9 @@ class CrabCups
     # determine the destination cup number
     three_cups_vals = [three_cups_start.val, three_cups_start.right.val, three_cups_start.right.right.val]
     dest_cup_val = @current_cup.val - 1
-    while three_cups_vals.include?(dest_cup_val)
-      dest_cup_val -= 1
-    end
+    dest_cup_val -= 1 while three_cups_vals.include?(dest_cup_val)
     dest_cup_val = @max_cup if dest_cup_val < @min_cup
-    while three_cups_vals.include?(dest_cup_val)
-      dest_cup_val -= 1
-    end
+    dest_cup_val -= 1 while three_cups_vals.include?(dest_cup_val)
 
     # insert the three cups after the destination cup
     dest_cup = @nodes[dest_cup_val]
@@ -80,7 +79,6 @@ class CrabCups
   end
 end
 
-
 class Day23 < Day
   TEST_INPUT = '389125467'
   REAL_INPUT = '253149867'
@@ -100,10 +98,10 @@ class Day23 < Day
   end
 
   def part2_tests
-    do_tests(149245887792, 10_000_000, 1_000_000)
+    do_tests(149_245_887_792, 10_000_000, 1_000_000)
   end
 
-  def do_tests(expected, num_iterations, max_cup=0)
+  def do_tests(expected, num_iterations, max_cup = 0)
     run_one_test(expected) do |expected|
       game = play(num_iterations, max_cup)
       answer = game.send("part#{@part_number}_answer".to_sym)
@@ -111,10 +109,16 @@ class Day23 < Day
     end
   end
 
-  def play(num_iterations, max_cup=0)
+  def play(num_iterations, max_cup = 0)
     start = @testing ? TEST_INPUT : REAL_INPUT
     crab_cups = CrabCups.new(start, max_cup)
     num_iterations.times { |_| crab_cups.move }
     crab_cups
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

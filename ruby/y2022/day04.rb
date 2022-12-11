@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Camp Cleanup
+
+require_relative '../day'
 
 class Day04 < Day
   def part1
@@ -55,4 +59,10 @@ class Day04 < Day
   def parse_line(line)
     line.split(',').map { _1.split('-').map(&:to_i) }
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

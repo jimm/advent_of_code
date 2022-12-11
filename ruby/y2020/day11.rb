@@ -1,5 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Seating System
 
+require_relative '../day'
 require_relative '../map'
 
 class SeatingMap < Map
@@ -30,10 +33,11 @@ class SeatingMap < Map
   end
 
   def tally_adjacent(row, col)
-    tally = {"L" => 0, "." => 0, "#" => 0}
+    tally = { 'L' => 0, '.' => 0, '#' => 0 }
     (-1..1).each do |rdelta|
       (-1..1).each do |cdelta|
         next if rdelta == 0 && cdelta == 0
+
         r = row + rdelta
         c = col + cdelta
         tally[@snapshot[r][c]] += 1 if in_bounds?(r, c)
@@ -43,11 +47,13 @@ class SeatingMap < Map
   end
 
   def tally_line_of_sight(row, col)
-    tally = {"L" => 0, "." => 0, "#" => 0}
+    tally = { 'L' => 0, '.' => 0, '#' => 0 }
     (-1..1).each do |rdelta|
       (-1..1).each do |cdelta|
         next if rdelta == 0 && cdelta == 0
-        r, c = row + rdelta, col + cdelta
+
+        r = row + rdelta
+        c = col + cdelta
         found = false
         while !found && in_bounds?(r, c)
           val = @snapshot[r][c]
@@ -78,10 +84,16 @@ class Day11 < Day
     map = SeatingMap.new(data_lines(1), adjacent_seat_threshold, tally_func_sym)
     while true
       map.apply_rules
-      if !map.changed?
-        puts(map.cells.flatten.tally()['#'])
+      unless map.changed?
+        puts(map.cells.flatten.tally['#'])
         exit(0)
       end
     end
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

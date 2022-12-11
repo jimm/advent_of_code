@@ -1,5 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Trick Shot
 
+require_relative '../day'
 require_relative '../utils'
 
 class Day17 < Day
@@ -8,8 +11,8 @@ class Day17 < Day
     target = read_target(lines)
 
     max_heights = []
-    (0..100).each do |x_velocity|
-      (0..100).each do |y_velocity|
+    101.times do |x_velocity|
+      101.times do |y_velocity|
         max_heights << max_height_for_trajectory(target, x_velocity, y_velocity)
       end
     end
@@ -145,4 +148,10 @@ class Day17 < Day
     x_max = x - 1
     (x_min..x_max)
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

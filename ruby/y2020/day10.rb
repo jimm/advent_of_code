@@ -1,8 +1,12 @@
+#!/usr/bin/env ruby
+#
 # Adapter Array
+
+require_relative '../day'
 
 class Day10 < Day
   def part1
-    puts(do_part1(data_lines()))
+    puts(do_part1(data_lines))
   end
 
   def part1_tests
@@ -11,21 +15,20 @@ class Day10 < Day
 
   def do_part1(lines)
     adapters = adapters_from_lines(lines)
-    diffs = {1 => 0, 3 => 0}
-    (0..adapters.length-2).each do |i|
+    diffs = { 1 => 0, 3 => 0 }
+    (0..adapters.length - 2).each do |i|
       j0 = adapters[i]
-      j1 = adapters[i+1]
+      j1 = adapters[i + 1]
       diff = j1 - j0
-      if diff != 1 && diff != 3
-        raise "unexpected diff #{diff} between #{j0} and #{j1}"
-      end
+      raise "unexpected diff #{diff} between #{j0} and #{j1}" if diff != 1 && diff != 3
+
       diffs[diff] += 1
     end
     diffs[1] * diffs[3]
   end
 
   def part2
-    puts(do_part2(data_lines()))
+    puts(do_part2(data_lines))
   end
 
   def part2_tests
@@ -75,4 +78,10 @@ class Day10 < Day
   def expected_for_part(chunk_comment)
     eval(chunk_comment)[@part_number - 1]
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

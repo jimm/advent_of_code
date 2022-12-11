@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Syntax Scoring
+
+require_relative '../day'
 
 class Day10 < Day
   ERROR_SCORES = {
@@ -71,4 +75,10 @@ class Day10 < Day
     score = score * 5 + REPAIR_SCORES[OPENER_TO_CLOSER[stack.pop]] until stack.empty?
     score
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

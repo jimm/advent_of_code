@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Ticket Translation
+
+require_relative '../day'
 
 class Rule
   attr_reader :name, :range1, :range2
@@ -41,7 +45,7 @@ end
 # A ticket is an array of integers.
 class Day16 < Day
   def part1
-    rules, my_ticket, other_tickets = parse_data()
+    rules, my_ticket, other_tickets = parse_data
     invalid_tickets = other_tickets.reject { |t| t.valid?(rules) }
     ticket_scanning_error_rate =
       invalid_tickets.sum { |t| t.invalid_values(rules).sum }
@@ -49,7 +53,7 @@ class Day16 < Day
   end
 
   def part2
-    rules, my_ticket, other_tickets = parse_data()
+    rules, my_ticket, other_tickets = parse_data
     other_tickets.select! { |t| t.valid?(rules) }
 
     possible_indexes = possible_rule_indexes(rules, other_tickets)
@@ -60,10 +64,8 @@ class Day16 < Day
       rule = rules[rule_index]
       if @testing
         puts("#{rule.name}: #{my_ticket.nums[ticket_field_index]}")
-      else
-        if rule.name =~ /^departure/
-          answer *= my_ticket.nums[ticket_field_index]
-        end
+      elsif rule.name =~ /^departure/
+        answer *= my_ticket.nums[ticket_field_index]
       end
     end
     puts(answer) unless @testing
@@ -73,40 +75,36 @@ class Day16 < Day
   # rule is valid for all tickets. Return an array of arrays.
   def possible_rule_indexes(rules, tickets)
     num_fields = rules.length
-    rule_indexes = rules.map do |rule|
+    rules.map do |rule|
       indexes = []
       (0...num_fields).each do |field_index|
-        if tickets.all? { |t| rule.valid?(t.nums[field_index]) }
-          indexes << field_index
-        end
+        indexes << field_index if tickets.all? { |t| rule.valid?(t.nums[field_index]) }
       end
       indexes
     end
-    rule_indexes
   end
 
   # Take array of arrays of possible indexes. Recursively eliminate
   # singleton entries from all other entries until they're all singletons,
   # then return those values.
   def reduce_rule_indexes(indexes)
-    if indexes.all? { |xs| xs.length == 1 }
-      return indexes.map(&:first)
-    end
+    return indexes.map(&:first) if indexes.all? { |xs| xs.length == 1 }
 
     single_values = indexes.select { |xs| xs.length == 1 }.map(&:first)
     indexes = indexes.map { |xs| xs.length == 1 ? xs : xs - single_values }
     reduce_rule_indexes(indexes)
   end
 
-  def parse_data()
+  def parse_data
     rules = []
     my_ticket = nil
     other_tickets = []
     ticket_type = nil
-    data_lines().each do |line|
+    data_lines.each do |line|
       case line
       when /([\w\s]+): (\d+)-(\d+) or (\d+)-(\d+)/
-        rules << Rule.new($1, $2.to_i, $3.to_i, $4.to_i, $5.to_i)
+        rules << Rule.new(::Regexp.last_match(1), ::Regexp.last_match(2).to_i, ::Regexp.last_match(3).to_i,
+                          ::Regexp.last_match(4).to_i, ::Regexp.last_match(5).to_i)
       when /your ticket:/
         ticket_type = :mine
       when /nearby tickets:/
@@ -122,4 +120,10 @@ class Day16 < Day
     end
     [rules, my_ticket, other_tickets]
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

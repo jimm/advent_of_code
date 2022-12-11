@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Rambunctious Recitation
+
+require_relative '../day'
 
 class Day15 < Day
   def part1
@@ -6,7 +10,7 @@ class Day15 < Day
   end
 
   def part2
-    do_part(30000000)
+    do_part(30_000_000)
   end
 
   def do_part(max_turn)
@@ -23,4 +27,10 @@ class Day15 < Day
     end
     puts(n)
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

@@ -1,6 +1,9 @@
+#!/usr/bin/env ruby
+#
 # Chiton
 
 require 'set'
+require_relative '../day'
 require_relative '../map'
 
 # All coord pairs are [row, col].
@@ -115,4 +118,10 @@ class Day15 < Day
     end
     nil
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

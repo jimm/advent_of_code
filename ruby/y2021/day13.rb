@@ -1,6 +1,9 @@
+#!/usr/bin/env ruby
+#
 # Transparent Origami
 
 require 'set'
+require_relative '../day'
 
 class Day13 < Day
   def part1
@@ -58,4 +61,10 @@ class Day13 < Day
       puts
     end
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

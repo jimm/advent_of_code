@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # No Space Left On Device
+
+require_relative '../day'
 
 class MyINode
   attr_accessor :name, :size, :parent
@@ -162,4 +166,10 @@ class Day07 < Day
     end
     root
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

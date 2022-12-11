@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Supply Stacks
+
+require_relative '../day'
 
 class Stacker
   attr_reader :stacks
@@ -83,4 +87,10 @@ class Day05 < Day
     stacker.run(lines, MOVE_AMOUNT[@part_number - 1])
     stacker.stacks.map(&:pop).join
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

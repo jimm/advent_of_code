@@ -1,5 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Sea Cucumber
 
+require_relative '../day'
 require_relative '../map'
 
 class Day25 < Day
@@ -81,4 +84,10 @@ class Day25 < Day
   def part2
     lines = data_lines(1)
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

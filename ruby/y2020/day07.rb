@@ -1,6 +1,9 @@
+#!/usr/bin/env ruby
+#
 # Handy Haversacks
 
 require 'set'
+require_relative '../day'
 
 class Day07 < Day
   MY_BAG = 'shiny gold'
@@ -22,7 +25,7 @@ class Day07 < Day
     start = MY_BAG
     set = Set.new
     appears_in = Set.new(inverted[start]) - set
-    while !appears_in.empty?
+    until appears_in.empty?
       set += appears_in
       appears_in = Set.new(appears_in
                              .map { |bag| inverted[bag] }
@@ -42,7 +45,7 @@ class Day07 < Day
       puts(do_part2(part_num))
     end
   end
-    
+
   def do_part2(part_num)
     @memoized_bags_inside = {}
     parsed = data_lines(part_num).map { |line| parse_line(line) }
@@ -50,10 +53,10 @@ class Day07 < Day
     bags_inside(rules, MY_BAG)
   end
 
-  def bags_inside(rules, bag, acc=0)
+  def bags_inside(rules, bag, acc = 0)
     return acc + @memoized_bags_inside[bag] if @memoized_bags_inside.has_key?(bag)
-      
-    if !rules.has_key?(bag)
+
+    unless rules.has_key?(bag)
       @memoized_bags_inside[bag] = 0
       return acc
     end
@@ -62,7 +65,7 @@ class Day07 < Day
       num_contained = rules[bag][contained_bag]
       num_contained + num_contained * bags_inside(rules, contained_bag, acc)
     end
-      .reduce(:+)
+                       .reduce(:+)
     retval = 0 if retval.nil?
     @memoized_bags_inside[bag] = retval
     acc + retval
@@ -83,15 +86,22 @@ class Day07 < Day
 
   def parse_line(line)
     line =~ /^(\w+ \w+) bags contain (.*)\.$/
-    container, contents = $1, $2
+    container = ::Regexp.last_match(1)
+    contents = ::Regexp.last_match(2)
     contents = contents.split(', ').map do |content|
       content =~ /(\d+) (\w+ \w+) bags?/
-      if $1.nil?
+      if ::Regexp.last_match(1).nil?
         []
       else
-        [$1.to_i, $2]
+        [::Regexp.last_match(1).to_i, ::Regexp.last_match(2)]
       end
     end
     [container, contents]
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

@@ -1,11 +1,15 @@
+#!/usr/bin/env ruby
+#
 # Password Philosophy
+
+require_relative '../day'
 
 class PasswordPolicy
   attr_reader :n1, :n2, :letter
 
   def self.parse(text)
     text =~ /(\d+)-(\d+) (.)/
-    new($1.to_i, $2.to_i, $3)
+    new(::Regexp.last_match(1).to_i, ::Regexp.last_match(2).to_i, ::Regexp.last_match(3))
   end
 
   def initialize(n1, n2, letter)
@@ -15,10 +19,9 @@ class PasswordPolicy
   end
 
   def valid_password?(password)
-    raise "subclasses must implement"
+    raise 'subclasses must implement'
   end
 end
-
 
 class OldPasswordPolicy < PasswordPolicy
   def valid_password?(password)
@@ -28,13 +31,11 @@ class OldPasswordPolicy < PasswordPolicy
   end
 end
 
-
 class NewPasswordPolicy < PasswordPolicy
   def valid_password?(password)
-    [password[@n1-1], password[@n2-1]].one? { |ch| ch == @letter }
+    [password[@n1 - 1], password[@n2 - 1]].one? { |ch| ch == @letter }
   end
 end
-
 
 class Day02 < Day
   def part1
@@ -52,4 +53,10 @@ class Day02 < Day
     end
     print(entries.select { |e| e[0].valid_password?(e[1]) }.length)
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

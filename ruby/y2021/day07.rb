@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # The Treachery of Whales
+
+require_relative '../day'
 
 class Day07 < Day
   def part1
@@ -31,4 +35,10 @@ class Day07 < Day
       acc + block.call(distance)
     end
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

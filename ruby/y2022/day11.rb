@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Monkey in the Middle
+
+require_relative '../day'
 
 class Monkey
   attr_reader :items, :items, :operation, :test_mod, :true_monkey,
@@ -129,4 +133,10 @@ class Day11 < Day
     end
     monkeys
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

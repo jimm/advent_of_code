@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Rock Paper Scissors
+
+require_relative '../day'
 
 class Day02 < Day
   SHAPE_SCORE = { rock: 1, paper: 2, scissors: 3 }
@@ -65,4 +69,10 @@ class Day02 < Day
     win_score = WIN_SCORE[desired_result]
     shape_score + win_score
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

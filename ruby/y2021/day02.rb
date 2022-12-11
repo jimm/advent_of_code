@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Dive!
+
+require_relative '../day'
 
 class Day02 < Day
   def part1
@@ -38,4 +42,10 @@ class Day02 < Day
     end
     puts distance * depth
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

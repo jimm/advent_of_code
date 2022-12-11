@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Passage Pathing
+
+require_relative '../day'
 
 class Day12 < Day
   class Cave
@@ -143,4 +147,10 @@ class Day12 < Day
       [num_paths == expected, num_paths]
     end
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

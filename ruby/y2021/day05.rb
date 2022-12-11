@@ -1,5 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Hydrothermal Venture
 
+require_relative '../day'
 require_relative '../map'
 require_relative '../point'
 require_relative '../utils'
@@ -99,4 +102,10 @@ class Day05 < Day
     puts map if @testing
     puts map.overlap_cell_count
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

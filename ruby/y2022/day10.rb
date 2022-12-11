@@ -1,5 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Cathode-Ray Tube
 
+require_relative '../day'
 require_relative '../map'
 
 class Day10 < Day
@@ -77,4 +80,10 @@ class Day10 < Day
   def sprite_on(x, col)
     col >= x - 1 && col <= x + 1
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

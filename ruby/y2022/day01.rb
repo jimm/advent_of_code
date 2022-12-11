@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Calorie Counting
+
+require_relative '../day'
 
 class Day01 < Day
   def part1
@@ -28,4 +32,10 @@ class Day01 < Day
     groups = lines.slice_when { |line| line.empty? }
     groups.map { |lines| lines.map(&:to_i).sum }
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

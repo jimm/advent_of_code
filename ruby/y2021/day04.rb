@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Giant Squid
+
+require_relative '../day'
 
 class BingoGame
   def initialize(input_lines)
@@ -111,4 +115,10 @@ class Day04 < Day
     last_winning_board = game.play_to_lose
     puts last_winning_board.score
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

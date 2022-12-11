@@ -1,7 +1,9 @@
+#!/usr/bin/env ruby
+#
 # Crab Combat
 
 require 'set'
-
+require_relative '../day'
 
 class Player
   # The deck of cards is a simple array, with the top card at deck[0].
@@ -40,11 +42,10 @@ class Player
 
   def score
     total = 0
-    @deck.reverse.each_with_index { |card, i| total += card * (i+1) }
+    @deck.reverse.each_with_index { |card, i| total += card * (i + 1) }
     total
   end
 end
-
 
 class Day22 < Day
   def part1
@@ -54,13 +55,13 @@ class Day22 < Day
 
   def part1_tests
     run_one_test(306) do |expected|
-      answer = do_part1().score
+      answer = do_part1.score
       [answer == expected, answer]
     end
   end
 
   def do_part1
-    player1, player2 = parse()
+    player1, player2 = parse
     while true
       card1 = player1.draw_card
       card2 = player2.draw_card
@@ -74,14 +75,14 @@ class Day22 < Day
   end
 
   def part2
-    player1, player2 = parse()
+    player1, player2 = parse
     winner = do_part2(player1, player2)
     puts winner.score
   end
 
   def part2_tests
     run_one_test(291) do |expected|
-      player1, player2 = parse()
+      player1, player2 = parse
       answer = do_part2(player1, player2).score
       [answer == expected, answer]
     end
@@ -93,6 +94,7 @@ class Day22 < Day
       # If these hands have been seen before, player 1 wins.
       round_start = [player1.score, player2.score]
       return player1 if previous_rounds.include?(round_start)
+
       previous_rounds << round_start
 
       card1 = player1.draw_card
@@ -139,4 +141,10 @@ class Day22 < Day
     end
     players
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

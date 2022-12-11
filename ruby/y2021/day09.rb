@@ -1,6 +1,9 @@
+#!/usr/bin/env ruby
+#
 # Smoke Basin
 
 require 'set'
+require_relative '../day'
 require_relative '../map'
 
 class Day09 < Day
@@ -60,4 +63,10 @@ class Day09 < Day
     flood_fill_basin(map, basin, row, col - 1)
     flood_fill_basin(map, basin, row, col + 1)
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

@@ -1,6 +1,9 @@
+#!/usr/bin/env ruby
+#
 # Rope Bridge
 
 require 'set'
+require_relative '../day'
 require_relative '../point'
 
 class Day09 < Day
@@ -104,4 +107,10 @@ class Day09 < Day
       follower.y += move[1]
     end
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

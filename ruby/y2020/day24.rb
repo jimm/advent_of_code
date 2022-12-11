@@ -1,7 +1,9 @@
+#!/usr/bin/env ruby
+#
 # Lobby Layout
 
 require 'set'
-
+require_relative '../day'
 
 class HexLife
   def initialize(lines)
@@ -28,6 +30,7 @@ class HexLife
       neighbors.each do |loc|
         next if snapshot[loc] == :black
         next if already_seen.include?(loc)
+
         # it's white and we've not already seen it
         new_color = count_surrounding_black(snapshot, loc[0], loc[1]) == 2 ? :black : :white
         @map[loc] = new_color
@@ -69,7 +72,7 @@ class HexLife
   end
 
   def surrounding_coords(loc_x, loc_y)
-    %i(e w ne nw se sw).map do |sym|
+    %i[e w ne nw se sw].map do |sym|
       x, y = hex_move(loc_x, loc_y, sym)
       [x, y]
     end
@@ -94,8 +97,8 @@ class HexLife
     lines.map do |line|
       tile_instructions = []
       until line.empty?
-        sym_len = (line[0] == 'e' || line[0] == 'w') ? 1 : 2
-        sym = line[0,sym_len].to_sym
+        sym_len = line[0] == 'e' || line[0] == 'w' ? 1 : 2
+        sym = line[0, sym_len].to_sym
         line = line[sym_len..-1]
         tile_instructions << sym
       end
@@ -104,14 +107,13 @@ class HexLife
   end
 end
 
-
 # Map of hex tiles is represented as a dictionary. Keys are coordinates and
 # rows are :black or :white. All tiles in the infinite map start :white, so
 # that's the default if there is no entry.
 class Day24 < Day
   def part1
     map = HexLife.new(data_lines(1))
-    answer = map.black_tile_count()
+    answer = map.black_tile_count
     puts(answer)
   end
 
@@ -119,24 +121,30 @@ class Day24 < Day
     run_one_test(10) do |expected|
       expected = expected.to_i
       map = HexLife.new(data_lines(1))
-      answer = map.black_tile_count()
+      answer = map.black_tile_count
       [answer == expected, answer]
     end
   end
 
   def part2
     map = HexLife.new(data_lines(1))
-    100.times { map.next_generation() }
-    answer = map.black_tile_count()
+    100.times { map.next_generation }
+    answer = map.black_tile_count
     puts(answer)
   end
 
   def part2_tests
     run_one_test(2208) do |expected|
       map = HexLife.new(data_lines(1))
-      100.times { map.next_generation() }
-      answer = map.black_tile_count()
+      100.times { map.next_generation }
+      answer = map.black_tile_count
       [answer == expected, answer]
     end
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

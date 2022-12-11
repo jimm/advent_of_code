@@ -1,8 +1,11 @@
+#!/usr/bin/env ruby
+#
 # Docking Data
 
+require_relative '../day'
 
 class MaskingBootloader
-  ALL_ONES = 0xfffffffff        # 36 bits
+  ALL_ONES = 0xfffffffff # 36 bits
 
   def initialize
     @mask_ones = 0
@@ -12,21 +15,21 @@ class MaskingBootloader
 
   def parse_and_load(lines)
     lines.each do |line|
-      if line[0,7] == 'mask = '
+      if line[0, 7] == 'mask = '
         parse_mask(line[7..-1])
       else
         line =~ /mem\[(\d+)\] = (\d+)/
-        set_memory($1.to_i, $2.to_i)
+        set_memory(::Regexp.last_match(1).to_i, ::Regexp.last_match(2).to_i)
       end
     end
   end
 
   def parse_mask(mask_str)
-    raise "subclasses must implement"
+    raise 'subclasses must implement'
   end
 
   def set_memory(address, value)
-    raise "subclasses must implement"
+    raise 'subclasses must implement'
   end
 
   def memory_sum
@@ -39,13 +42,12 @@ class MaskingBootloader
   end
 end
 
-
 class MaskingBootloaderV1 < MaskingBootloader
   def parse_mask(mask_str)
     @mask_ones = 0
     @mask_zeroes = ALL_ONES
 
-    bit_pos = 2 ** 35
+    bit_pos = 2**35
     mask_str.each_char do |ch|
       case ch
       when '0'
@@ -64,14 +66,13 @@ class MaskingBootloaderV1 < MaskingBootloader
   end
 end
 
-
 class MaskingBootloaderV2 < MaskingBootloader
   def parse_mask(mask_str)
     @mask_ones = 0
     @mask_zeroes = ALL_ONES
     @mask_floating_bit_pos = []
 
-    bit_pos = 2 ** 35
+    bit_pos = 2**35
     mask_str.each_char do |ch|
       case ch
       when '0'
@@ -99,12 +100,11 @@ class MaskingBootloaderV2 < MaskingBootloader
     end
 
     bit_pos = floating_bit_pos[0]
-    rest_bit_pos  = floating_bit_pos[1..-1]
+    rest_bit_pos = floating_bit_pos[1..-1]
     set_floating_memory(address & (ALL_ONES - bit_pos), value, rest_bit_pos)
     set_floating_memory(address | bit_pos, value, rest_bit_pos)
   end
 end
-
 
 class Day14 < Day
   def part1
@@ -120,4 +120,10 @@ class Day14 < Day
     mb.parse_and_load(lines)
     puts(mb.memory_sum)
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

@@ -1,6 +1,9 @@
+#!/usr/bin/env ruby
+#
 # Dumbo Octopus
 
 require 'set'
+require_relative '../day'
 require_relative '../map'
 
 class Day11 < Day
@@ -98,4 +101,10 @@ class Day11 < Day
 
     all_flashed_cells.size
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end

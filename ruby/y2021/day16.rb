@@ -1,4 +1,8 @@
+#!/usr/bin/env ruby
+#
 # Packet Decoder
+
+require_relative '../day'
 
 class Day16 < Day
   class Packet
@@ -168,4 +172,10 @@ class Day16 < Day
       [value == expected.to_i, value]
     end
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  require_relative '../aoc'
+
+  aoc
 end
