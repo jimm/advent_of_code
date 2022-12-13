@@ -5,6 +5,7 @@
 require 'set'
 require_relative '../day'
 require_relative '../map'
+require_relative '../point'
 
 class Day12 < Day
   def part1
@@ -38,20 +39,18 @@ class Day12 < Day
     a_star(map, start_loc, end_loc).length
   end
 
-  # Can't brute force this. Besides, looking at the map shows that there is
-  # an "island" outside of which we can't even get to the goal, and that
-  # outside area has tons of potential starting positions we need to ignore.
+  # 370 is too low
   def do_part2(lines)
     map, _, end_loc = map_from(lines)
     remove_inaccessible_cells(map, end_loc)
-    lengths = []
-    # FIXME
+    paths = []
     map.height.times do |row|
       map.width.times do |col|
-        lengths << a_star(map, [row, col], end_loc) if map.at(row, col) == 0
+        paths << a_star(map, [row, col], end_loc) if map.at(row, col) == 0
       end
     end
-    lengths.compact.map(&:length).min
+
+    paths.compact.map(&:length).min
   end
 
   def map_from(lines)
@@ -80,7 +79,7 @@ class Day12 < Day
   def heuristic(map, there, here)
     there_val = map.at(*there)
     here_val = map.at(*here)
-    there_val > (here_val + 1) ? 10_000 : 1
+    there_val > (here_val + 1) ? 10_000 : Point.new(*there).manhattan_distance(Point.new(*here)) # 1
   end
 
   def a_star(map, start, goal)
@@ -134,50 +133,29 @@ class Day12 < Day
   # defined by setting the value to -1, because all we really care about is
   # removing any zero-valued cells that we can ignore as starting points.
   def remove_inaccessible_cells(map, goal)
-    # Use a flood fill to keep cells; everything not flooded gets a -1.
+    # Use a flood fill to keep cells; everything not flooded gets a 99.
     basin = Set.new
     flood_fill(map, basin, goal[0], goal[1])
     map.height.times do |row|
       map.width.times do |col|
-        map.set(row, col, '.') unless basin.include?([row, col])
+        map.set(row, col, 99) unless basin.include?([row, col])
       end
     end
-
-    # DEBUG
-    map.height.times do |row|
-      map.width.times do |col|
-        val = map.at(row, col)
-        next if val == '.'
-
-        map.set(row, col, (val + 'a'.ord).chr)
-        map.set(row, col, '.') unless basin.include?([row, col])
-      end
-    end
-
-    # DEBUG
-    puts map # DEBUG
-
-    # DEBUG
-    map.height.times do |row|
-      map.width.times do |col|
-        map.set(row, col, map.at(row, col).ord - 'a'.ord)
-      end
-    end
-    exit 0                      # DEBUG
   end
 
+  # Not quite standard flood fill: we re-look at cells' neighbors more than
+  # once because other neighbors of it might have different criteria.
   def flood_fill(map, basin, row, col)
     return unless map.in_bounds?(row, col)
-    return if basin.include?([row, col])
-
-    val = map.at(row, col)
-    return if val.nil? || val == 9
 
     basin.add([row, col])
 
+    val = map.at(row, col)
     [[-1, 0], [1, 0], [0, -1], [0, 1]].each do |dr, dc|
       r = row + dr
       c = col + dc
+      next if basin.include?([r, c])
+
       other_val = map.at(r, c)
       flood_fill(map, basin, r, c) if other_val && other_val >= (val - 1)
     end
