@@ -43,6 +43,7 @@ class Day12 < Day
   # outside area has tons of potential starting positions we need to ignore.
   def do_part2(lines)
     map, _, end_loc = map_from(lines)
+    remove_inaccessible_cells(map, end_loc)
     lengths = []
     # FIXME
     map.height.times do |row|
@@ -127,10 +128,64 @@ class Day12 < Day
     end
     nil
   end
+
+  # Given a `map` and the `goal` cell coordinates, removes all cells from
+  # `map` that are inaccessable from the goal. Removal in this case is
+  # defined by setting the value to -1, because all we really care about is
+  # removing any zero-valued cells that we can ignore as starting points.
+  def remove_inaccessible_cells(map, goal)
+    # Use a flood fill to keep cells; everything not flooded gets a -1.
+    basin = Set.new
+    flood_fill(map, basin, goal[0], goal[1])
+    map.height.times do |row|
+      map.width.times do |col|
+        map.set(row, col, '.') unless basin.include?([row, col])
+      end
+    end
+
+    # DEBUG
+    map.height.times do |row|
+      map.width.times do |col|
+        val = map.at(row, col)
+        next if val == '.'
+
+        map.set(row, col, (val + 'a'.ord).chr)
+        map.set(row, col, '.') unless basin.include?([row, col])
+      end
+    end
+
+    # DEBUG
+    puts map # DEBUG
+
+    # DEBUG
+    map.height.times do |row|
+      map.width.times do |col|
+        map.set(row, col, map.at(row, col).ord - 'a'.ord)
+      end
+    end
+    exit 0                      # DEBUG
+  end
+
+  def flood_fill(map, basin, row, col)
+    return unless map.in_bounds?(row, col)
+    return if basin.include?([row, col])
+
+    val = map.at(row, col)
+    return if val.nil? || val == 9
+
+    basin.add([row, col])
+
+    [[-1, 0], [1, 0], [0, -1], [0, 1]].each do |dr, dc|
+      r = row + dr
+      c = col + dc
+      other_val = map.at(r, c)
+      flood_fill(map, basin, r, c) if other_val && other_val >= (val - 1)
+    end
+  end
 end
 
 if __FILE__ == $PROGRAM_NAME
   require_relative '../aoc'
 
-  aoc
+  aoc(2022, 12)
 end

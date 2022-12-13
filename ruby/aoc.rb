@@ -5,10 +5,12 @@
 require 'optparse'
 require_relative 'day'
 
-def aoc
+# Args are here so that each day file can include this one and tell us what
+# year/day it is for.
+def aoc(year = nil, day = nil)
   now = Time.now
-  year = now.year
-  day = now.day
+  year ||= now.year
+  day ||= now.day
   testing = false
 
   OptionParser.new do |opts|
