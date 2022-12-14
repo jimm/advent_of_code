@@ -7,7 +7,7 @@ require_relative '../day'
 
 class Day14 < Day
   def part1
-    puts do_part(data_lines(1))
+    puts do_part1(data_lines(1))
   end
 
   def part1_tests
@@ -15,7 +15,7 @@ class Day14 < Day
   end
 
   def part2
-    puts do_part(data_lines(1))
+    puts do_part2(data_lines(1))
   end
 
   def part2_tests
@@ -27,23 +27,40 @@ class Day14 < Day
   def do_tests
     run_chunk_tests(1) do |expected, lines|
       expected = expected.split(',')[@part_number - 1].to_i
-      answer = do_part(lines)
+      answer = send(:"do_part#{@part_number}", lines)
       [answer == expected, answer, expected]
     end
   end
 
-  def do_part(lines)
+  def do_part1(lines)
     start_loc = [500, 0]
     obstructions = parse(lines)
     max_y = obstructions.to_a.map { |a| a[1] }.max
 
     grain = 0
-    done = false
-    until done
+    while true
       loc = start_loc.dup
       break unless drop(start_loc, obstructions, max_y)
 
       grain += 1
+    end
+    grain
+  end
+
+  def do_part2(lines)
+    start_loc = [500, 0]
+    obstructions = parse(lines)
+    min_x, max_x = obstructions.to_a.map { |a| a[0] }.minmax
+    max_y = obstructions.to_a.map { |a| a[1] }.max
+    # the floor
+    (min_x - max_y - 4..max_x + max_y + 4).each { |x| obstructions.add([x, max_y + 2]) }
+
+    grain = 0
+    while true
+      loc = start_loc.dup
+      drop(start_loc, obstructions, max_y + 3) # floor at + 2, avoid fall-through logic
+      grain += 1
+      break if obstructions.include?([500, 0])
     end
     grain
   end
@@ -79,6 +96,7 @@ class Day14 < Day
       obstructions.add(loc)
       return true
     end
+    false
   end
 
   def parse(lines)
