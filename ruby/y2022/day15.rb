@@ -36,15 +36,15 @@ class Day15 < Day
   def do_part1(lines, y_row)
     sensors_and_beacons, occupied = setup(lines)
     not_beacon_xs = Set.new
-    sensors_and_beacons.each do |sensor, beacon, mdist|
-      add_not_beacon_xs(sensor, beacon, mdist, y_row, occupied, not_beacon_xs)
+    sensors_and_beacons.each do |sensor, beacon, sensor_range|
+      add_not_beacon_xs(sensor, beacon, sensor_range, y_row, occupied, not_beacon_xs)
     end
     not_beacon_xs.size
   end
 
-  def add_not_beacon_xs(sensor, beacon, mdist, y_row, occupied, not_beacon_xs)
+  def add_not_beacon_xs(sensor, beacon, sensor_range, y_row, occupied, not_beacon_xs)
     y_dist = (sensor.y - y_row).abs
-    x_diff = mdist - y_dist
+    x_diff = sensor_range - y_dist
     if x_diff > 0
       (-x_diff..x_diff).each do |dx|
         p = Point.new(sensor.x + dx, y_row)
@@ -62,25 +62,31 @@ class Day15 < Day
     max_y = [max_coord, sensors_and_beacons.map { |sb| sb[0].y + sb[2] }.max].min
 
     p = Point.new
-    (min_x..max_x).each do |x|
-      p.x = x
-      (min_y..max_y).each do |y|
-        p.y = y
-        return (p.x * 4_000_000 + p.y) if free_point?(sensors_and_beacons, occupied, p)
+    (min_y..max_y).each do |y|
+      p.y = y
+      x = 0
+      while x <= max_x
+        p.x = x
+        p_or_dx = free_point?(sensors_and_beacons, occupied, p)
+        return (p_or_dx.x * 4_000_000 + p_or_dx.y) if p_or_dx.instance_of?(Point)
+
+        x += p_or_dx
       end
     end
     nil
   end
 
+  # Returns free point if found. Else returns dx by which X should be
+  # increased.
   def free_point?(sensors_and_beacons, occupied, p)
-    return false if occupied.include?(p)
+    return 1 if occupied.include?(p)
 
-    return p if sensors_and_beacons.all? do |sbm|
-      sensor, beacon, mdist = *sbm
-      sensor.manhattan_distance(p) > mdist
+    sbm = sensors_and_beacons.detect do |sbm|
+      sbm[0].manhattan_distance(p) <= sbm[2]
     end
+    return p if sbm.nil?
 
-    nil
+    sbm[2] - sbm[0].manhattan_distance(p) + 1
   end
 
   # Returns sensors_and_beacons Array and occupied Set.
