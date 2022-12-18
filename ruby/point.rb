@@ -11,6 +11,17 @@ class Point
     @x == other.x && @y == other.y && @z == other.z
   end
 
+  # Compare first x, then y, then z.
+  def <=>(other)
+    comp = @x <=> other.x
+    return comp unless comp == 0
+
+    comp = @y <=> other.y
+    return comp unless comp == 0
+
+    @z <=> other.z
+  end
+
   def distance_squared(other)
     dx = (other.x - @x)
     dy = (other.y - @y)
