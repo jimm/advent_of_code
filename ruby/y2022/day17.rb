@@ -1,6 +1,9 @@
 #!/usr/bin/env ruby
 #
 # Pyroclastic Flow
+#
+# Notes: I have a feeling there is a cycle, but given how I'm storing data
+# I'll have to redo everything to detect it.
 
 require 'set'
 require_relative '../day'

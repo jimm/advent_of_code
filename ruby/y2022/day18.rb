@@ -74,12 +74,12 @@ class Day18 < Day
   def do_part1(lines)
     cubes = parse(lines)
     total_faces = cubes.length * 6
-    showing_faces = Set.new(cubes.flat_map(&:faces)).size
-    total_faces - (total_faces - showing_faces) * 2
+    num_unique_faces = Set.new(cubes.flat_map(&:faces)).size
+    total_faces - (total_faces - num_unique_faces) * 2
   end
 
   def do_part2(lines)
-    # TODO
+    vertices = lines.map { |line| line.split(',').map(&:to_i) }
   end
 
   def parse(lines)
