@@ -40,11 +40,11 @@ class Map
     at(@row, @col)
   end
 
-  def row(row = @row)
+  def row_cells(row = @row)
     @cells[row]
   end
 
-  def col(col = @col)
+  def col_cells(col = @col)
     @cells.map { |row| row[col] }
   end
 
@@ -77,7 +77,7 @@ class Map
 
   # Move by deltas. wrap_type may be nil, :both, :row, or :col.
   def move_by(row_delta, col_delta)
-    @row, @col = wrap(row + row_delta, col + col_delta)
+    @row, @col = wrap(@row + row_delta, @col + col_delta)
   end
 
   def in_bounds?(row = @row, col = @col)
