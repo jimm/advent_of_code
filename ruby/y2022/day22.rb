@@ -67,6 +67,7 @@ class Day22 < Day
       end
     end
 
+    puts "row = #{map.row + 1}, col = #{map.col + 1}, facing = #{facing}, FACING_SCORE[facing] = #{FACING_SCORE[facing]}" # DEBUG
     (map.row + 1) * 1000 + (map.col + 1) * 4 + FACING_SCORE[facing]
   end
 

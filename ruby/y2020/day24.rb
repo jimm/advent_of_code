@@ -118,11 +118,10 @@ class Day24 < Day
   end
 
   def part1_tests
-    run_one_test(10) do |expected|
+    run_one_test(10) do |_|
       expected = expected.to_i
       map = HexLife.new(data_lines(1))
-      answer = map.black_tile_count
-      [answer == expected, answer]
+      map.black_tile_count
     end
   end
 
@@ -134,11 +133,10 @@ class Day24 < Day
   end
 
   def part2_tests
-    run_one_test(2208) do |expected|
+    run_one_test(2208) do |_|
       map = HexLife.new(data_lines(1))
       100.times { map.next_generation }
-      answer = map.black_tile_count
-      [answer == expected, answer]
+      map.black_tile_count
     end
   end
 end

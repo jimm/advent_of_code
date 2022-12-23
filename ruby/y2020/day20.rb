@@ -253,10 +253,7 @@ class Day20 < Day
   end
 
   def part1_tests
-    run_one_test(20_899_048_083_289) do |expected|
-      answer = do_part1
-      [answer == expected, answer]
-    end
+    run_one_test(20_899_048_083_289) { |_| do_part1 }
   end
 
   def do_part1
@@ -278,10 +275,7 @@ class Day20 < Day
   end
 
   def part2_tests
-    run_one_test(273) do |expected|
-      answer = do_part2
-      [answer == expected, answer]
-    end
+    run_one_test(273) { |_| do_part2 }
   end
 
   def do_part2

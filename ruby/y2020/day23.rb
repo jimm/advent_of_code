@@ -102,10 +102,9 @@ class Day23 < Day
   end
 
   def do_tests(expected, num_iterations, max_cup = 0)
-    run_one_test(expected) do |expected|
+    run_one_test(expected) do |_|
       game = play(num_iterations, max_cup)
-      answer = game.send("part#{@part_number}_answer".to_sym)
-      [answer == expected, answer]
+      game.send("part#{@part_number}_answer".to_sym)
     end
   end
 

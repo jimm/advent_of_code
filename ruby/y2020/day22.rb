@@ -54,10 +54,7 @@ class Day22 < Day
   end
 
   def part1_tests
-    run_one_test(306) do |expected|
-      answer = do_part1.score
-      [answer == expected, answer]
-    end
+    run_one_test(306) { |_| do_part1.score }
   end
 
   def do_part1
@@ -81,10 +78,9 @@ class Day22 < Day
   end
 
   def part2_tests
-    run_one_test(291) do |expected|
+    run_one_test(291) do |_|
       player1, player2 = parse
-      answer = do_part2(player1, player2).score
-      [answer == expected, answer]
+      do_part2(player1, player2).score
     end
   end
 

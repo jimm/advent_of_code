@@ -36,7 +36,7 @@ class Day
   #
   # Despite their names, `run_chunk_tests` does not call this method.
   def run_one_test(expected)
-    ok, answer = yield(expected)
+    answer = yield(expected)
     if answer == expected
       puts('.')
       puts('ok')
