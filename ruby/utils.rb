@@ -24,3 +24,7 @@ module Enumerable
       .map { |_, vals| vals }
   end
 end
+
+def clear_screen
+  print("\e[0;0H\e[J") # DEBUG clear screen
+end

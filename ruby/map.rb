@@ -64,9 +64,16 @@ class Map
     @cells[row][col] = val
   end
 
+  # Calls update! on each cell
+  def update_all!
+    each do |ir, ic, val|
+      @cells[ir][ic] = yield val
+    end
+  end
+
   # Updates value at `row`, `col` by yielding its value and storing the
   # result.
-  def update(row = @row, col = @col)
+  def update!(row = @row, col = @col)
     @cells[row][col] = yield at(row, col)
   end
 
