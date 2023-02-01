@@ -24,9 +24,9 @@ def read_data_file(year=None, day=None, part_num=1, testing=False):
         day = now.day
     if not year:
         year = now.year
-    fname = f"day{'%02d' % day}"
+    fname = f"day{'%02d' % day}_{part_num}"
     if testing:
-        fname += f"_{part_num}_test"
+        fname += "_test"
     fname += ".txt"
     path = os.path.join(
         os.path.dirname(os.path.realpath(__file__)), f"../data/y{year}", fname
@@ -35,13 +35,28 @@ def read_data_file(year=None, day=None, part_num=1, testing=False):
         return f.read()
 
 
-def data_file_lines(year=None, day=None, part_num=1, testing=False):
-    """Returns a list of lines from a data file with blank lines skipped."""
-    return [
-        line
-        for line in read_data_file(year, day, part_num, testing).split("\n")
-        if line
-    ]
+def data_file_lines(year=None, day=None, part_num=1, preserve_blank_lines=False, testing=False):
+    """Returns a list of lines from a data file with blank lines skipped optionally.
+
+    If preserve_blank_lines is False, returns a list of all non-blank lines.
+    If it is True, returns a list of lists.
+    """
+    lines = read_data_file(year, day, part_num, testing).split("\n")
+    if not preserve_blank_lines:
+        return [line for line in lines if line]
+
+    grouped_lines = []
+    curr_lines = []
+    for line in lines:
+        if not line:
+            if curr_lines:
+                grouped_lines.append(curr_lines)
+            curr_lines = []
+        else:
+            curr_lines.append(line)
+    if curr_lines:
+        grouped_lines.append(curr_lines)
+    return grouped_lines
 
 
 def minmax(xs):
