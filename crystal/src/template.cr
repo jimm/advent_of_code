@@ -17,3 +17,5 @@ module YEARNAME
     end
   end
 end
+
+AoC.register(YEARNAME::DAYNAME)

@@ -18,6 +18,7 @@ usage: $(basename "$0") [-m] [-i] [-y year] [-d day] [-l lang] [-Y] [-L] \\
   -Y       List years
   -L       List languages available for the current year and exit
   -t       Testing
+  -f       When initializing, overwrite existing file
   -n       Print commands but do not run them
   -h       Print this help and exit
 
@@ -57,7 +58,7 @@ find_lang_for_year() {
 }
 
 exit_if_exists() {
-    if [ -e "$1" ] ; then
+    if [ "$force" = "no" ] && [ -e "$1" ] ; then
         echo file already exists, no changes made >&2
         echo "$(pwd)/$1"
         exit 0
@@ -76,8 +77,9 @@ list_langs=no
 lang=""
 testing=""
 no_execute=""
+force=no
 
-while getopts "maiy:d:l:YLtnh" opt ; do
+while getopts "maiy:d:l:YLtfnh" opt ; do
     case $opt in
         m) makeup=1 ;;
         a) dir="$OPTARG" ;;
@@ -98,6 +100,7 @@ while getopts "maiy:d:l:YLtnh" opt ; do
         Y) list_years=yes ;;
         L) list_langs=yes ;;
         t) testing=1 ;;
+        f) force=yes ;;
         n) no_execute="echo" ;;
         h) usage 0 ;;
         *) usage 1 ;;
@@ -128,11 +131,6 @@ fi
 cd $lang > /dev/null 2>&1 || ( echo "error: language required" ; exit 1 )
 
 if [ $init == 1 ] ; then
-    local tmpfile
-    local two_digit_day
-    local f
-    local data_file
-
     tmpfile="/tmp/day${day}.html"
     two_digit_day="$(printf '%02d' $day)"
     f=""
@@ -140,6 +138,9 @@ if [ $init == 1 ] ; then
 
     curl --silent -o $tmpfile "https://adventofcode.com/$year/day/$day"
     puzzle_name=$(cat $tmpfile  | grep -- '--- Day' | sed -e 's/.*--- Day [0-9]*: //' -e 's/ ---.*//')
+    if [ -z "$puzzle_name" ] ; then
+        puzzle_name="Year $year, Day $day"
+    fi
 
     if [ ! -f $data_file ] ; then
         grep "get your puzzle input" $tmpfile \
