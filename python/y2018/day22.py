@@ -18,12 +18,12 @@ part1_expected_regions = {
 }
 
 
-def part1(testing=False):
-    depth, target_loc = _read_data(1, testing)
-    if testing:
+def part1(env):
+    depth, target_loc = _read_data(env)
+    if env.test:
         print((depth, target_loc))
     underground_map = _create_map(depth, target_loc)
-    if testing:
+    if env.test:
         for loc, r in part1_expected_regions.items():
             map_r = underground_map[loc.y][loc.x]
             if map_r != r:
@@ -37,12 +37,12 @@ def part1(testing=False):
     )
 
 
-def part2(testing=False):
-    depth, target_loc = _read_data(2, testing)
+def part2(env):
+    depth, target_loc = _read_data(env)
 
 
-def _read_data(part_num, testing):
-    lines = data_file_lines(2018, 22, part_num, testing)
+def _read_data(env):
+    lines = data_file_lines(env)
     m = re.match(r"depth: (\d+)", lines[0])
     depth = int(m[1])
     m = re.match(r"target: (\d+),\s*(\d+)", lines[1])

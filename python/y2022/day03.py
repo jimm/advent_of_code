@@ -3,8 +3,8 @@
 from utils import *
 
 
-def part1(testing=False):
-    lines = data_file_lines(2022, 3, testing=testing)
+def part1(env):
+    lines = data_file_lines(env)
     rucksacks = [rucksack(line) for line in lines]
     commons = [common_item(r) for r in rucksacks]
     print(commons)  # DEBUG
@@ -12,8 +12,8 @@ def part1(testing=False):
     print(sum(priority(ch) for ch in commons))
 
 
-def part2(testing=False):
-    lines = data_file_lines(2022, 3, testing=testing)
+def part2(env):
+    lines = data_file_lines(env)
 
 
 def rucksack(line):

@@ -73,8 +73,8 @@ class Worker:
         return f"Worker {self.id} working on {job} time left {self.time_left}"
 
 
-def part1(testing=False):
-    _read_steps(testing, 1)
+def part1(env):
+    _read_steps(env)
     for step in _ordered_steps_generator():
         step.start()
         step.finish()
@@ -82,19 +82,19 @@ def part1(testing=False):
     print("")
 
 
-def part2(testing=False):
+def part2(env):
     num_workers = 5
-    if testing:
+    if env.test:
         Step.work_duration_min = 0
         num_workers = 2
-    _read_steps(testing, 1)
+    _read_steps(env)
     workers = [Worker(i) for i in range(num_workers)]
     time_spent = _timed_parallel_work(workers)
     print(time_spent)
 
 
-def _read_steps(testing, part_num):
-    for line in data_file_lines(2018, 7, part_num, testing):
+def _read_steps(env):
+    for line in data_file_lines(env):
         before = Step.find_or_create(line[5])
         after = Step.find_or_create(line[36])
         before.afters.append(after)

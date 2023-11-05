@@ -13,11 +13,11 @@ Point = namedtuple("Point", ["x", "y"])
 Light = namedtuple("Light", ["pos", "vel"])
 
 
-def part1(testing=False):
+def part1(env):
     win = curses.initscr()
     curses.curs_set(0)
 
-    lights = _read_lights(1, testing)
+    lights = _read_lights(env)
     t = 0
 
     # Wait until lights are near each other
@@ -40,13 +40,13 @@ def part1(testing=False):
     curses.endwin()
 
 
-def part2(testing=False):
-    part1(testing)
+def part2(env):
+    part1(env)
 
 
-def _read_lights(part_num, testing):
+def _read_lights(env):
     lights = []
-    for line in data_file_lines(2018, 10, part_num, testing):
+    for line in data_file_lines(env):
         match = re.search(LIGHT_REGEX, line)
         ints = [int(match.group(i + 1)) for i in range(4)]
         lights.append(Light(Point(ints[0], ints[1]), Point(ints[2], ints[3])))

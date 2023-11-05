@@ -123,22 +123,22 @@ car_piece_mapping = {
 }
 
 
-def part1(testing=False):
-    track, carts = _read_data(1, testing)
-    if testing:
+def part1(env):
+    track, carts = _read_data(env)
+    if env.test:
         print("expected crash loc = (7, 3)")
     print(_first_crash_loc(track, carts))
 
 
-def part2(testing=False):
-    track, carts = _read_data(2, testing)
-    if testing:
+def part2(env):
+    track, carts = _read_data(env)
+    if env.test:
         print("expected final loc = (6, 4)")
     print(_last_cart_standing_loc(track, carts))
 
 
-def _read_data(part_num, testing):
-    lines = data_file_lines(2018, 13, part_num, testing)
+def _read_data(env):
+    lines = data_file_lines(env)
     track = []
     carts = []
     for row_num, line in enumerate(lines):

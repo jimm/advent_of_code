@@ -34,20 +34,20 @@ class Node:
         return f"{self.name} {[c.name for c in self.children]} {self.metadata}"
 
 
-def part1(testing=False):
-    root = _read_tree(1, testing)
-    if testing:
+def part1(env):
+    root = _read_tree(env)
+    if env.test:
         root.print_tree()
     print(root.metadata_sum())
 
 
-def part2(testing=False):
-    root = _read_tree(2, testing)
+def part2(env):
+    root = _read_tree(env)
     print(root.value())
 
 
-def _read_tree(part_num, testing):
-    data = [int(n) for n in data_file_lines(2018, 8, 1, testing)[0].split()]
+def _read_tree(env):
+    data = [int(n) for n in data_file_lines(env)[0].split()]
     root, _ = _read_node(None, data)
     return root
 

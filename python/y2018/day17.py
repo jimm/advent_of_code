@@ -138,20 +138,20 @@ class Water(Thing):
                 self.can_flow = False
 
 
-def part1(testing=False):
-    world = _read_world(1, testing)
-    if testing:
+def part1(env):
+    world = _read_world(env)
+    if env.test:
         world.print_map()
     print(world.reachable_tiles())
 
 
-def part2(testing=False):
-    world = _read_world(2, testing)
+def part2(env):
+    world = _read_world(env)
 
 
-def _read_world(part_num, testing):
+def _read_world(env):
     soundings = []
-    for line in data_file_lines(2018, 17, part_num, testing):
+    for line in data_file_lines(env):
         print(line)  # DEBUG
         m = re.match(r"x=(\d+), y=(\d+)\.\.(\d+)", line)
         if m:

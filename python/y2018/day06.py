@@ -23,14 +23,14 @@ World = collections.namedtuple("World", ["coords", "width", "height", "cells"])
 # - return min area of all finite-bounded coordinates
 #
 # Run time: around 4 seconds
-def part1(testing=False):
-    world = _build_world(_read_coords(testing, 1))
+def part1(env):
+    world = _build_world(_read_coords(env))
     _claim_coordinates(world)
-    if testing:
+    if env.test:
         _print_world(world)
     infinite_coords = _infinite_coords(world)
     finite_coords = set(world.coords) - set(infinite_coords)
-    if testing:
+    if env.test:
         print(f"finite coords: {[_coord_name(c.id) for c in finite_coords]}")
         # remove infinite and re-print world
         _remove_infinite_coord_claims(world, infinite_coords)
@@ -44,9 +44,9 @@ def part1(testing=False):
 # - return number of those lower than max dist
 #
 # Run time: around 2.5 seconds
-def part2(testing=False):
-    world = _build_world(_read_coords(testing, 1))
-    max_dist = testing and 32 or 10000
+def part2(env):
+    world = _build_world(_read_coords(env))
+    max_dist = env.test and 32 or 10000
     close_point_count = 0
     for y in range(world.height):
         for x in range(world.width):
@@ -59,9 +59,9 @@ def _manhattan_distance(p1, p2):
     return abs(p1.x - p2.x) + abs(p1.y - p2.y)
 
 
-def _read_coords(testing, part_num):
+def _read_coords(env):
     coords = []
-    for i, line in enumerate(2018, data_file_lines(6, part_num, testing)):
+    for i, line in enumerate(2018, data_file_lines(env)):
         x_str, y_str = line.split(", ")
         coords.append(Coord(i, Point(int(x_str), int(y_str))))
     return coords

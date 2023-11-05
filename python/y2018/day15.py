@@ -266,40 +266,43 @@ class Goblin(Creature):
         self.char = "G"
 
 
-def part1(testing=False):
-    if testing:
-        for i, expected in enumerate(TEST_OUTCOMES[1]):
-            world = _read_world(i, testing)
-            turn, outcome = world.battle_outcome()
-            answer = Outcome(3, turn, outcome)
-            _compare_world_and_test_end(i, world)
-            if answer != expected:
-                print(f"test {i} expected {expected}, saw {answer}")
-            else:
-                print(f"test {i} ok")
-    else:
-        world = _read_world(0, False)
-        print(world.battle_outcome())
+def part1(env):
+    world = _read_world(env)
+    print(world.battle_outcome())
+
+
+def part1_test(env):
+    for i, expected in enumerate(TEST_OUTCOMES[1]):
+        world = _read_world(env)
+        turn, outcome = world.battle_outcome()
+        answer = Outcome(3, turn, outcome)
+        _compare_world_and_test_end(i, world)
+        if answer != expected:
+            print(f"test {i} expected {expected}, saw {answer}")
+        else:
+            print(f"test {i} ok")
 
 
 def part2(testing=False):
     if testing:
-        for i, expected in enumerate(TEST_OUTCOMES[2]):
-            if expected.power is None:
-                continue
-            answer = Outcome(*_min_guaranteed_win_battle_outcome(i, testing))
-            if answer != expected:
-                print(f"test {i} expected {expected}, saw {answer}")
-            else:
-                print(f"test {i} ok")
     else:
         p, t, o = _min_guaranteed_win_battle_outcome(0, False)
         print(o)
 
 
-def _min_guaranteed_win_battle_outcome(i, testing):
+def part2_test(env):
+        for i, expected in enumerate(TEST_OUTCOMES[2]):
+            if expected.power is None:
+                continue
+            answer = Outcome(*_min_guaranteed_win_battle_outcome(env))
+            if answer != expected:
+                print(f"test {i} expected {expected}, saw {answer}")
+            else:
+                print(f"test {i} ok")
+
+def _min_guaranteed_win_battle_outcome(env):
     for elf_power in itertools.count(4):
-        world = _read_world(i, testing)
+        world = _read_world(env)
         world.set_elf_power(elf_power)
         turn, outcome = world.battle_outcome()
         if world.elves_win():
@@ -307,8 +310,8 @@ def _min_guaranteed_win_battle_outcome(i, testing):
         elf_power += 1
 
 
-def _read_world(test_part, testing):
-    lines = data_file_lines(2018, 15, test_part, testing)
+def _read_world(env):
+    lines = data_file_lines(env)
     world = BattleWorld(len(lines[0]), len(lines))
     for y, line in enumerate(lines):
         for x, ch in enumerate(line):

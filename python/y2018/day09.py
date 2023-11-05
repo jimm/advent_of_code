@@ -74,25 +74,25 @@ class MarbleMania:
         return f"{self.num_marbles} marbles, next is {self.next_marble}\n  circle: {self.circle}\n  scores: {self.scores}"
 
 
-def part1(testing=False):
+def part1(env):
     # answer only returned if testing, else None
-    for num_players, last_marble_points, answer_high_score in _games(1, testing):
+    for num_players, last_marble_points, answer_high_score in _games(env):
         print(f"{num_players}, {last_marble_points}, {answer_high_score}")
         game = MarbleMania(
-            num_players, last_marble_points + 1, testing and num_players < 10
+            num_players, last_marble_points + 1, env.test and num_players < 10
         )
         max_score = game.play()
         print(max_score)
 
 
-def part2(testing=False):
-    num_players, last_marble_points, _ = next(_games(2, False))
+def part2(env):
+    num_players, last_marble_points, _ = next(_games(env))
     game = MarbleMania(num_players, (last_marble_points * 100) + 1, False)
     max_score = game.play()
     print(max_score)
 
 
-def _games(part_num, testing):
-    for line in data_file_lines(2018, 9, part_num, testing):
+def _games(env):
+    for line in data_file_lines(env):
         words = line.split()
         yield (int(words[0]), int(words[6]), len(words) > 11 and int(words[11]) or None)

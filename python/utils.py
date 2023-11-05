@@ -4,39 +4,41 @@ import os.path
 import sys
 
 
-def read_data_file(year=None, day=None, part_num=1, testing=False):
-    """Returns the contents of a data file as a string."""
-    now = datetime.datetime.today()
-    if not day:
-        day = now.day
-    if not year:
-        year = now.year
-    fname = f"day{'%02d' % day}_{part_num}"
-    if testing:
+def _data_file_path(env, part_number):
+    """Returns contents of data file as a string."""
+    fname = f"day{'%02d' % env.day}"
+    if part_number:
+        fname += f"_{part_number}"
+    if env.test:
         fname += "_test"
     fname += ".txt"
-    path = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), f"../data/y{year}", fname
+    return os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), f"../data/y{env.year}", fname
     )
+
+
+def read_data_file(env):
+    """Returns the contents of a data file as a string.
+
+    Tries a few different file names. First we try "dayXX_PART.txt" then, if
+    that does not exist and PART is > 1 then we try with part == 1. Finally,
+    we try without any part number at all because both parts share the same
+    data file.
+
+    In all cases, if `env.test` is True we append "_test" to the file name
+    before the extension. For example, on day 3 with env.test == True the
+    file name would be "day03_PART_test.txt" or "day03_test.txt".
+    """
+    path = _data_file_path(env, env.part_number)  # with part number
+    if not os.path.isfile(path) and env.part_number != 1:
+        path = _data_file_path(env, 1)  # not part 1, try part 1
+    if not os.path.isfile(path):
+        path = _data_file_path(env, None)  # try without any part number
     with open(path, "r") as f:
         return f.read()
 
 
-def run_one_test(expected, func):
-    """Runs `func`, passing in `expected`, and prints success or failure.
-
-    `run_chunk_tests` does not call this method.
-    """
-    answer = func(expected)
-    if answer == expected:
-        print(".")
-        print("ok")
-    else:
-        print("F")
-        print(f"error: expected {expected}, got {answer}")
-
-
-def run_chunk_tests(part_number, func, year=None, day=None):
+def run_chunk_tests(env, func):
     """Runs tests and compares with expected answers.
 
     Given an optional part number, reads each test chunk and yields the
@@ -48,7 +50,7 @@ def run_chunk_tests(part_number, func, year=None, day=None):
     the next such line or the end of the file.
     """
     errors = []
-    for expected, lines in test_chunks(part_number, year=year, day=day):
+    for expected, lines in test_chunks(env):
         result = func(expected, lines)
         if len(result) == 2:
             ok, answer = result
@@ -68,15 +70,13 @@ def run_chunk_tests(part_number, func, year=None, day=None):
             print(f"expected {expected}, got {answer}")
 
 
-def data_file_lines(
-    year=None, day=None, part_num=1, preserve_blank_lines=False, testing=False
-):
+def data_file_lines(env, preserve_blank_lines=False):
     """Returns lines from a data file with blank lines skipped optionally.
 
     If preserve_blank_lines is False (the default), returns a list of all
     non-blank lines. If it is True, returns a list of lists.
     """
-    lines = read_data_file(year, day, part_num, testing).split("\n")
+    lines = read_data_file(env).split("\n")
     if not preserve_blank_lines:
         return [line for line in lines if line]
 
@@ -86,7 +86,7 @@ def data_file_lines(
     return [g for g in groups if g[0]]
 
 
-def test_chunks(part_number, year=None, day=None):
+def test_chunks(env):
     """Returns tuples like (expected, [lines...]).
 
     Many times test data files have multiple tests. (These are usually files
@@ -100,7 +100,7 @@ def test_chunks(part_number, year=None, day=None):
     """
     chunks = []
     chunk_index = -1
-    for line in data_file_lines(year=year, day=day, part_num=part_number, testing=True):
+    for line in data_file_lines(env):
         if line[0] == "#":
             chunk_index += 1
             expected = line[1:].strip()

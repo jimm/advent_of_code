@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 #
-# usage: aoc.py [--year year] [--day day] [--test] 1|2
-#
-# 't' for test
+# usage: aoc.py [-y|--year year] [-d|--day day] [-t|--test] 1|2
 
 import argparse
 import datetime
@@ -26,4 +24,12 @@ if args.day:
     day = int(args.day)
 
 module = importlib.import_module(f"y{year}.day{'%02d' % day}")
-getattr(module, f"part{int(args.part_number)}")(args.test)
+
+# Try to find partPART_test() first. If that does not exist, fall back
+# to non-test function name.
+func = None
+if args.test:
+    func = getattr(module, f"part{int(args.part_number)}_test", None)
+if not func:
+    func = getattr(module, f"part{int(args.part_number)}", None)
+func(args)

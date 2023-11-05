@@ -5,27 +5,27 @@ from utils import *
 from .computer import Computer, Instruction
 
 
-def part1(testing=False):
-    before_and_after_tuples, _ = _read_input(testing)
+def part1(env):
+    before_and_after_tuples, _ = _read_input(env)
     c = Computer([], before_and_after_tuples=before_and_after_tuples)
-    if testing:
+    if env.test:
         print(c.is_versatile(before_and_after_tuples[0]))
     else:
         print(len([1 for bia in before_and_after_tuples if c.is_versatile(bia)]))
 
 
-def part2(testing=False):
-    before_and_after_tuples, program = _read_input(testing)
+def part2(env):
+    before_and_after_tuples, program = _read_input(env)
     c = Computer(program, before_and_after_tuples=before_and_after_tuples)
     c.determine_opcodes()
     c.execute_program()
     print(c.regs[0])
 
 
-def _read_input(testing):
+def _read_input(env):
     """Returns tuple containing ([(before, instruction, after)], program)."""
     # data_file_lines strips out all blank lines
-    lines = data_file_lines(2018, 16, 1, testing)
+    lines = data_file_lines(env)
     bia_tuples = []
     while lines and lines[0].startswith("Before: ["):
         before = [

@@ -30,13 +30,13 @@ OPPONENT_AND_RESULT_TO_MY_SHAPE = {
 }
 
 
-def part1(testing=False):
-    lines = data_file_lines(2022, 2, testing=testing)
+def part1(env):
+    lines = data_file_lines(env)
     print(sum(part1_round_score(line) for line in lines))
 
 
-def part2(testing=False):
-    lines = data_file_lines(2022, 2, testing=testing)
+def part2(env):
+    lines = data_file_lines(env)
     print(sum(part2_round_score(line) for line in lines))
 
 

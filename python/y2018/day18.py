@@ -83,19 +83,19 @@ class Forest(World):
         )
 
 
-def part1(testing=False):
-    world = _read_world(1, testing)
+def part1(env):
+    world = _read_world(env)
     print(world.score_after_n_turns(10))
 
 
-def part2(testing=False):
-    world = _read_world(1, testing)
+def part2(env):
+    world = _read_world(env)
     # It cycles (I can see it if I print out world map at each turn)
     print(world.score_after_n_turns(1_000_000_000))
 
 
-def _read_world(part_num, testing):
-    lines = data_file_lines(2018, 18, part_num, testing)
+def _read_world(env):
+    lines = data_file_lines(env)
     world = Forest(len(lines[0]), len(lines))
     for y, line in enumerate(lines):
         for x, ch in enumerate(line):

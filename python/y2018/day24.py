@@ -26,18 +26,18 @@ class Group:
         return self.count * self.attack_hp
 
 
-def part1(testing=False):
-    armies = _read_armies(1, testing)
+def part1(env):
+    armies = _read_armies(env)
     print(armies)  # DEBUG
 
 
-def part2(testing=False):
-    lines = data_file_lines(2018, 24, 2, testing)
+def part2(env):
+    lines = data_file_lines(env)
 
 
-def _read_armies(part_num, testing):
+def _read_armies(env):
     armies = []
-    for line in data_file_lines(2018, 24, part_num, testing):
+    for line in data_file_lines(env):
         if line[-1] == ":":
             army = Army()
             armies.append(army)

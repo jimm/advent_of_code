@@ -20,8 +20,8 @@ puzzle_tests = [
 subgrid_power_cache = {}
 
 
-def part1(testing=False):
-    if testing:
+def part1(env):
+    if env.test:
         for test in power_level_tests:
             _run_power_level_test(test)
         for test in puzzle_tests:
@@ -32,7 +32,7 @@ def part1(testing=False):
         print(_max_power_subgrid(grid, 3))
 
 
-def part2(testing=False):
+def part2(env):
     grid = _init_grid(puzzle_input, 300)
     max_coord, max_size, max_power = None, None, 0
     for size in range(3, 301):

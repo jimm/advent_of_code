@@ -10,11 +10,12 @@ Point4D = namedtuple("Point4D", ["x", "y", "z", "t"])
 tests = {1: 4, 2: 3, 3: 8}
 
 
-def part1(testing=False):
-    if testing:
+def part1(env):
+    if env.test:
         ok = True
         for i in tests:
-            stars = _read_stars(i, testing)
+            # FIXME after switch to env
+            stars = _read_stars(env)
             constellations = _find_constellations(stars)
             lc = len(constellations)
             if lc != tests[i]:
@@ -23,17 +24,17 @@ def part1(testing=False):
         if ok:
             print("ok")
     else:
-        stars = _read_stars(1, testing)
+        stars = _read_stars(env)
         constellations = _find_constellations(stars)
         print(len(constellations))
 
 
-def part2(testing=False):
-    lines = data_file_lines(2018, 25, 2, testing)
+def part2(env):
+    lines = data_file_lines(env)
 
 
-def _read_stars(i, testing):
-    return [_read_star(line) for line in data_file_lines(2018, 25, i, testing)]
+def _read_stars(env):
+    return [_read_star(line) for line in data_file_lines(env)]
 
 
 def _read_star(line):

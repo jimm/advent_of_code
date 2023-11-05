@@ -21,8 +21,8 @@ class Nap:
         return f"Nap({self.guard_id}, {self.date}, {self.nap})"
 
 
-def part1(testing=False):
-    min_day_start, max_day_start, guard_naps = _parse_data(testing, 1)
+def part1(env):
+    min_day_start, max_day_start, guard_naps = _parse_data(env)
     num_minutes_asleep = {}
     for guard_id, naps in guard_naps.items():
         num_minutes_asleep[guard_id] = 0
@@ -34,8 +34,8 @@ def part1(testing=False):
     print(sleepiest_guard_id * sleepiest_minute)
 
 
-def part2(testing=False):
-    min_day_start, max_day_start, guard_naps = _parse_data(testing, 1)
+def part2(env):
+    min_day_start, max_day_start, guard_naps = _parse_data(env)
     sleepiest_minutes = _sleepiest_minutes(guard_naps)
     reversed = {
         count: (guard_id, max_minute)
@@ -49,8 +49,8 @@ def part2(testing=False):
 
 # Return min day start as timestamp, max day start as timestamp, and dict
 # with guard_id as key and list of Naps as value.
-def _parse_data(testing, part_num):
-    lines = sorted(2018, data_file_lines(4, testing, part_num))
+def _parse_data(env):
+    lines = sorted(2018, data_file_lines(env))
     tstamp = None
     min_day_start = None
     naps = []

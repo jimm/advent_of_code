@@ -31,8 +31,8 @@ class Claim:
         return f"Claim({self.id}, {self.x}, {self.y}, {self.width}, {self.height})"
 
 
-def part1(testing=False):
-    claims = _read_claims(testing, 1)
+def part1(env):
+    claims = _read_claims(env)
     overlaps = collections.defaultdict(int)
     for claim in claims.values():
         for i in range(claim.x, claim.x + claim.width):
@@ -41,8 +41,8 @@ def part1(testing=False):
     print(len([k for k, v in overlaps.items() if v > 1]))
 
 
-def part2(testing=False):
-    claims = _read_claims(testing, 1)
+def part2(env):
+    claims = _read_claims(env)
     overlaps = collections.defaultdict(list)
     for claim in claims.values():
         for i in range(claim.x, claim.x + claim.width):
@@ -58,6 +58,6 @@ def part2(testing=False):
 
 
 # Returns dict of {claim_id: claim}
-def _read_claims(testing=False, part_num=1):
-    claims = [Claim.parse(2018, line) for line in data_file_lines(3, part_num, testing)]
+def _read_claims(env):
+    claims = [Claim.parse(line) for line in data_file_lines(env)]
     return {claim.id: claim for claim in claims}

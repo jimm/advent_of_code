@@ -3,13 +3,13 @@
 from utils import *
 
 
-def part1(testing=False):
-    pots, rules = _read_data(1, testing)
+def part1(env):
+    pots, rules = _read_data(env)
     print(_run_for_n_generations(pots, rules, 20))
 
 
-def part2(testing=False):
-    pots, rules = _read_data(2, testing)
+def part2(env):
+    pots, rules = _read_data(env)
     # n = 50000000000
     n = 50000000000
     print(_run_for_n_generations(pots, rules, n))
@@ -56,8 +56,8 @@ def _offset_from(prev_gen, pots):
 
 
 # rule is a tuple like ([1,1,0,1,1], 1)
-def _read_data(part_num, testing):
-    lines = data_file_lines(2018, 12, 1, testing)
+def _read_data(env):
+    lines = data_file_lines(env)
     pots = set([idx for idx, ch in enumerate(lines[0][15:]) if ch == "#"])
     rules = set(
         [

@@ -3,9 +3,17 @@ PUZZLENAME
 from utils import *
 
 
-def part1(testing=False):
-    lines = data_file_lines(YEARNAME, DAYNAME, testing=testing)
+def part1(ctx):
+    lines = data_file_lines(ctx)
 
 
-def part2(testing=False):
-    lines = data_file_lines(YEARNAME, DAYNAME, testing=testing)
+def part1_test(ctx):
+    run_chunk_tests(ctx, lambda expected, lines: (expected == lines[0], lines[0]))
+
+
+def part2(ctx):
+    lines = data_file_lines(ctx)
+
+
+def part2_test(ctx):
+    run_chunk_tests(ctx, lambda expected, lines: (expected == lines[0], lines[0]))

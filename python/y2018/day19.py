@@ -5,20 +5,20 @@ from utils import *
 from .computer import Computer, Instruction
 
 
-def part1(testing=False):
-    c = _read_input(1, testing)
+def part1(env):
+    c = _read_input(env)
     c.execute_program()
     print(c.regs[0])
 
 
-def part2(testing=False):
+def part2(env):
     print("run day19.c")
 
 
-def _read_input(part_num, testing):
+def _read_input(env):
     """Returns tuple containing ([(before, instruction, after)], program)."""
     # data_file_lines strips out all blank lines
-    lines = data_file_lines(2018, 19, part_num, testing)
+    lines = data_file_lines(env)
     line = lines[0]
     pc_register = int(line[4:])
     program = []

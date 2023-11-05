@@ -73,23 +73,38 @@ class Day
   end
 
   def no_tests
-    if @testing
-      puts('no tests available')
-      exit(0)
-    end
+    return unless @testing
+
+    puts('no tests available')
+    exit(0)
   end
 
   # ================ reading data files ================
 
+  private
+
+  # Returns the path to the data file, using `part_number`. If `part_number`
+  # is nil, the file name won't containthe part number.
+  def data_file_path(part_number)
+    fname = "day#{format('%02d', @day)}"
+    fname += "_#{part_number}" if part_number
+    fname += '_test' if @testing
+    File.join(__dir__, "../data/y#{@year}", "#{fname}.txt")
+  end
+
+  public
+
   # Returns the contents of a data file as an array of lines with line
   # endings stripped. File is found using year, day, part number and
   # the testing flag.
+  #
+  # If the file is not found and `part_number` > 1, try with part number 1.
+  # If that is not found, try it without a part number at all.
   def read_data_file(part_number = @part_number)
-    fname = "day#{format('%02d', @day)}"
-    fname += "_#{part_number}"
-    fname += '_test' if @testing
-    path = File.join(__dir__, "../data/y#{@year}", "#{fname}.txt")
-    raise "File #{path} does not exist" unless File.exist?(path)
+    path = data_file_path(part_number)
+    path = data_file_path(1) if !File.exist?(path) && part_number > 1
+    path = data_file_path(nil) unless File.exist?(path)
+    raise "No data file found for year #{@year} day #{@day}" unless File.exist?(path)
 
     IO.readlines(path).map(&:chomp!)
   end

@@ -11,15 +11,15 @@ tests = {
 }
 
 
-def part1(testing=False):
-    if testing:
+def part1(env):
+    if env.test:
         for input, output in tests.items():
             result = _remove_antipairs(input)
             print(len(result))
             if len(result) != len(output):
                 print(f"error with '{input}' => '{output}', wrong result '{result}'")
     else:
-        polymer = data_file_lines(2018, 5, 1)[0]
+        polymer = data_file_lines(env)[0]
         print(len(_remove_antipairs(polymer)))
 
 
@@ -40,12 +40,12 @@ def _remove_antipairs(p):
     return p
 
 
-def part2(testing=False):
-    if testing:
+def part2(env):
+    if env.test:
         for polymer in tests.keys():
             print(_min_removed_unit_len(polymer))
     else:
-        polymer = data_file_lines(2018, 5, 2)[0]
+        polymer = data_file_lines(env)[0]
         print(_min_removed_unit_len(polymer))
 
 

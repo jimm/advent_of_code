@@ -9,16 +9,16 @@ Point3 = namedtuple("Point3", ["x", "y", "z"])
 Bot = namedtuple("Bot", ["loc", "r"])
 
 
-def part1(testing=False):
-    bots = _read_nanobots(1, testing)
+def part1(env):
+    bots = _read_nanobots(env)
     strongest = max(bots, key=lambda b: b.r)
-    if testing:
+    if env.test:
         print(strongest)
     print(len([b for b in bots if _mdist(strongest.loc, b.loc) <= strongest.r]))
 
 
-def part2(testing=False):
-    bots = _read_nanobots(2, testing)
+def part2(env):
+    bots = _read_nanobots(env)
     max_num = -1
     max_coords = None
     min_x, max_x = minmax(b.loc.x for b in bots)
@@ -40,9 +40,9 @@ def part2(testing=False):
     print(_mlen(closest))
 
 
-def _read_nanobots(part_num, testing):
+def _read_nanobots(env):
     bots = []
-    for line in data_file_lines(2018, 23, part_num, testing):
+    for line in data_file_lines(env):
         m = re.match(r"pos=<(-?\d+),(-?\d+),(-?\d+)>, r=(\d+)", line)
         bots.append(Bot(Point3(int(m[1]), int(m[2]), int(m[3])), int(m[4])))
     return bots

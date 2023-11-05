@@ -6,8 +6,8 @@ import sys
 from utils import *
 
 
-def part1(testing=False):
-    lines = data_file_lines(2018, 2, 1, testing)
+def part1(env):
+    lines = data_file_lines(env)
     num_twos = 0
     num_threes = 0
     for line in lines:
@@ -23,8 +23,8 @@ def part1(testing=False):
 
 
 # This is O(n^2) but it's fast enough.
-def part2(testing=False):
-    lines = data_file_lines(2018, 2, 2, testing)
+def part2(env):
+    lines = data_file_lines(env)
     for line1 in lines:
         for line2 in lines:
             if line1 == line2:
