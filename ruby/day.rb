@@ -14,20 +14,31 @@ class Day
     send(fname.to_sym)
   end
 
-  def part1
+  def part1(lines = nil)
+    lines ||= data_lines(1)
+    puts do_part1(lines)
+  end
+
+  def do_part1(lines)
     raise 'subclasses must implement'
   end
 
   def part1_tests
-    part1
+    do_tests(1)
   end
 
   def part2
+    lines ||= data_lines(2)
+    warn 'calling do_part2' # DEBUG
+    puts do_part2(lines)
+  end
+
+  def do_part2(lines)
     raise 'subclasses must implement'
   end
 
   def part2_tests
-    part2
+    do_tests(2)
   end
 
   # Given an expected answer and a block, yields the expected answer to the
@@ -51,17 +62,38 @@ class Day
   # [boolean, answer] pair or [boolean, answer, expected] triplet. Prints
   # success or failure for all the tests.
   #
-  # A test chunk starts with a line starting with '# <expected>' and ends at
-  # the next such line or the end of the file.
+  # A test chunk starts with a line starting with
+  # '# <expected>[,<expected>]' and ends at the next such line or the end of
+  # the file. The first expected value is for part 1, the second for part 2.
   def run_chunk_tests(part_number = @part_number)
+    # Look first for the test data file for the given part number. If
+    # anything goes wrong and part_number == 2, try looking for the test
+    # data file for part 1.
+    chunks = begin
+      test_chunks(part_number)
+    rescue StandardError => e
+      if part_number == 2
+        begin
+          test_chunks(1)
+        rescue StandardError
+          no_tests
+        end
+      else
+        no_tests
+      end
+    end
+
     errors = []
-    test_chunks(part_number).each do |expected, lines|
-      ok, answer, optional_expected = yield(expected, lines)
-      if ok
+    chunks.each do |expected, lines|
+      expected_list = expected.split(',')
+      expected = part_number == 1 ? expected_list[0] : (expected_list[1] || expected_list[0])
+
+      answer = yield(lines)
+      if answer.to_s == expected.to_s
         print('.')
       else
         print('F')
-        errors << [optional_expected || expected, answer]
+        errors << [expected, answer]
       end
     end
     puts
@@ -70,6 +102,11 @@ class Day
     else
       errors.each { |err| puts("expected #{err[0]}, got #{err[1]}") }
     end
+  end
+
+  # Default `do_tests` implementation.
+  def do_tests(part_number = @part_number)
+    run_chunk_tests(part_number) { |lines| send("do_part#{part_number}".to_sym, lines) }
   end
 
   def no_tests

@@ -7,6 +7,8 @@ class Point
     @z = z
   end
 
+  ORIGIN = Point.new(0, 0, 0).freeze
+
   def ==(other)
     @x == other.x && @y == other.y && @z == other.z
   end
@@ -22,18 +24,24 @@ class Point
     @z <=> other.z
   end
 
-  def distance_squared(other)
+  # When other == nil, this returns the distance squared from the origin.
+  def distance_squared(other = nil)
+    other ||= ORIGIN
     dx = (other.x - @x)
     dy = (other.y - @y)
     dz = (other.z - @z)
     (dx * dx) + (dy * dy) + (dz * dz)
   end
 
-  def distance(other)
+  # When other == nil, this returns the distance from the origin.
+  def distance(other = nil)
+    other ||= ORIGIN
     Math.sqrt(distance_squared(other))
   end
 
-  def manhattan_distance(other)
+  # When other == nil, this returns the manhattan distance from the origin.
+  def manhattan_distance(other = nil)
+    other ||= ORIGIN
     (other.x - @x).abs + (other.y - @y).abs + (other.z - @z).abs
   end
 
