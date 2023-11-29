@@ -14,10 +14,21 @@ class Day03 < Day
   end
 
   def do_part2(lines)
-    # TODO
+    wire1 = coords_from_directions(lines[0])
+    wire2 = coords_from_directions(lines[1])
+    intersections = (wire1 & wire2) - [Point::ORIGIN]
+    # This isn't the most efficient approach, but it'll do
+    distance_sums = intersections.map do |p|
+      distance_to(wire1, p) + distance_to(wire2, p)
+    end
+    distance_sums.min
   end
 
   private
+
+  def distance_to(wire, p)
+    wire.index(p)
+  end
 
   def coords_from_directions(line)
     here = Point::ORIGIN

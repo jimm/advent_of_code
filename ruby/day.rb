@@ -137,22 +137,27 @@ class Day
   #
   # If the file is not found and `part_number` > 1, try with part number 1.
   # If that is not found, try it without a part number at all.
+  #
+  # If there is no data file, returns nil.
   def read_data_file(part_number = @part_number)
     path = data_file_path(part_number)
     path = data_file_path(1) if !File.exist?(path) && part_number > 1
     path = data_file_path(nil) unless File.exist?(path)
-    raise "No data file found for year #{@year} day #{@day}" unless File.exist?(path)
+    return nil unless File.exist?(path)
 
     IO.readlines(path).map(&:chomp!)
   end
 
   # Returns non-empty lines from the data file for @year, @day, and
-  # part_number (default @part_number).
+  # part_number (default @part_number). If there is no data file, returns
+  # nil.
   #
   # Normally, empty lines are skipped but if `skip_empty_lines` is false
   # then they're returned as well.
   def data_lines(part_number = @part_number, skip_empty_lines = true)
     lines = read_data_file(part_number)
+    return nil unless lines
+
     lines = lines[0..-2] if lines[-1].nil? # no newline at end of file
     lines.reject!(&:empty?) if skip_empty_lines
     lines
