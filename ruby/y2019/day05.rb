@@ -7,15 +7,19 @@ require_relative 'intcode'
 
 class Day05 < Day
   def do_part1(lines)
-    computer = IntcodeComputer.new(lines)
+    computer = IntcodeComputer.new
+    computer.load_memory(lines)
     computer.inputs = [1]
     computer.run
+    computer.outputs[-1]
   end
 
   def do_part2(lines)
-    computer = IntcodeComputer.new(lines)
+    computer = IntcodeComputer.new
+    computer.load_memory(lines)
     computer.inputs = [5]
     computer.run
+    computer.outputs[-1]
   end
 end
 

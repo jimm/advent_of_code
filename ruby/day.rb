@@ -29,7 +29,6 @@ class Day
 
   def part2
     lines ||= data_lines(2)
-    warn 'calling do_part2' # DEBUG
     puts do_part2(lines)
   end
 

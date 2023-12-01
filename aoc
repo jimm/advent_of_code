@@ -19,6 +19,7 @@ usage: $(basename "$0") [-m] [-i] [-y year] [-d day] [-l lang] [-Y] [-L] \\
   -L       List languages available for the current year and exit
   -t       Testing
   -f       When initializing, overwrite existing file
+  -D       Sets environment variable DEBUG=true
   -n       Print commands but do not run them
   -h       Print this help and exit
 
@@ -79,7 +80,7 @@ testing=""
 no_execute=""
 force=no
 
-while getopts "maiy:d:l:YLtfnh" opt ; do
+while getopts "maiy:d:l:YLtfnDh" opt ; do
     case $opt in
         m) makeup=1 ;;
         a) dir="$OPTARG" ;;
@@ -102,6 +103,7 @@ while getopts "maiy:d:l:YLtfnh" opt ; do
         t) testing=1 ;;
         f) force=yes ;;
         n) no_execute="echo" ;;
+        D) export DEBUG=true ;;
         h) usage 0 ;;
         *) usage 1 ;;
     esac

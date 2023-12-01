@@ -10,7 +10,8 @@ class Day02 < Day
 
   def do_part1(lines)
     lines ||= data_lines(1)
-    computer = IntcodeComputer.new(lines)
+    computer = IntcodeComputer.new
+    computer.load_memory(lines)
     unless @testing
       computer.data[1] = 12
       computer.data[2] = 2
@@ -25,7 +26,8 @@ class Day02 < Day
 
     for noun in (0..99)
       for verb in (0..99)
-        computer = IntcodeComputer.new(lines)
+        computer = IntcodeComputer.new
+        computer.load_memory(lines)
         computer.data[1] = noun
         computer.data[2] = verb
         computer.run
