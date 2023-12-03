@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Advent of code launcher.
+# Advent of Code launcher and utilities.
 
 usage() {
     cat <<EOS
@@ -134,23 +134,35 @@ cd $lang > /dev/null 2>&1 || ( echo "error: language required" ; exit 1 )
 
 if [ $init == 1 ] ; then
     tmpfile="/tmp/day${day}.html"
+    trap "rm -f $tmpfile" EXIT HUP INT TERM
     two_digit_day="$(printf '%02d' $day)"
     f=""
-    data_file="../data/y${year}/day${two_digit_day}_1.txt"
 
-    curl --silent -o $tmpfile "https://adventofcode.com/$year/day/$day"
-    puzzle_name=$(cat $tmpfile  | grep -- '--- Day' | sed -e 's/.*--- Day [0-9]*: //' -e 's/ ---.*//')
+    auth_cookie=""
+    if [ -n "$AOC_COOKIE" ] ; then
+        auth_cookie=" --cookie $AOC_COOKIE"
+    fi
+
+    # Download the puzzle page
+    url="https://adventofcode.com/$year/day/$day"
+    curl --silent $auth_cookie -o $tmpfile "$url"
+    puzzle_name=$(grep -- '--- Day' < $tmpfile | sed -e 's/.*--- Day [0-9]*: //' -e 's/ ---.*//')
     if [ -z "$puzzle_name" ] ; then
         puzzle_name="Year $year, Day $day"
     fi
 
-    if [ ! -f $data_file ] ; then
-        grep "get your puzzle input" $tmpfile \
-            && mkdir -p "../data/y${year}" \
-            && curl --silent -o $data_file
+    # Download the data file, if there is one
+    if [ -n "$auth_cookie" ] ; then
+        if [ grep 'get your puzzle input' < $tmpfile >/dev/null ] ; then
+            here="$(cd "$(dirname "$0")" && pwd)"
+            data_dir="$here/data/y$year"
+            mkdir -p "$data_dir"
+            curl --silent $auth_cookie -o "$data_dir/day${two_digit_day}_1.txt" "$url/input"
+        fi
     fi
-    rm $tmpfile
 
+    # Copy language-specific template and fill in variables PUZZLENAME,
+    # YEAR, DAY, YEARNAME, and DAYNAME.
     case $lang in
         crystal)
             mkdir -p "src/y${year}"

@@ -13,21 +13,21 @@ class Day02 < Day
 
   def do_part2(lines)
     games = read_games(lines)
-    games.map { |game| power_of_minimum_cubes(game) }.sum
+    games.map { power_of_minimum_cubes(_1) }.sum
   end
 
   private
 
   def possible?(game, bag_contents)
     game[:draws].all? do |draw|
-      draw.keys.all? { |color| draw[color] <= bag_contents[color] }
+      draw.keys.all? { draw[_1] <= bag_contents[_1] }
     end
   end
 
   def power_of_minimum_cubes(game)
     color_maxes = { red: 0, green: 0, blue: 0 }
     %i[red green blue].map do |color|
-      color_max = game[:draws].map { |d| d[color] }.max
+      color_max = game[:draws].map { _1[color] }.max
       color_maxes[color] = color_max if color_maxes[color].nil? || color_max > color_maxes[color]
     end
     color_maxes[:red] * color_maxes[:green] * color_maxes[:blue]
