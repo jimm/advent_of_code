@@ -14,9 +14,10 @@ usage: $(basename "$0") [-m] [-i] [-y year] [-d day] [-l lang] [-Y] [-L] \\
            current year (-1 == last year)
   -d day   Default is current day of the month or, if negative,
            offset from current day (-1 == yesterday)
-  -l lang  Required only if more than one lang for a year
-  -Y       List years
-  -L       List languages available for the current year and exit
+  -l lang  Required only if there is more than one languange for a year
+  -Y       List years and exits
+  -L       List languages available for a year (current by default) year
+           and exit
   -t       Testing
   -f       When initializing, overwrite existing file
   -D       Sets environment variable DEBUG=true
@@ -73,8 +74,8 @@ today=$(date "+%d" | sed -e 's/^0//')
 day=$today
 makeup=0
 init=0
-list_years=no
-list_langs=no
+list_years_flag=no
+list_langs_flag=no
 lang=""
 testing=""
 no_execute=""
@@ -98,8 +99,8 @@ while getopts "maiy:d:l:YLtfnDh" opt ; do
             fi
             ;;
         l) lang="$OPTARG" ;;
-        Y) list_years=yes ;;
-        L) list_langs=yes ;;
+        Y) list_years_flag=yes ;;
+        L) list_langs_flag=yes ;;
         t) testing=1 ;;
         f) force=yes ;;
         n) no_execute="echo" ;;
@@ -110,18 +111,18 @@ while getopts "maiy:d:l:YLtfnDh" opt ; do
 done
 shift $((OPTIND-1))
 part_num=$1
-if [ -z "$part_num" ] && [ $list_years = "no" ] && [ $list_langs = "no" ] && [ $init = 0 ]; then
+if [ -z "$part_num" ] && [ $list_years_flag = "no" ] && [ $list_langs_flag = "no" ] && [ $init = 0 ]; then
     usage 1
 fi
 
 cd $dir
 
-if [ $list_years = "yes" ] ; then
+if [ $list_years_flag = "yes" ] ; then
     list_years
     exit 0
 fi
 
-if [ $list_langs = "yes" ] ; then
+if [ $list_langs_flag = "yes" ] ; then
     list_langs $year
     exit 0
 fi
@@ -130,7 +131,7 @@ if [ -z "$lang" ] ; then
     lang=$(find_lang_for_year $year $lang)
 fi
 
-cd $lang > /dev/null 2>&1 || ( echo "error: language required" ; exit 1 )
+cd "$lang" > /dev/null 2>&1 || ( echo "error: language required" ; exit 1 )
 
 if [ $init == 1 ] ; then
     tmpfile="/tmp/day${day}.html"
@@ -155,8 +156,7 @@ if [ $init == 1 ] ; then
     if [ -n "$auth_cookie" ] ; then
         grep 'get your puzzle input' < $tmpfile >/dev/null
         if [ $? -eq 0  ] ; then
-            here="$(cd "$(dirname "$0")" && pwd)"
-            data_dir="$here/data/y$year"
+            data_dir="$dir/data/y$year"
             mkdir -p "$data_dir"
             curl --silent $auth_cookie -o "$data_dir/day${two_digit_day}_1.txt" "$url/input"
         fi

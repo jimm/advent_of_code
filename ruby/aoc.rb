@@ -5,11 +5,18 @@
 require 'optparse'
 require_relative 'day'
 
-# Args are here so that each day file can include this one and tell us what
-# year/day it is for.
-def aoc(file)
-  day = File.basename(file)[3, 2].to_i
-  year = File.basename(File.dirname(file))[1..].to_i
+# If we pass in a file name, we parse the year and day of the month from its
+# path. Else we start with the current year and day of the month. Both can
+# be overridden by command line arguments.
+def aoc(file = nil)
+  if file
+    day = File.basename(file)[3, 2].to_i
+    year = File.basename(File.dirname(file))[1..].to_i
+  else
+    now = Time.now
+    day = now.day
+    year = now.year
+  end
   testing = false
 
   OptionParser.new do |opts|
