@@ -123,5 +123,5 @@ end
 if __FILE__ == $PROGRAM_NAME
   require_relative '../aoc'
 
-  aoc(2022, 20)
+  aoc(__FILE__)
 end

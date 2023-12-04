@@ -45,13 +45,12 @@ class Day08 < Day
     modified_pc = -1
     while true
       cpu.run
-      if cpu.infinite_loop_detected?
-        flip_instruction_at(cpu, modified_pc) if modified_pc >= 0
-        modified_pc = next_instruction_to_modify(cpu, modified_pc)
-        flip_instruction_at(cpu, modified_pc)
-      else
-        break
-      end
+      break unless cpu.infinite_loop_detected?
+
+      flip_instruction_at(cpu, modified_pc) if modified_pc >= 0
+      modified_pc = next_instruction_to_modify(cpu, modified_pc)
+      flip_instruction_at(cpu, modified_pc)
+
     end
     puts(cpu.acc)
   end
@@ -77,5 +76,5 @@ end
 if __FILE__ == $PROGRAM_NAME
   require_relative '../aoc'
 
-  aoc(2020, 8)
+  aoc(__FILE__)
 end

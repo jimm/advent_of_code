@@ -102,15 +102,15 @@ class Day09 < Day
     dx = leader.x - follower.x
     dy = leader.y - follower.y
     move = FOLLOWER_FOLLOW_MOVES[[dx, dy]]
-    if move
-      follower.x += move[0]
-      follower.y += move[1]
-    end
+    return unless move
+
+    follower.x += move[0]
+    follower.y += move[1]
   end
 end
 
 if __FILE__ == $PROGRAM_NAME
   require_relative '../aoc'
 
-  aoc(2022, 9)
+  aoc(__FILE__)
 end

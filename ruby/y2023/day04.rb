@@ -56,10 +56,6 @@ class Day04 < Day
     counts.sum
   end
 
-  def num_winners(card)
-    card.on_card.select { card.winning_nums.include?(_1) }.length
-  end
-
   def parse_cards(lines)
     i = 1
     lines.map do |line|
@@ -75,5 +71,5 @@ end
 if __FILE__ == $PROGRAM_NAME
   require_relative '../aoc'
 
-  aoc(2023, 4)
+  aoc(__FILE__)
 end

@@ -105,11 +105,10 @@ class Day18 < Day
         end
 
         deep_ten = find_first_large_integer
-        if deep_ten
-          deep_ten.split
-        else
-          break
-        end
+        break unless deep_ten
+
+        deep_ten.split
+
       end
       self
     end
@@ -373,5 +372,5 @@ end
 if __FILE__ == $PROGRAM_NAME
   require_relative '../aoc'
 
-  aoc(2021, 18)
+  aoc(__FILE__)
 end

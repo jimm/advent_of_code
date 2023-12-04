@@ -45,11 +45,11 @@ class Day15 < Day
   def add_not_beacon_xs(sensor, beacon, sensor_range, y_row, occupied, not_beacon_xs)
     y_dist = (sensor.y - y_row).abs
     x_diff = sensor_range - y_dist
-    if x_diff > 0
-      (-x_diff..x_diff).each do |dx|
-        p = Point.new(sensor.x + dx, y_row)
-        not_beacon_xs.add(p) unless occupied.include?(p)
-      end
+    return unless x_diff > 0
+
+    (-x_diff..x_diff).each do |dx|
+      p = Point.new(sensor.x + dx, y_row)
+      not_beacon_xs.add(p) unless occupied.include?(p)
     end
   end
 
@@ -115,5 +115,5 @@ end
 if __FILE__ == $PROGRAM_NAME
   require_relative '../aoc'
 
-  aoc(2022, 15)
+  aoc(__FILE__)
 end

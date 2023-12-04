@@ -7,10 +7,9 @@ require_relative 'day'
 
 # Args are here so that each day file can include this one and tell us what
 # year/day it is for.
-def aoc(year = nil, day = nil)
-  now = Time.now
-  year ||= now.year
-  day ||= now.day
+def aoc(file)
+  day = File.basename(file)[3, 2].to_i
+  year = File.basename(File.dirname(file))[1..].to_i
   testing = false
 
   OptionParser.new do |opts|

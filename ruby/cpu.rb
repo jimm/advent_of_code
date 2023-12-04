@@ -19,9 +19,7 @@ class CPU
   def run
     @acc = 0
     @pc = 0
-    while pc_legal?
-      execute_instruction(@instructions[@pc])
-    end
+    execute_instruction(@instructions[@pc]) while pc_legal?
   end
 
   def pc_legal?
@@ -31,15 +29,15 @@ class CPU
   def execute_instruction(instruction)
     case instruction.op
     when :acc
-        @acc += instruction.val
-        @pc += 1
-      when :jmp
-        @pc += instruction.val
-      when :nop
-        @pc += 1
-      else
-        raise "illegal instruction #{instruction.inspect}"
-      end
+      @acc += instruction.val
+      @pc += 1
+    when :jmp
+      @pc += instruction.val
+    when :nop
+      @pc += 1
+    else
+      raise "illegal instruction #{instruction.inspect}"
+    end
   end
 
   def halt
