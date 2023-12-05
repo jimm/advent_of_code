@@ -14,37 +14,50 @@ class Day
     send(fname.to_sym)
   end
 
+  # Reads the data if +lines+ is +nil+, calls +do_part1+, and prints the
+  # returned value. Passes the lines in to #do_part1. If there is no data
+  # file, then +lines+ will be +nil+.
   def part1(lines = nil)
     lines ||= data_lines(1)
     puts do_part1(lines)
   end
 
+  # This method, run by both +part1+ and +part1_tests+, calculates the
+  # answer and returns it. When run by +part1_tests+, it is called once per
+  # test. If there is no part 1 data file then +lines+ will be +nil+.
   def do_part1(lines)
     raise 'subclasses must implement'
   end
 
+  # Runs the tests for part 1. Will call `do_part1` once for each test.
   def part1_tests
     do_tests(1)
   end
 
+  # Reads the data if +lines+ is +nil+, calls +do_part2+, and prints the
+  # returned value. Passes the lines in to #do_part2. If there is no data
+  # file, then +lines+ will be +nil+.
   def part2
     lines ||= data_lines(2)
     puts do_part2(lines)
   end
 
+  # This method, run by both +part2+ and +part2_tests+, calculates the
+  # answer and returns it. When run by +part2_tests+, it is called once per
+  # test. If there is no part 2 data file then +lines+ will be +nil+.
   def do_part2(lines)
     raise 'subclasses must implement'
   end
 
+  # Runs the tests for part 2. Will call `do_part2` once for each test.
   def part2_tests
     do_tests(2)
   end
 
   # Given an expected answer and a block, yields the expected answer to the
-  # block, which must return a [boolean, answer] pair. Prints success or
-  # failure.
+  # block which must return the answer. Prints success or failure.
   #
-  # Despite their names, `run_chunk_tests` does not call this method.
+  # Despite their names, +run_chunk_tests+ does not call this method.
   def run_one_test(expected)
     answer = yield(expected)
     if answer == expected
@@ -103,7 +116,7 @@ class Day
     end
   end
 
-  # Default `do_tests` implementation.
+  # Default +do_tests+ implementation.
   def do_tests(part_number = @part_number)
     run_chunk_tests(part_number) { |lines| send("do_part#{part_number}".to_sym, lines) }
   end
@@ -119,7 +132,7 @@ class Day
 
   private
 
-  # Returns the path to the data file, using `part_number`. If `part_number`
+  # Returns the path to the data file, using +part_number+. If +part_number+
   # is nil, the file name won't containthe part number.
   def data_file_path(part_number)
     fname = "day#{format('%02d', @day)}"
@@ -134,7 +147,7 @@ class Day
   # endings stripped. File is found using year, day, part number and
   # the testing flag.
   #
-  # If the file is not found and `part_number` > 1, try with part number 1.
+  # If the file is not found and +part_number+ > 1, try with part number 1.
   # If that is not found, try it without a part number at all.
   #
   # If there is no data file, returns nil.
@@ -151,7 +164,7 @@ class Day
   # part_number (default @part_number). If there is no data file, returns
   # nil.
   #
-  # Normally, empty lines are skipped but if `skip_empty_lines` is false
+  # Normally, empty lines are skipped but if +skip_empty_lines+ is false
   # then they're returned as well.
   def data_lines(part_number = @part_number, skip_empty_lines = true)
     lines = read_data_file(part_number)

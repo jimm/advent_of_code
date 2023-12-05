@@ -12,7 +12,7 @@ class Day04 < Day
       @num = num
       @winning_nums = winning_nums
       @on_card = on_card
-      @num_winners = @on_card.select { @winning_nums.include?(_1) }.length
+      @num_winners = (@on_card & @winning_nums).length
     end
 
     def name
