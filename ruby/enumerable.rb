@@ -1,19 +1,3 @@
-class Object
-  # Prints self.to_s to stdout and returns self, so that this method can be
-  # chained.
-  def debug(msg = nil)
-    puts("#{msg}#{msg ? ' ' : ''}#{self}")
-    self
-  end
-
-  # Prints self.inspect to stdout and returns self, so that this method can
-  # be chained.
-  def debugi(msg = nil)
-    puts("#{msg}#{msg ? ' ' : ''}#{inspect}")
-    self
-  end
-end
-
 module Enumerable
   # Divides `self` into arrays based on a delimiter, returning an array of
   # arrays of elements. Must either specfiy `func_sym` or pass in a block to
@@ -31,8 +15,4 @@ module Enumerable
     each { |item| freqs[item] += 1 }
     freqs
   end
-end
-
-def clear_screen
-  print("\e[0;0H\e[J") # DEBUG clear screen
 end

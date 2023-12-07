@@ -4,7 +4,7 @@
 
 require 'set'
 require_relative '../day'
-require_relative '../utils'
+require_relative '../enumerable'
 
 class Day06 < Day
   def part1

@@ -1,3 +1,29 @@
+# ================ debugging helpers ================
+
+class Object
+  # Prints self.to_s to stdout and returns self, so that this method can be
+  # chained.
+  def debug(msg = nil)
+    puts("#{msg}#{msg ? ' ' : ''}#{self}")
+    self
+  end
+
+  # Prints self.inspect to stdout and returns self, so that this method can
+  # be chained.
+  def debugi(msg = nil)
+    puts("#{msg}#{msg ? ' ' : ''}#{inspect}")
+    self
+  end
+end
+
+def clear_screen
+  print("\e[0;0H\e[J") # DEBUG clear screen
+end
+
+# ================
+
+# A framework for running tests and solutions that also includes methods for
+# reading data and running tests.
 class Day
   def initialize(year, day, part_number, testing)
     @year = year
@@ -196,4 +222,6 @@ class Day
     end
     chunks
   end
+
+  # ================ debugging helpers ================
 end

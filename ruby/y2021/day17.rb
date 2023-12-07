@@ -3,7 +3,6 @@
 # Trick Shot
 
 require_relative '../day'
-require_relative '../utils'
 
 class Day17 < Day
   def part1

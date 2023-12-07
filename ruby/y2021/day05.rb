@@ -5,7 +5,6 @@
 require_relative '../day'
 require_relative '../map'
 require_relative '../point'
-require_relative '../utils'
 
 class SegmentMap < Map
   def initialize(segments, rook_moves_only: false)

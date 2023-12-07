@@ -3,7 +3,7 @@
 # Camel Cards
 
 require_relative '../day'
-require_relative '../utils'
+require_relative '../enumerable'
 
 class Day07 < Day
   CARD_ORDER_PART_1 = %w[2 3 4 5 6 7 8 9 T J Q K A]
