@@ -10,19 +10,16 @@ class Day07 < Day
   CARD_ORDER_PART_2 = %w[J 2 3 4 5 6 7 8 9 T Q K A] # J is now Joker
 
   def do_part1(lines)
-    hands = parse(lines, CARD_ORDER_PART_1)
-    hands.each { |h| h[:type_score] = type_score(h[:card_values]) }
-    hands = sort_by_rank(hands)
-    score = 0
-    hands.each_with_index do |hand, i|
-      score += hand[:bid] * (i + 1)
-    end
-    score
+    do_part(lines, CARD_ORDER_PART_1, :type_score)
   end
 
   def do_part2(lines)
-    hands = parse(lines, CARD_ORDER_PART_2)
-    hands.each { |h| h[:type_score] = type_score_using_joker(h[:card_values]) }
+    do_part(lines, CARD_ORDER_PART_2, :type_score_using_joker)
+  end
+
+  def do_part(lines, card_order, type_score_method_sym)
+    hands = parse(lines, card_order)
+    hands.each { |h| h[:type_score] = send(type_score_method_sym, h[:card_values]) }
     hands = sort_by_rank(hands)
     score = 0
     hands.each_with_index do |hand, i|
@@ -34,20 +31,19 @@ class Day07 < Day
   private
 
   def type_score(card_values)
-    frequencies = card_values.frequencies.values
-    sorted_frequences = frequencies.sort.reverse
-    return 8 if frequencies.any? { _1 == 5 } # five of a kind
-    return 7 if frequencies.any? { _1 == 4 } # four of a kind
-    return 6 if sorted_frequences == [3, 2]  # full house
-    return 5 if sorted_frequences == [3, 1, 1] # three of a kind
-    return 4 if sorted_frequences == [2, 2, 1] # two pair
-    return 3 if sorted_frequences == [2, 1, 1, 1] # one pair
-    return 2 if sorted_frequences == [1, 1, 1, 1, 1] # high card
+    sorted_freqs = card_values.frequencies.values.sort.reverse
+    return 8 if sorted_freqs[0] == 5            # five of a kind
+    return 7 if sorted_freqs[0] == 4            # four of a kind
+    return 6 if sorted_freqs == [3, 2]          # full house
+    return 5 if sorted_freqs == [3, 1, 1]       # three of a kind
+    return 4 if sorted_freqs == [2, 2, 1]       # two pair
+    return 3 if sorted_freqs == [2, 1, 1, 1]    # one pair
+    return 2 if sorted_freqs == [1, 1, 1, 1, 1] # high card
 
     1
   end
 
-  def type_score_using_joker(card_values, debug_level = 0)
+  def type_score_using_joker(card_values)
     idx = card_values.index(0) # find the first joker
     # If there is no joker we can use the simpler logic
     return type_score(card_values) if idx.nil?
@@ -57,7 +53,7 @@ class Day07 < Day
     new_vals = card_values.dup
     (1..12).map do |card_val|
       new_vals[idx] = card_val
-      type_score_using_joker(new_vals, debug_level + 1)
+      type_score_using_joker(new_vals)
     end.max
   end
 
