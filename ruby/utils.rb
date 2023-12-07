@@ -23,6 +23,14 @@ module Enumerable
       .reject { |delim_true, _| delim_true }
       .map { |_, vals| vals }
   end
+
+  # Returns a hash whose keys are values in this Enumerable and values are
+  # the number of times the key occurs.
+  def frequencies
+    freqs = Hash.new { |h, k| h[k] = 0 }
+    each { |item| freqs[item] += 1 }
+    freqs
+  end
 end
 
 def clear_screen
