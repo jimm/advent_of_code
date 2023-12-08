@@ -197,7 +197,7 @@ if [ $init == 1 ] ; then
             mkdir -p "y${year}"
             f="y${year}/day${two_digit_day}.rb"
             exit_if_exists "$f"
-            m4 -DYEAR=$year -DDAY=$day -DPUZZLENAME="# $puzzle_name" -DDAYNAME="Day${two_digit_day}" \
+            m4 -DYEAR=$year -DDAY=$day -DPUZZLENAME="$puzzle_name" -DDAYNAME="Day${two_digit_day}" \
                template.rb > $f
             ;;
         *)
