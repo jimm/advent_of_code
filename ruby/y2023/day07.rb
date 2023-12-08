@@ -31,7 +31,7 @@ class Day07 < Day
   private
 
   def type_score(card_values)
-    sorted_freqs = card_values.frequencies.values.sort.reverse
+    sorted_freqs = card_values.tally.values.sort.reverse
     return 8 if sorted_freqs[0] == 5            # five of a kind
     return 7 if sorted_freqs[0] == 4            # four of a kind
     return 6 if sorted_freqs == [3, 2]          # full house
