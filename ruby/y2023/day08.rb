@@ -20,7 +20,7 @@ class Day08 < Day
     lcm(steps)
   end
 
-  # Block defines how to identify an end node
+  # end_node_lambda defines how to identify an end node.
   def steps_to_z(start_node, directions, nodes, end_node_lambda)
     steps = 0
     curr_node = start_node
