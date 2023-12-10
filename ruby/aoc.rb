@@ -23,6 +23,7 @@ def aoc(file = nil)
     opts.on('-y YEAR', '--year YEAR', 'year') { |arg| year = arg.to_i }
     opts.on('-d DAY', '--day DAY', 'day') { |arg| day = arg.to_i }
     opts.on('-t', '--testing', 'testing') { |_| testing = true }
+    opts.on('-D', '--debug', 'debug') { |_| $DEBUG = true }
   end.parse!
   if ARGV[0].nil?
     warn 'error: must specify part number 1 or 2'

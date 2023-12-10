@@ -4,16 +4,20 @@ class Object
   # Prints self.to_s to stdout and returns self, so that this method can be
   # chained.
   def debug(msg = nil)
-    puts("#{msg}#{msg ? ' ' : ''}#{self}")
+    puts("#{msg}#{msg ? ' ' : ''}#{self}") if $DEBUG
     self
   end
 
   # Prints self.inspect to stdout and returns self, so that this method can
   # be chained.
   def debugi(msg = nil)
-    puts("#{msg}#{msg ? ' ' : ''}#{inspect}")
+    puts("#{msg}#{msg ? ' ' : ''}#{inspect}") if $DEBUG
     self
   end
+end
+
+def debug(msg)
+  puts(msg) if $DEBUG
 end
 
 def clear_screen
@@ -122,7 +126,8 @@ class Day
     end
 
     errors = []
-    chunks.each do |expected, lines|
+    chunks.each_with_index do |chunk, test_run|
+      expected, lines = chunk
       expected_list = expected.split(',')
       expected = part_number == 1 ? expected_list[0] : (expected_list[1] || expected_list[0])
 
@@ -131,14 +136,14 @@ class Day
         print('.')
       else
         print('F')
-        errors << [expected, answer]
+        errors << [test_run + 1, expected, answer]
       end
     end
     puts
     if errors.empty?
       puts('ok')
     else
-      errors.each { |err| puts("expected #{err[0]}, got #{err[1]}") }
+      errors.each { |err| puts("run #{err[0]}: expected #{err[1]}, got #{err[2]}") }
     end
   end
 
