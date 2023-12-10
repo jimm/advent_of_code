@@ -48,6 +48,16 @@ class Map
     @cells.map { |row| row[col] }
   end
 
+  # Returns the first occurence of `val` as a two-element array containing
+  # [row, col], or nil if not found.
+  def find(val)
+    @cells.each_with_index do |row, row_idx|
+      col_idx = row.index(val)
+      return [row_idx, col_idx] if col_idx
+    end
+    nil
+  end
+
   # For each row and column, yields the row number, column number, and
   # value.
   def each

@@ -222,6 +222,4 @@ class Day
     end
     chunks
   end
-
-  # ================ debugging helpers ================
 end
