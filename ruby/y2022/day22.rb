@@ -67,7 +67,6 @@ class Day22 < Day
       end
     end
 
-    puts "row = #{map.row + 1}, col = #{map.col + 1}, facing = #{facing}, FACING_SCORE[facing] = #{FACING_SCORE[facing]}" # DEBUG
     (map.row + 1) * 1000 + (map.col + 1) * 4 + FACING_SCORE[facing]
   end
 
@@ -93,7 +92,7 @@ class Day22 < Day
   end
 
   def set_starting_loc(map)
-    map.move_by(0, 1) while map.here != '.'
+    map.move_by(0, 1) while map.at(map.row, map.col) != '.'
   end
 end
 

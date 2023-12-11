@@ -31,12 +31,12 @@ class Day11 < Day
   def indexes_of_expanded(map)
     empty_row_ixs = []
     map.height.times do |ri|
-      empty_row_ixs << ri if map.cells[ri].all? { _1 == '.' }
+      empty_row_ixs << ri if map.row(ri).all? { _1 == '.' }
     end
 
     empty_col_ixs = []
     map.width.times do |ci|
-      empty_col_ixs << ci if map.col_cells(ci).all? { |ch| ch == '.' }
+      empty_col_ixs << ci if map.column(ci).all? { |ch| ch == '.' }
     end
 
     [empty_row_ixs, empty_col_ixs]

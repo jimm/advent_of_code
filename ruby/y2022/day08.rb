@@ -61,11 +61,11 @@ class Day08 < Day
 
     val = map.at(row, col)
 
-    map_row = map.row_cells(row)
+    map_row = map.row(row)
     return true if map_row[0..col].max == val && map_row[0..col - 1].max < val
     return true if map_row[col..].max == val && map_row[col + 1..].max < val
 
-    map_col = map.col_cells(col)
+    map_col = map.column(col)
     return true if map_col[0..row].max == val && map_col[0..row - 1].max < val
     return true if map_col[row..].max == val && map_col[row + 1..].max < val
 

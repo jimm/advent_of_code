@@ -4,7 +4,7 @@
 # [0, 0] is at the top left of the map. @row increases down, @col increases
 # to the right.
 class Map
-  attr_reader :cells, :height, :width, :wrap_type
+  attr_reader :rows, :height, :width, :wrap_type
   attr_accessor :row, :col
 
   # Given `lines` of text, initializes a two-dimensional map of characters.
@@ -12,10 +12,10 @@ class Map
   #
   # `wrap_type` may be nil, :both, :row, or :col.
   def initialize(lines, wrap_type = nil)
-    @cells = lines.map { |line| line.split('') }
+    @rows = lines.map { |line| line.split('') }
     @wrap_type = wrap_type
-    @height = @cells.length
-    @width = @cells[0].length
+    @height = @rows.length
+    @width = @rows[0].length
     @row = @col = 0
   end
 
@@ -23,35 +23,30 @@ class Map
   # integer.
   def cells_to_ints!
     @height.times do |row|
-      @cells[row].map!(&:to_i)
+      @rows[row].map!(&:to_i)
     end
   end
 
   # Returns the value at [row][col].
-  def at(row = @row, col = @col)
+  def at(row, col)
     row, col = wrap(row, col)
     return nil unless in_bounds?(row, col)
 
-    @cells[row][col]
+    @rows[row][col]
   end
 
-  # A convenience method that returns `at(@row, @col)`
-  def here
-    at(@row, @col)
+  def row(row)
+    @rows[row]
   end
 
-  def row_cells(row = @row)
-    @cells[row]
+  def column(col)
+    @rows.map { |row| row[col] }
   end
 
-  def col_cells(col = @col)
-    @cells.map { |row| row[col] }
-  end
-
-  # Returns the first occurence of `val` as a two-element array containing
-  # [row, col], or nil if not found.
+  # Returns the first occurence of `val` (min row, then min col) as a
+  # two-element array containing [row, col], or nil if not found.
   def find(val)
-    @cells.each_with_index do |row, row_idx|
+    @rows.each_with_index do |row, row_idx|
       col_idx = row.index(val)
       return [row_idx, col_idx] if col_idx
     end
@@ -61,7 +56,7 @@ class Map
   # For each row and column, yields the row number, column number, and
   # value.
   def each
-    @cells.each_with_index do |row, ir|
+    @rows.each_with_index do |row, ir|
       row.each_with_index do |val, ic|
         yield ir, ic, val
       end
@@ -71,32 +66,32 @@ class Map
   # Sets value at `row`, `col` to `val`.
   def set(row = @row, col = @col, val)
     row, col = wrap(row, col)
-    @cells[row][col] = val
+    @rows[row][col] = val
   end
 
   def delete_row(row = @row)
     return if row < 0 || row >= @height || @height == 0
 
-    @cells.delete_at(row)
+    @rows.delete_at(row)
     @height -= 1
   end
 
   def insert_row(index, row)
-    @cells.insert(index, row.dup)
+    @rows.insert(index, row.dup)
     @height += 1
   end
 
   def delete_col(col = @col)
     return if col < 0 || col >= @width || @width == 0
 
-    @cells.each do |row|
+    @rows.each do |row|
       row.delete_at(col)
     end
     @width -= 1
   end
 
   def insert_col(index, col)
-    @cells.each_with_index do |row, i|
+    @rows.each_with_index do |row, i|
       row.insert(index, col[i].dup)
     end
     @width += 1
@@ -105,14 +100,14 @@ class Map
   # Calls update! on each cell
   def update_all!
     each do |ir, ic, val|
-      @cells[ir][ic] = yield val
+      @rows[ir][ic] = yield val
     end
   end
 
   # Updates value at `row`, `col` by yielding its value and storing the
   # result.
   def update!(row = @row, col = @col)
-    @cells[row][col] = yield at(row, col)
+    @rows[row][col] = yield at(row, col)
   end
 
   # Move to row and col.
@@ -144,11 +139,11 @@ class Map
   end
 
   def to_s
-    @cells.map(&:join).join("\n")
+    @rows.map(&:join).join("\n")
   end
 
   # Stretches out each row so that a square map prints closer to a square.
   def to_s_corrected
-    @cells.map { |row| row.join(' ') }.join("\n")
+    @rows.map { |row| row.join(' ') }.join("\n")
   end
 end

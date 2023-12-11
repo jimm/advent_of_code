@@ -24,7 +24,6 @@ class Day10 < Day
   end
 
   def do_part2(lines)
-    debug("\n\n\n++++++++++++++++++++++++++++++++")
     map = Map.new(lines)
     start_loc = map.find('S')
     start_char = start_char_at(map, start_loc)
@@ -107,50 +106,8 @@ class Day10 < Day
     end
   end
 
-  # def count_locs_inside_loop(map, loop, start_loc, start_char)
-  #   debug("map =\n#{map}")
-  #   init_non_loop_chars(map, loop)
-  #   map.set(start_loc[0], start_loc[1], start_char) # avoids 'S' special case
-
-  #   debug("map =\n#{map}")
-  #   num_inside = 0
-  #   map.height.times do |row_idx|
-  #     num_border_crossings = 0
-  #     debug("\nrow = #{map.row_cells(row_idx).join}")
-  #     prev_ch = '.'
-  #     map.width.times do |col_idx|
-  #       ch = map.at(row_idx, col_idx)
-  #       case ch
-  #       when '.'
-  #         num_inside += 1 if num_border_crossings.odd? && prev_ch == '.'
-  #         map.set(row_idx, col_idx, num_border_crossings.odd? ? 'I' : 'O') # DEBUG
-  #         debug(". at [#{row_idx}, #{col_idx}], num_border_crossings = #{num_border_crossings}, prev_ch = #{prev_ch}")
-  #         prev_ch = '.'
-  #       when '|'
-  #         num_border_crossings += 1
-  #         prev_ch = '.'
-  #         debug("#{ch} at [#{row_idx}, #{col_idx}], num_border_crossings => #{num_border_crossings}")
-  #       when '-'
-  #         prev_ch = ch
-  #       when 'F', 'L'
-  #         num_border_crossings += 1
-  #         debug("#{ch} at [#{row_idx}, #{col_idx}], num_border_crossings => #{num_border_crossings}")
-  #         prev_ch = ch
-  #       when '7', 'J'
-  #         num_border_crossings += 1
-  #         debug("#{ch} at [#{row_idx}, #{col_idx}], num_border_crossings => #{num_border_crossings}")
-  #         prev_ch = ch
-  #       end
-  #     end
-  #     debug("row = #{map.row_cells(row_idx).join}")
-  #   end
-  #   debug("\nreturning #{num_inside}, map =\n#{map}")
-  #   num_inside
-  # end
-
   # We assume that all non-loop chars are '.'.
   def count_locs_inside_loop(map, loop, start_loc, start_char)
-    debug("map =\n#{map}")
     init_non_loop_chars(map, loop)
     id = 'a'
     loc = map.find('.')
@@ -159,16 +116,13 @@ class Day10 < Day
       id = id.succ
       loc = map.find('.')
     end
-    debug("flood-filled map =\n#{map}")
     ids = ('a'...id).to_a
-    debug("ids = #{ids}")
 
     r, c = start_loc
     inside_ids = Set.new
 
     # set initial direction and in_dir as if we were coming in to the starting loc
     ch = start_char_at(map, [r, c])
-    debug("start char = #{ch}")
     case ch
     when 'F'
       dir = :left
@@ -262,8 +216,6 @@ class Day10 < Day
         end
       end
 
-      debug("  [#{r}, #{c}] ch = #{ch}, dir = #{dir}, in_dir = #{in_dir}, inids = #{inside_ids}") # DEBUG
-
       case dir
       when :left
         c -= 1
@@ -279,37 +231,8 @@ class Day10 < Day
 
     count = 0
     map.each { |_, _, ch| count += 1 if inside_ids.include?(ch) }
-
-    # DEBUG
-    debug("inside_ids = #{inside_ids}")
-    map.each do |ri, ci, ch|
-      if inside_ids.include?(ch)
-        map.set(ri, ci, 'I')
-      elsif ids.include?(ch)
-        map.set(ri, ci, 'O')
-      end
-    end
-    debug(map)
-
-    debug("returning count = #{count}")
     count
   end
-
-  # def find_outside_loc(map)
-  #   ci = map.row_cells(0).index('.')
-  #   return [0, ci] if ci
-
-  #   ci = map.row_cells[-1].index('.')
-  #   return [map.height - 1, ci] if ci
-
-  #   ri = map.col_cells(0).index('.')
-  #   return [ri, 0] if ri
-
-  #   ri = map.col_cells(map.width - 1).index('.')
-  #   return [ri, map.width - 1] if ri
-
-  #   nil
-  # end
 
   def flood_fill(map, loop, ri, ci, ch)
     q = []

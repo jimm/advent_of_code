@@ -22,10 +22,11 @@ class Day03 < Day
 
   def num_trees_on_slope(map, right, down)
     num_trees = 0
-    map.row = map.col = 0
-    while map.row < map.height
-      num_trees += 1 if map.here == '#'
-      map.move_by(down, right)
+    row = col = 0
+    while row < map.height
+      num_trees += 1 if map.at(row, col) == '#'
+      row += down
+      col += right
     end
     num_trees
   end

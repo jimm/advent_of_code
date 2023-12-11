@@ -23,7 +23,7 @@ class Day25 < Day
           @num_moved += 1
         end
       end
-      @cells = copy.cells
+      @rows = copy.rows
       copy = dup
 
       # move vertical cukes
@@ -37,18 +37,18 @@ class Day25 < Day
         end
       end
 
-      @cells = copy.cells
+      @rows = copy.rows
     end
 
     def column(n)
-      @cells.map { |row| row[n] }
+      @rows.map { |row| row[n] }
     end
 
     def dup
       duplicate = super
-      duplicate.instance_variable_set(:@cells, duplicate.cells.dup)
+      duplicate.instance_variable_set(:@rows, duplicate.rows.dup)
       (0..height - 1).each do |row|
-        duplicate.cells[row] = duplicate.cells[row].dup
+        duplicate.rows[row] = duplicate.rows[row].dup
       end
       duplicate
     end

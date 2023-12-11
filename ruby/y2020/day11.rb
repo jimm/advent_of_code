@@ -85,7 +85,7 @@ class Day11 < Day
     while true
       map.apply_rules
       unless map.changed?
-        puts(map.cells.flatten.tally['#'])
+        puts(map.rows.flatten.tally['#'])
         exit(0)
       end
     end
