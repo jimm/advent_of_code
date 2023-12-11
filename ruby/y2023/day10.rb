@@ -163,105 +163,106 @@ class Day10 < Day
     ids = ('a'...id).to_a
     debug("ids = #{ids}")
 
-    outside_ids = Set.new
-    dir = :down
-    out_dir = :left
     r, c = start_loc
+    inside_ids = Set.new
 
-    # set initial direction and out_dir as if we were coming in to the starting loc
+    # set initial direction and in_dir as if we were coming in to the starting loc
     ch = start_char_at(map, [r, c])
+    debug("start char = #{ch}")
     case ch
     when 'F'
       dir = :left
-      out_dir = :up
+      in_dir = :down
     when '7'
       dir = :right
-      out_dir = :up
+      in_dir = :down
     when 'J'
       dir = :right
-      out_dir = :down
+      in_dir = :up
     when 'L'
       dir = :left
-      out_dir = :down
+      in_dir = :up
     end
 
     begin
       case ch
       when '-'
-        outer = map.at(out_dir == :up ? r - 1 : r + 1, c)
-        outside_ids.add(outer) if ids.include?(outer)
+        inner = map.at(in_dir == :down ? r + 1 : r - 1, c)
+        inside_ids.add(inner) if ids.include?(inner)
       when '|'
-        outer = map.at(r, out_dir == :left ? c - 1 : c + 1)
-        outside_ids.add(outer) if ids.include?(outer)
+        inner = map.at(r, in_dir == :right ? c + 1 : c - 1)
+        inside_ids.add(inner) if ids.include?(inner)
       when 'F'
-        if %i[up left].include?(out_dir)
+        if %i[up left].include?(in_dir)
           [[r - 1, c - 1], [r - 1, c], [r, c - 1]].each do |ri, ci|
-            outer = map.at(ri, ci)
-            outside_ids.add(outer) if ids.include?(outer)
+            inner = map.at(ri, ci)
+            inside_ids.add(inner) if ids.include?(inner)
           end
         else
-          outer = map.at(r + 1, c + 1)
-          outside_ids.add(outer) if ids.include?(outer)
+          inner = map.at(r + 1, c + 1)
+          inside_ids.add(inner) if ids.include?(inner)
         end
         if dir == :left
           dir = :down
-          out_dir = out_dir == :up ? :left : :right
+          in_dir = in_dir == :up ? :left : :right
         elsif dir == :up
           dir = :right
-          out_dir = out_dir == :left ? :up : :down
+          in_dir = in_dir == :left ? :up : :down
         end
       when '7'
-        if %i[up right].include?(out_dir)
+        if %i[up right].include?(in_dir)
           [[r - 1, c], [r - 1, c + 1], [r, c + 1]].each do |ri, ci|
-            outer = map.at(ri, ci)
-            outside_ids.add(outer) if ids.include?(outer)
+            inner = map.at(ri, ci)
+            inside_ids.add(inner) if ids.include?(inner)
           end
         else
-          outer = map.at(r + 1, c - 1)
-          outside_ids.add(outer) if ids.include?(outer)
+          inner = map.at(r + 1, c - 1)
+          inside_ids.add(inner) if ids.include?(inner)
         end
         if dir == :right
           dir = :down
-          out_dir = out_dir == :up ? :right : :left
+          in_dir = in_dir == :up ? :right : :left
         elsif dir == :up
           dir = :left
-          out_dir = out_dir == :right ? :up : :down
+          in_dir = in_dir == :right ? :up : :down
         end
       when 'J'
-        if %i[right down].include?(out_dir)
+        if %i[right down].include?(in_dir)
           [[r, c + 1], [r + 1, c + 1], [r + 1, c]].each do |ri, ci|
-            outer = map.at(ri, ci)
-            outside_ids.add(outer) if ids.include?(outer)
+            inner = map.at(ri, ci)
+            inside_ids.add(inner) if ids.include?(inner)
           end
         else
-          outer = map.at(r - 1, c - 1)
-          outside_ids.add(outer) if ids.include?(outer)
+          inner = map.at(r - 1, c - 1)
+          inside_ids.add(inner) if ids.include?(inner)
         end
         if dir == :down
           dir = :left
-          out_dir = out_dir == :right ? :down : :up
+          in_dir = in_dir == :right ? :down : :up
         elsif dir == :right
           dir = :up
-          out_dir = out_dir == :down ? :right : :left
+          in_dir = in_dir == :down ? :right : :left
         end
       when 'L'
-        if %i[left down].include?(out_dir)
+        if %i[left down].include?(in_dir)
           [[r, c - 1], [r + 1, c - 1], [r + 1, c]].each do |ri, ci|
-            outer = map.at(ri, ci)
-            outside_ids.add(outer) if ids.include?(outer)
+            inner = map.at(ri, ci)
+            inside_ids.add(inner) if ids.include?(inner)
           end
         else
-          outer = map.at(r - 1, c + 1)
-          outside_ids.add(outer) if ids.include?(outer)
+          inner = map.at(r - 1, c + 1)
+          inside_ids.add(inner) if ids.include?(inner)
         end
         if dir == :down
           dir = :right
-          out_dir = out_dir == :left ? :down : :up
+          in_dir = in_dir == :left ? :down : :up
         elsif dir == :left
           dir = :up
-          out_dir = out_dir == :down ? :left : :right
+          in_dir = in_dir == :down ? :left : :right
         end
       end
+
+      debug("  [#{r}, #{c}] ch = #{ch}, dir = #{dir}, in_dir = #{in_dir}, inids = #{inside_ids}") # DEBUG
 
       case dir
       when :left
@@ -276,17 +277,16 @@ class Day10 < Day
       ch = map.at(r, c)
     end while ch != 'S'
 
-    inside_ids = ids - outside_ids.to_a
     count = 0
     map.each { |_, _, ch| count += 1 if inside_ids.include?(ch) }
 
-    warn "outside_ids = #{outside_ids}" # DEBUG
     # DEBUG
+    debug("inside_ids = #{inside_ids}")
     map.each do |ri, ci, ch|
-      if outside_ids.include?(ch)
-        map.set(ri, ci, 'O')
-      elsif inside_ids.include?(ch)
+      if inside_ids.include?(ch)
         map.set(ri, ci, 'I')
+      elsif ids.include?(ch)
+        map.set(ri, ci, 'O')
       end
     end
     debug(map)

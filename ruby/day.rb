@@ -29,6 +29,8 @@ end
 # A framework for running tests and solutions that also includes methods for
 # reading data and running tests.
 class Day
+  attr_reader :year, :day, :part_number, :testing
+
   def initialize(year, day, part_number, testing)
     @year = year
     @day = day
