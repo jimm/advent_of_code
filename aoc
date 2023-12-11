@@ -17,9 +17,11 @@ usage: $(basename "$0") [-m] [-i] [-y year] [-d day] [-l lang] [-Y] [-L] \\
   -f       When initializing, overwrite existing file
   -h       Print this help and exit
   -i       Initialize the current/specified day (language specific)
+  -k       Keep day's HTML file /tmp/dayDD.html instead of deleting it
   -l lang  Required only if there is more than one languange for a year
   -m       Run \`makeup\` first
   -n       Print commands but do not run them
+  -o       Open the day's puzzle page in a browser
   -t       Testing
   -y year  Default is current year or, if negative, offset from current year
            (-1 == last year)
@@ -80,32 +82,36 @@ lang=""
 testing=""
 run_or_echo=""
 force=no
+keep_tmpfile=no
+open_puzzle=no
 
-while getopts "maiy:d:l:YLtfnDh" opt ; do
+while getopts "DLYa:d:fhikl:mnoty:" opt ; do
     case $opt in
-        m) makeup=1 ;;
+        D) export DEBUG=true ;;
+        L) list_langs_flag=yes ;;
+        Y) list_years_flag=yes ;;
         a) dir="$OPTARG" ;;
-        i) init=1 ;;
-        y)
-            year="$OPTARG"
-            if [ $year -le 0 ] ; then
-                year=$(( this_year + year ))
-            fi
-            ;;
         d)
             day="$OPTARG"
             if [ $day -le 0 ] ; then
                 day=$(( today + day ))
             fi
             ;;
-        l) lang="$OPTARG" ;;
-        Y) list_years_flag=yes ;;
-        L) list_langs_flag=yes ;;
-        t) testing=1 ;;
         f) force=yes ;;
-        n) run_or_echo="echo" ;;
-        D) export DEBUG=true ;;
         h) usage 0 ;;
+        i) init=1 ;;
+        k) keep_tmpfile=yes ;;
+        l) lang="$OPTARG" ;;
+        m) makeup=1 ;;
+        n) run_or_echo="echo" ;;
+        o) open_puzzle=yes ;;
+        t) testing=1 ;;
+        y)
+            year="$OPTARG"
+            if [ $year -le 0 ] ; then
+                year=$(( this_year + year ))
+            fi
+            ;;
         *) usage 1 ;;
     esac
 done
@@ -135,7 +141,10 @@ cd "$lang" > /dev/null 2>&1 || ( echo "error: language required" ; exit 1 )
 
 if [ $init == 1 ] ; then
     tmpfile="/tmp/day${day}.html"
-    trap "rm -f $tmpfile" EXIT HUP INT TERM
+    if [ $keep_tmpfile = "no" ] ; then
+        trap "rm -f $tmpfile" EXIT HUP INT TERM
+    fi
+
     two_digit_day="$(printf '%02d' $day)"
     f=""
 
@@ -152,7 +161,8 @@ if [ $init == 1 ] ; then
         puzzle_name="Year $year, Day $day"
     fi
 
-    # Download the data file, if there is one
+    # Download the data file if 1. we have an auth cookie env var, 2. it's
+    # still good, and 3. the page says that we have one.
     if [ -n "$auth_cookie" ] ; then
         grep 'get your puzzle input' < $tmpfile >/dev/null
         if [ $? -eq 0  ] ; then
@@ -212,6 +222,10 @@ if [ $init == 1 ] ; then
         echo language "'${lang}'" not found
         exit 1
     fi
+fi
+
+if [ $open_puzzle = "yes" ] ; then
+    open "https://adventofcode.com/$year/day/$day"
 fi
 
 if [ $makeup == 1 ] ; then
