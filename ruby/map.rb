@@ -74,6 +74,34 @@ class Map
     @cells[row][col] = val
   end
 
+  def delete_row(row = @row)
+    return if row < 0 || row >= @height || @height == 0
+
+    @cells.delete_at(row)
+    @height -= 1
+  end
+
+  def insert_row(index, row)
+    @cells.insert(index, row.dup)
+    @height += 1
+  end
+
+  def delete_col(col = @col)
+    return if col < 0 || col >= @width || @width == 0
+
+    @cells.each do |row|
+      row.delete_at(col)
+    end
+    @width -= 1
+  end
+
+  def insert_col(index, col)
+    @cells.each_with_index do |row, i|
+      row.insert(index, col[i].dup)
+    end
+    @width += 1
+  end
+
   # Calls update! on each cell
   def update_all!
     each do |ir, ic, val|

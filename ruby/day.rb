@@ -210,17 +210,26 @@ class Day
 
   # Many times test data files have multiple tests. (These are usually files
   # that I've created based on multiple test cases provided by the problem
-  # description and/or my needs.) The first line will start with '#' and the
-  # data/input for the test is the following lines up to the next '#' or
-  # EOF. This method returns a list of two-element lists where the first
-  # element is the '#' line, minus the '#' and any leading whitespace, and
-  # the second element is the array of strings contains the data lines for
-  # that test.
+  # description and/or my needs.) The first line will start with any
+  # character (for example, '#' or ';', but any character will do) and the
+  # remainder of the lines is a comma-separated list of expected values for
+  # the first part and optionally the second part.. The data/input for the
+  # test is the following lines up to the next delimiter or EOF.
+  #
+  # This method returns a list of two-element lists where the first element
+  # is the expected line line, minus the delimter and any leading
+  # whitespace, and the second element is the array of strings contains the
+  # data lines for that test.
   def test_chunks(part_number = @part_number)
     chunks = []
     chunk_index = -1
+    first_line = true
     data_lines(part_number).each do |line|
-      if line[0] == '#'
+      if first_line
+        expected_line_char = line[0]
+        first_line = false
+      end
+      if line[0] == expected_line_char
         chunk_index += 1
         chunks[chunk_index] = [line[1..-1].strip, []]
       elsif chunk_index >= 0
