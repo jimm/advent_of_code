@@ -3,14 +3,14 @@
 class Object
   # Prints self.to_s to stdout and returns self, so that this method can be
   # chained.
-  def debug(msg = nil)
+  def pdebug(msg = nil)
     puts("#{msg}#{msg ? ' ' : ''}#{self}") if $DEBUG
     self
   end
 
   # Prints self.inspect to stdout and returns self, so that this method can
   # be chained.
-  def debugi(msg = nil)
+  def idebug(msg = nil)
     puts("#{msg}#{msg ? ' ' : ''}#{inspect}") if $DEBUG
     self
   end
