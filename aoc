@@ -21,7 +21,7 @@ usage: $(basename "$0") [-m] [-i] [-y year] [-d day] [-l lang] [-Y] [-L] \\
   -l lang  Required only if there is more than one languange for a year
   -m       Run \`makeup\` first
   -n       Print commands but do not run them
-  -o       Open the day's puzzle page in a browser
+  -o       Open the day's puzzle page in a browser and exit (run after init)
   -t       Testing
   -y year  Default is current year or, if negative, offset from current year
            (-1 == last year)
@@ -226,6 +226,7 @@ fi
 
 if [ $open_puzzle = "yes" ] ; then
     open "https://adventofcode.com/$year/day/$day"
+    exit 0
 fi
 
 if [ $makeup == 1 ] ; then
