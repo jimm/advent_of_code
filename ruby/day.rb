@@ -223,8 +223,9 @@ class Day
   def test_chunks(part_number = @part_number)
     chunks = []
     chunk_index = -1
+    expected_line_char = nil
     first_line = true
-    data_lines(part_number).each do |line|
+    data_lines(part_number, false).each do |line|
       if first_line
         expected_line_char = line[0]
         first_line = false

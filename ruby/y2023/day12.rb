@@ -32,13 +32,42 @@ class Day12 < Day
 
   def fit_count(springs, nums)
     unknown_indexes = springs.map.with_index { _1 == '?' ? _2 : nil }.compact
-    num_known = springs.select { _1 == '#' }.count
-    max_num = nums.sum
-    do_fit_count(springs, nums, unknown_indexes, num_known, max_num)
+    do_fit_count(springs, nums, 0, 0, 0)
   end
 
-  def do_fit_count(springs, nums, unknown_indexes, num_known, max_num)
-    return 0 if num_known > max_num
+  def do_fit_count(springs, nums, idx, run_len, num_idx)
+    if idx >= springs.length
+      case springs[-1]
+      when '.'
+        return nums_idx == nums.length ? 1 : 0
+      when '#'
+        return nums_idx == nums.length - 1 && run_len == curr_num ? 1 : 0
+      end
+    end
+
+    prev_ch = springs[idx - 1]
+    ch = springs[idx]
+    case ch
+    when '.'
+      if prev_ch == '#'
+        return 0 if run_len != curr_num
+
+        run_len = 0
+        nums_idx += 1
+        # FIXME
+        curr_num = nums[nums_idx]
+      end
+    when '#'
+      run_len += 1
+      return false if nums_idx >= nums.length || run_len > curr_num
+    end
+
+    do_fit_count(springs, nums, idx + 1, run_len, num_idx)
+  end
+
+  # ================
+
+  def do_fit_count(springs, nums, unknown_indexes)
     if unknown_indexes.empty?
       return fit_criteria?(springs, nums) ? 1 : 0
     end
@@ -46,7 +75,7 @@ class Day12 < Day
     i = unknown_indexes[0]
     ['#', '.'].map do |ch|
       springs[i] = ch
-      do_fit_count(springs, nums, unknown_indexes[1..], num_known + (ch == '#' ? 1 : 0), max_num)
+      do_fit_count(springs, nums, unknown_indexes[1..])
     end.sum
   end
 
