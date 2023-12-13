@@ -21,7 +21,7 @@ class Day12 < Day
       springs = springs
       nums = nums.split(',').map(&:to_i)
 
-      springs = (springs.chars << '?') * 5
+      springs = ((springs.chars << '?') * 5)[..-2] # remove the last '?'
       nums *= 5
 
       fit_count(springs, nums)
@@ -31,84 +31,55 @@ class Day12 < Day
   private
 
   def fit_count(springs, nums)
-    unknown_indexes = springs.map.with_index { _1 == '?' ? _2 : nil }.compact
-    do_fit_count(springs, nums, 0, 0, 0)
+    @cache = {}
+    do_fit_count(springs, nums)
   end
 
-  def do_fit_count(springs, nums, idx, run_len, num_idx)
-    if idx >= springs.length
-      case springs[-1]
-      when '.'
-        return nums_idx == nums.length ? 1 : 0
-      when '#'
-        return nums_idx == nums.length - 1 && run_len == curr_num ? 1 : 0
-      end
+  def do_fit_count(springs, nums)
+    cached_value = @cache[[springs, nums]]
+    return cached_value if cached_value
+
+    retval = calc_fit_count(springs, nums)
+    @cache[[springs, nums]] = retval
+    retval
+  end
+
+  def calc_fit_count(springs, nums)
+    # if there are no more runs of springs to look for, make sure we have no
+    # more springs to find
+    if nums.empty?
+      return springs.any? { _1 == '#' } ? 0 : 1
     end
 
-    prev_ch = springs[idx - 1]
-    ch = springs[idx]
-    case ch
-    when '.'
-      if prev_ch == '#'
-        return 0 if run_len != curr_num
+    # there are still runs of springs to look for, so if we're out of input
+    # then this is not a match
+    return 0 if springs.empty?
 
-        run_len = 0
-        nums_idx += 1
-        # FIXME
-        curr_num = nums[nums_idx]
-      end
+    case springs[0]
     when '#'
-      run_len += 1
-      return false if nums_idx >= nums.length || run_len > curr_num
-    end
+      runlen = nums[0]
 
-    do_fit_count(springs, nums, idx + 1, run_len, num_idx)
-  end
+      # must have runlen springs or possible springs
+      checking = springs.take(runlen)
+      return 0 if checking.length < runlen || checking.any? { _1 == '.' }
 
-  # ================
-
-  def do_fit_count(springs, nums, unknown_indexes)
-    if unknown_indexes.empty?
-      return fit_criteria?(springs, nums) ? 1 : 0
-    end
-
-    i = unknown_indexes[0]
-    ['#', '.'].map do |ch|
-      springs[i] = ch
-      do_fit_count(springs, nums, unknown_indexes[1..])
-    end.sum
-  end
-
-  def fit_criteria?(springs, nums)
-    # Easier to code but much slower
-    # return springs.chunk { _1 == '#' }.select { _1[0] == true }.map { _1[1].length } == nums
-
-    run_len = 0
-    nums_idx = 0
-    curr_num = nums[0]
-    prev_ch = nil
-    springs.each do |ch|
-      case ch
-      when '.'
-        if prev_ch == '#'
-          return false if run_len != curr_num
-
-          run_len = 0
-          nums_idx += 1
-          curr_num = nums[nums_idx]
-        end
-      when '#'
-        run_len += 1
-        return false if nums_idx >= nums.length || run_len > curr_num
+      # if we're looking at the last group of springs, we know if we're done
+      # or not
+      if springs.length == runlen
+        return nums.length == 1 ? 1 : 0
       end
-      prev_ch = ch
-    end
 
-    case prev_ch
+      # next char must be a possible separator
+      return 0 if springs[runlen] == '#'
+
+      # skip that separator and continue
+      do_fit_count(springs.drop(runlen + 1), nums.drop(1))
     when '.'
-      nums_idx == nums.length
-    when '#'
-      nums_idx == nums.length - 1 && run_len == curr_num
+      do_fit_count(springs.drop(1), nums)
+    when '?'
+      remainder = springs.drop(1)
+      do_fit_count(['#'] + remainder, nums) +
+        do_fit_count(['.'] + remainder, nums)
     end
   end
 end

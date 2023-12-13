@@ -231,12 +231,16 @@ class Day
         first_line = false
       end
       if line[0] == expected_line_char
+        # remove last empty line of previous chunk
+        chunks[chunk_index][1].pop if chunk_index >= 0 && chunks[chunk_index][1].last.empty?
+
         chunk_index += 1
         chunks[chunk_index] = [line[1..-1].strip, []]
       elsif chunk_index >= 0
         chunks[chunk_index][1] << line
       end
     end
+    chunks.pop if chunks.last.empty?
     chunks
   end
 end
