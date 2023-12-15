@@ -39,6 +39,10 @@ class Map
     @rows[row]
   end
 
+  def columns
+    (0...@width).map { column(_1) }
+  end
+
   def column(col)
     @rows.map { |row| row[col] }
   end
