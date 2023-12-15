@@ -67,6 +67,12 @@ class Map
     end
   end
 
+  def clone(freeze: nil)
+    new_map = super
+    new_map.rows = rows.map(&:clone)
+    new_map
+  end
+
   # Sets value at `row`, `col` to `val`.
   def set(row = @row, col = @col, val)
     row, col = wrap(row, col)
