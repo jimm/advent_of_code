@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# usage: aoc.rb [--year=year] [--day-day] [--test] 1|2
+# usage: aoc.rb [-y|--year=year] [-d|--day-day] [--D|--DEBUG] [-t|--test] 1|2
 
 require 'optparse'
 require_relative 'day'

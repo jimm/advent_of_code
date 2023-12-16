@@ -24,6 +24,8 @@ class Point
     @z <=> other.z
   end
 
+  def eql?(other) = self == other
+
   # When other == nil, this returns the distance squared from the origin.
   def distance_squared(other = nil)
     other ||= ORIGIN
@@ -53,15 +55,32 @@ class Point
     to_a.hash
   end
 
-  def eql?(other)
-    self == other
-  end
-
   def to_s
     "(#{@x}, #{@y}, #{@z})"
   end
 
   def inspect
     "Point#{self}"
+  end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  p0 = Point.new(3, 4)
+  p1 = Point.new(3, 4, 0)
+  unless p0 == p1
+    raise "== is not working"
+  end
+
+  unless [p0].include?(p1)
+    raise "include? is not working"
+  end
+
+  unless (p1 <=> p0) == 0
+    raise "comparison is not working"
+  end
+
+  p0.z = 3
+  unless (p1 <=> p0) == -1
+    raise "comparison is not working"
   end
 end
