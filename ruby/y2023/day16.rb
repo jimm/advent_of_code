@@ -39,17 +39,18 @@ class Day16 < Day
 
   def do_part1(lines)
     map = Map.new(lines)
-    energized_tiles(map)
+    energized_tiles(map, Beam.new(0, -1, :right))
   end
 
   def do_part2(lines)
-    # TODO
+    map = Map.new(lines)
+    outer_beams(map).map { energized_tiles(map, _1) }.max
   end
 
   private
 
-  def energized_tiles(map)
-    beams = [Beam.new(0, -1, :right)]
+  def energized_tiles(map, initial_beam)
+    beams = [initial_beam]
     energized = Set.new
     # optimization: if beam gets to a tile that is already energized with a
     # beam with the same loc and dir, we can stop.
@@ -127,6 +128,22 @@ class Day16 < Day
     when :down
       beam.x += 1
     end
+  end
+
+  def outer_beams(map)
+    beams = []
+    # top and bottom
+    map.width.times do |col|
+      beams << Beam.new(-1, col, :down)
+      beams << Beam.new(map.height, col, :up)
+    end
+
+    # left and right
+    map.height.times do |row|
+      beams << Beam.new(row, -1, :right)
+      beams << Beam.new(row, map.width, :left)
+    end
+    beams
   end
 end
 
