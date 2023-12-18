@@ -7,6 +7,10 @@ class Map
   attr_reader :rows, :height, :width, :wrap_type
   attr_accessor :row, :col
 
+  def self.from_size(num_rows, num_cols, initial_value = '.')
+    Map.new(Array.new(num_rows) { ('.' * num_cols).dup })
+  end
+
   # Given `lines` of text, initializes a two-dimensional map of characters.
   # Assumes all lines are the same length.
   #
@@ -155,5 +159,24 @@ class Map
   # Stretches out each row so that a square map prints closer to a square.
   def to_s_corrected
     @rows.map { |row| row.join(' ') }.join("\n")
+  end
+
+  # A non-recursive flood fill that changes `old_value` to `new_value`
+  # starting at (`row`, `col`).
+  def flood_fill(row, col, old_value, new_value)
+    queue = [[row, col]]
+    until queue.empty?
+      r, c = queue.shift
+      next unless in_bounds?(r, c)
+
+      ch = at(r, c)
+      next unless ch == old_value
+
+      set(r, c, new_value)
+      queue << [r - 1, c]
+      queue << [r + 1, c]
+      queue << [r, c - 1]
+      queue << [r, c + 1]
+    end
   end
 end
