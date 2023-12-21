@@ -23,7 +23,6 @@ class Day20 < Day
     def add_observer(observer, func=:update)
       super
       observer.inputs << self
-      puts "#{name} adding observer #{observer.name}, observer.inputs = #{observer.inputs.map(&:name)}" if $DEBUG
     end
 
     def notify_observers(sender, pulse)
@@ -32,12 +31,11 @@ class Day20 < Day
       else
         @highs_sent += @observer_peers.keys.size
       end
-      puts "\nnotify: #{sender} -> #{pulse} -> #{@observer_peers.keys.map(&:name)}" if $DEBUG
       super
     end
 
     def update(sender, pulse)
-      # puts "update: #{self} received #{pulse} from #{sender}" if $DEBUG
+      # nop
     end
 
     def run
@@ -75,11 +73,8 @@ class Day20 < Day
     def update(sender, pulse)
       super
       @received[sender.name] = pulse
-      changed
-    end
-
-    def run
       @state = @inputs.map(&:name).all? { @received[_1] == :high } ? :low : :high
+      changed
       notify_observers(self, @state)
     end
   end
@@ -110,30 +105,35 @@ class Day20 < Day
   def do_part1(lines)
     modules = parse(lines)
     button = modules.detect { _1.name == 'button' }
-    if $DEBUG
+    1000.times do
       button.push
       changed = modules.select(&:changed?)
       until changed.empty?
-        warn "****************" # DEBUG
-        warn "changed.map(&:name) = #{changed.map(&:name)}" # DEBUG
         changed.each(&:run)
         changed = modules.select(&:changed?)
-      end
-    else
-      1000.times do
-        button.push
-        changed = modules.select(&:changed?)
-        until changed.empty?
-          changed.each(&:run)
-          changed = modules.select(&:changed?)
-        end
       end
     end
     modules.map(&:highs_sent).sum * modules.map(&:lows_sent).sum
   end
 
   def do_part2(lines)
-    # TODO
+    no_tests
+
+    modules = parse(lines)
+    button = modules.detect { _1.name == 'button' }
+    rx = modules.detect { _1.name == 'rx' }
+    num_button_presses = 0
+    while true
+      num_button_presses += 1
+      button.push
+      changed = modules.select(&:changed?)
+      until changed.empty?
+        changed.each(&:run)
+        changed = modules.select(&:changed?)
+      end
+      break if rx.lows_sent >= 1
+    end
+    rx.lows_sent
   end
 
   private
