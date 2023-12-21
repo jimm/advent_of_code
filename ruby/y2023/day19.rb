@@ -21,6 +21,7 @@ class Day19 < Day
   end
 
   class Condition
+    attr_reader :part_field, :comparitor, :value
     def initialize(part_field, comparitor, value)
       @part_field = part_field.to_sym
       @comparitor = comparitor.to_sym
@@ -32,7 +33,7 @@ class Day19 < Day
     end
 
     def to_s
-      "Condition(#{@field} #{@comparitor} #{@value})"
+      "Condition(#{@part_field} #{@comparitor} #{@value})"
     end
   end
 
@@ -61,6 +62,7 @@ class Day19 < Day
   end
 
   class ConditionalRule < Rule
+    attr_reader :condition
     def pass?(part)
       @condition.pass?(part)
     end
@@ -99,8 +101,7 @@ class Day19 < Day
     attr_reader :workflows
 
     def initialize(workflows)
-      @workflows = {}
-      workflows.each { |w| @workflows[w.name] = w }
+      @workflows = workflows
     end
 
     def accepted?(part)
@@ -112,32 +113,142 @@ class Day19 < Day
         workflow = @workflows[next_sym]
       end
     end
+  end
 
-    def accepted_ranges(ranges)
-      do_accepted_ranges([@workflows[:in]], ranges)
+  class Vertex
+    attr_reader :workflow, :inputs, :outputs
+    def initialize(workflow)
+      @workflow = workflow
+      @inputs = []
+      @outputs = []
     end
 
-    def do_accepted_ranges(workflows, ranges)
-      return ranges if workflows.empty?
-      # TODO
+    def accepted? = @workflow == :accepted
+    def rejected? = @workflow == :rejected
+    def start? = @workflow.name == :in
+    def end? = accepted? || rejected?
+
+    def name = end? ? @workflow : @workflow.name
+
+    def to_s = "Vertex(name=#{name})"
+    def inspect = to_s
+  end
+
+  class Edge
+    attr_reader :source, :rule, :dest
+    def initialize(source, rule, dest)
+      @source = source
+      @source.outputs << self
+      @rule = rule
+      @dest = dest
+      @dest.inputs << self
     end
+
+    def to_s = "Edge(#{source.name} -> #{dest.name})"
+    def inspect = to_s
   end
 
   def do_part1(lines)
-    processor, parts = parse(lines)
+    workflows, parts = parse(lines)
+    processor = PartProcessor.new(workflows)
     parts.select { |p| processor.accepted?(p) }.sum(&:score)
   end
 
   def do_part2(lines)
-    processor, _ = parse(lines)
-    ranges = processor.accepted_ranges(
-      {x: [(1..4000)], m: [(1..4000)], a: [(1..4000)], s: [(1..4000)]}
-    )
-    ranges[:x].sum(&:size) * ranges[:m].sum(&:size) *
-      ranges[:a].sum(&:size) * ranges[:s].sum(&:size)
+    workflows, _ = parse(lines)
+    vertices = build_graph(workflows)
+    accepted = vertices.detect(&:accepted?)
+    flows = vertices_from_start_to(accepted)
+              .flatten
+              .slice_before(&:start?)
+
+    ranges = %i(x m a s).zip(%i(x m a s).map { (1..4000) }).to_h
+    ranges = accepted_ranges(flows, ranges)
+               .pdebug
+
+    # here's the brute force part
+    count = 0
+    (1...4000).each do |x|
+      (1...4000).each do |m|
+        (1...4000).each do |a|
+          (1...4000).each do |s|
+            if ranges.any? do |range|
+                 range[:x].include?(x) &&
+                   range[:m].include?(m) &&
+                   range[:a].include?(a) &&
+                   range[:s].include?(s)
+               end
+              count += 1
+            end
+          end
+        end
+      end
+    end
   end
 
   private
+
+  # Given a vertex, return an array of arrays of vertices that lead from the
+  # start node to this vertex.
+  def vertices_from_start_to(vertex)
+    return [vertex] if vertex.start?
+    vertex
+      .inputs
+      .map { |edge| vertices_from_start_to(edge.source) }
+      .map { |arr| arr << vertex }
+  end
+
+  def accepted_ranges(flows, ranges)
+    rs = []
+    flows.each do |flow|
+      flow_range = ranges.dup
+      flow.each_cons(2) do |v0, v1|
+        rule = v0.workflow.rules.detect { _1.destination == v1.name }
+        if rule.kind_of?(ConditionalRule)
+          cond = rule.condition
+          range = flow_range[cond.part_field]
+          case cond.comparitor
+          when :>
+            new_min = [cond.value, range.min].max
+            range = (new_min..range.max)
+          when :<
+            new_max = [cond.value, range.max].min
+            range = (range.min..new_max)
+          end
+          flow_range[cond.part_field] = range
+        end
+      end
+      if %i(x m a s).none? { flow_range[_1].size == 0 }
+        rs << flow_range
+      end
+    end
+    rs
+  end
+
+  def apply_node_to_ranges(node, ranges)
+    cond = node.rule.condition
+    if cond
+      ranges[cond.part_field] = remove_from_range(ranges[cond.part_field], cond)
+    end
+  end
+
+  # Returns an array containing Vertices which are connected by Edges.
+  def build_graph(workflows)
+    # We build a dict, but only return the values (the vertices)
+    vertices = {
+      accepted: Vertex.new(:accepted),
+      rejected: Vertex.new(:rejected)
+    }
+    workflows.each do |name, workflow|
+      vertices[name] = Vertex.new(workflow)
+    end
+    workflows.each do |name, workflow|
+      workflow.rules.each do |rule|
+        Edge.new(vertices[name], rule, vertices[rule.destination]) # joins itself to vertices
+      end
+    end
+    vertices.values
+  end
 
   def parse(lines)
     parts = []
@@ -164,7 +275,9 @@ class Day19 < Day
         workflows << Workflow.new(name, rules)
       end
     end
-    [PartProcessor.new(workflows), parts]
+    workflows_hash = {}
+    workflows.each { |w| workflows_hash[w.name] = w }
+    [workflows_hash, parts]
   end
 end
 

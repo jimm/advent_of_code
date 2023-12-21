@@ -80,6 +80,7 @@ list_years_flag=no
 list_langs_flag=no
 lang=""
 testing=""
+debug=""
 run_or_echo=""
 force=no
 keep_tmpfile=no
@@ -87,7 +88,10 @@ open_puzzle=no
 
 while getopts "DLYa:d:fhikl:mnoty:" opt ; do
     case $opt in
-        D) export DEBUG=true ;;
+        D)
+            export DEBUG=true
+            debug=1
+            ;;
         L) list_langs_flag=yes ;;
         Y) list_years_flag=yes ;;
         a) dir="$OPTARG" ;;
@@ -278,9 +282,13 @@ EOS
         $run_or_echo ./aoc.py -y $year -d $day $testing $part_num
         ;;
     ruby)
+        debug=""
+        if [ -n "$debug" ] ; then
+            debug="--debug"
+        fi
         if [ -n "$testing" ] ;then
             testing="-t"
         fi
-        $run_or_echo ./aoc.rb -y $year -d $day $testing $part_num
+        $run_or_echo ./aoc.rb -y $year -d $day $testing $debug $part_num
         ;;
 esac
