@@ -25,9 +25,16 @@ class Day21 < Day
   private
 
   def nth_step_count(map, loc, num_steps)
+    history = {}
     queue = Set.new
     queue << loc
-    num_steps.times do
+    num_steps.times do |step|
+      if history[queue]
+        queue = history[queue]
+        puts "repeat found at step #{step}"
+        return 0                # DEBUG
+      end
+
       new_queue = Set.new
       max_height = map.height - 1
       max_width = map.width - 1
@@ -37,6 +44,7 @@ class Day21 < Day
           new_queue << new_loc if map.at(*new_loc) == '.'
         end
       end
+      history[queue] = new_queue
       queue = new_queue
     end
     queue.each { |r, c| map.set(r, c, 'O') }
