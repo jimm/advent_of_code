@@ -3,6 +3,7 @@
 # Aplenty
 
 require_relative '../day'
+require_relative 'graph'
 
 class Day19 < Day
   class Part
@@ -115,12 +116,11 @@ class Day19 < Day
     end
   end
 
-  class Vertex
-    attr_reader :workflow, :inputs, :outputs
+  class WorkflowVertex < Vertex
+    attr_reader :workflow
     def initialize(workflow)
+      super(workflow == :accepted || workflow == :rejected ? workflow.to_s : workflow.name.to_s)
       @workflow = workflow
-      @inputs = []
-      @outputs = []
     end
 
     def accepted? = @workflow == :accepted
@@ -130,22 +130,15 @@ class Day19 < Day
 
     def name = end? ? @workflow : @workflow.name
 
-    def to_s = "Vertex(name=#{name})"
-    def inspect = to_s
+    def to_s = "WorkflowVertex(name=#{name})"
   end
 
-  class Edge
+  class WorkflowEdge < Edge
     attr_reader :source, :rule, :dest
     def initialize(source, rule, dest)
-      @source = source
-      @source.outputs << self
+      super(source, dest)
       @rule = rule
-      @dest = dest
-      @dest.inputs << self
     end
-
-    def to_s = "Edge(#{source.name} -> #{dest.name})"
-    def inspect = to_s
   end
 
   def do_part1(lines)
@@ -156,8 +149,8 @@ class Day19 < Day
 
   def do_part2(lines)
     workflows, _ = parse(lines)
-    vertices = build_graph(workflows)
-    accepted = vertices.detect(&:accepted?)
+    graph = build_graph(workflows)
+    accepted = graph.vertices.detect(&:accepted?)
     flows = vertices_from_start_to(accepted)
               .flatten
               .slice_before(&:start?)
@@ -232,22 +225,24 @@ class Day19 < Day
     end
   end
 
-  # Returns an array containing Vertices which are connected by Edges.
+  # Returns a Graph.
   def build_graph(workflows)
-    # We build a dict, but only return the values (the vertices)
-    vertices = {
-      accepted: Vertex.new(:accepted),
-      rejected: Vertex.new(:rejected)
-    }
+    graph = Graph.new
+    graph.add_vertex(WorkflowVertex.new(:accepted))
+    graph.add_vertex(WorkflowVertex.new(:rejected))
+
     workflows.each do |name, workflow|
-      vertices[name] = Vertex.new(workflow)
+      graph.add_vertex(WorkflowVertex.new(workflow))
     end
     workflows.each do |name, workflow|
       workflow.rules.each do |rule|
-        Edge.new(vertices[name], rule, vertices[rule.destination]) # joins itself to vertices
+        graph.add_edge(
+          graph.vertices.detect { _1.name == name },
+          graph.vertices.detect { _1.name == rule.destination }
+        )
       end
     end
-    vertices.values
+    graph
   end
 
   def parse(lines)

@@ -38,10 +38,10 @@ class Day24 < Day
   end
 
   def paths_intersect(h0, h1, range)
-    x1, y1 = h0.pos.to_a.map(&:to_f)
-    x2, y2 = another_point(h0).to_a.map(&:to_f)
-    x3, y3 = h1.pos.to_a.map(&:to_f)
-    x4, y4 = another_point(h1).to_a.map(&:to_f)
+    x1, y1 = h0.pos.to_a
+    x2, y2 = another_point(h0).to_a
+    x3, y3 = h1.pos.to_a
+    x4, y4 = another_point(h1).to_a
 
     denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
     return false if denom == 0  # they never intersection
@@ -52,8 +52,8 @@ class Day24 < Day
               (y1 - y2) * (x3 * y4 - y3 * x4)
 
     # px, py is the intersection point
-    px = numer_x / denom
-    py = numer_y / denom
+    px = numer_x.to_f / denom.to_f
+    py = numer_y.to_f / denom.to_f
 
     in_range = range.include?(px) && range.include?(py)
     return false unless in_range
