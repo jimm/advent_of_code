@@ -4,14 +4,20 @@
 
 ;; ================ main ================
 
-(defun part1 (&optional test-root)
-  (let ((lines (input-lines YEAR DAY)))
+(defun part1 ()
+  (let ((lines (input-lines YEAR DAY 1)))
     ))
 
-(defun test-part1 () (part1))
+(defun test-part1 ()
+  (let ((lines (input-lines YEAR DAY 1 :testing t)))
+    ))
+
+ (part1))
 
 (defun part2 (&optional test-root)
-  (let ((lines (input-lines YEAR DAY)))
+  (let ((lines (input-lines YEAR DAY 2)))
     ))
 
-(defun test-part2 () (part2))
+(defun test-part2 ()
+  (let ((lines (input-lines YEAR DAY 2 :testing t)))
+    ))
