@@ -64,6 +64,32 @@ found, try it without a part number at all."
       (setq path (data-file-path year day nil testing)))
     (input-lines-from path :keep-blank-lines keep-blank-lines)))
 
+;;; ================ run tests ================
+
+;; (defun run-test (lines)
+;;   (let* ((expected (subseq (car lines) 2))
+;;          (input (cdr lines)))
+;;     ;; TODO
+;;     ))
+
+;; (defun run-tests (func year day part)
+;;   (let* ((lines (input-lines year day part :testing t))
+;;          (chunks (find-chunks lines ""))
+;;          (test-count 0)
+;;          (pass-count 0))
+;;     (loop for chunk in chunks
+;;           (let ((ok-p (run-test chunk)))
+;;             (setq test-count (1+ test-count))
+;;             (if ok-p
+;;                 (progn
+;;                   (setq pass-count (1+ pass-count))
+;;                   (princ #\.))
+;;                 (princ #\F))))
+;;     (print "")
+;;     (format t " Tests: ~a~n" test-count)
+;;     (format t "Passed: ~a~n" pass-count)
+;;     (format t "Failed: ~a~n" ((- test-count pass-count)))))
+
 ;;; ================ queue ================
 ;;; From Common Lisp Recipes (http://weitz.de/cl-recipes/), section 2-10.
 
