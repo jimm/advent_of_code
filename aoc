@@ -269,11 +269,14 @@ EOS
         if [ $year = "2017" ] && ( [ $day = "10" ] || [ $day = "14" ] ) ; then
             part="day${day}-part"
         fi
-        $run_or_echo sbcl <<EOS
-(load "../utils.lisp")
-(load "day$day.lisp")
-(${test}${part}${part_num})
-EOS
+        TMPFILE="$(mktemp -t "$(basename "$0")")"
+        trap 'rm -rf $TMPFILE' EXIT HUP INT TERM
+        cat > "$TMPFILE" <<EOF
+(load "../load")
+(load "day$day")
+(print (${test}${part}${part_num}))
+EOF
+        $run_or_echo /usr/bin/env sbcl --noinform --non-interactive --load "$TMPFILE"
     ;;
     python)
         if [ -n "$testing" ] ; then

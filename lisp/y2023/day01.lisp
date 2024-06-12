@@ -3,6 +3,11 @@
 
 ;; ================ part 1 ================
 
+(defun -part1 (lines)
+  (loop for line in lines
+        summing
+        (first-and-last-digits-to-number line)))
+
 (defun first-and-last-digits (str)
   (let ((digits (loop for c across str  if (digit-char-p c) collect c)))
     (list (first digits) (car (last digits)))))
@@ -14,21 +19,19 @@
 
 ;; ================ part 2 ================
 
+(defun -part2 (lines)
+  )
+
 ;; ================ main ================
 
 (defun part1 ()
-  (loop for line in (input-lines 2023 1 1)
-        summing
-        (first-and-last-digits-to-number line)))
+  (-part1 (input-lines 2023 1 1)))
 
 (defun test-part1 ()
-  (let ((lines (input-lines 2023 1 1 :testing t)))
-    ))
+  (run-tests #'-part1 2023 1 1))
 
-(defun part2 (&optional test-root)
-  (let ((lines (input-lines 2023 1 2)))
-    ))
+(defun part2 ()
+  (-part2 (input-lines 2023 1 2)))
 
 (defun test-part2 ()
-  (let ((lines (input-lines 2023 1 2 :testing t)))
-    ))
+  (run-tests #'-part2 2023 1 2))

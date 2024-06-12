@@ -1,23 +1,23 @@
 ;; ================ part 1 ================
 
+(defun -part1 (lines)
+  )
+
 ;; ================ part 2 ================
+
+(defun -part2 (lines)
+  )
 
 ;; ================ main ================
 
 (defun part1 ()
-  (let ((lines (input-lines YEAR DAY 1)))
-    ))
+  (-part1 (input-lines YEAR DAY 1)))
 
 (defun test-part1 ()
-  (let ((lines (input-lines YEAR DAY 1 :testing t)))
-    ))
+  (run-tests #'-part1 YEAR DAY 1))
 
- (part1))
-
-(defun part2 (&optional test-root)
-  (let ((lines (input-lines YEAR DAY 2)))
-    ))
+(defun part2 ()
+  (-part2 (input-lines YEAR DAY 2)))
 
 (defun test-part2 ()
-  (let ((lines (input-lines YEAR DAY 2 :testing t)))
-    ))
+  (run-tests #'-part2 YEAR DAY 2))
