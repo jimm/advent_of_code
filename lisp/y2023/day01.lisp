@@ -39,8 +39,6 @@
             (do-replace-words-with-digits (drop input 1) (concat output (take input 1)))))))
 
 (defun replace-words-with-digits (line)
-  ;; FIXME need to iterate over index in line, not numeric words
-  ;; Example: "eightwothree" needs to become "8wo3" not "eigh23"
   (do-replace-words-with-digits line ""))
 
 (defun do-part2 (lines)
