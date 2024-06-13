@@ -16,8 +16,8 @@ lines in the file, without newlines. Does not return blank lines unless
   "Returns a path to the data file for `year`, `day`, and `part` (may be nil).
 If `testing` is non-nil, adds \"_test\" before the file extension."
   (let ((fname (format nil "day~2,'0D" day)))
-    (when part (setq fname (cat fname (format nil "_~a" part))))
-    (when testing (setq fname (cat fname "_test")))
+    (when part (setq fname (concat fname (format nil "_~a" part))))
+    (when testing (setq fname (concat fname "_test")))
     (format nil "../../data/y~a/~a.txt" year fname)))
 
 (defun input-lines (year day part &key (testing nil) (keep-blank-lines nil))

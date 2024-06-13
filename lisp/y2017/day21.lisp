@@ -66,10 +66,10 @@
          (num-chunks (/ (length art) chunk-size))
          (new-art-chunks nil))
     (dotimes (i num-chunks)
-      (let ((rows (take chunk-size (drop (* i chunk-size) art)))
+      (let ((rows (take (drop art (* i chunk-size)) chunk-size))
             (row-chunks nil))
         (dotimes (j num-chunks)
-          (let ((chunk-key (mapcar (lambda (row) (take chunk-size (drop (* j chunk-size) row))) rows)))
+          (let ((chunk-key (mapcar (lambda (row) (take (drop row (* j chunk-size)) chunk-size)) rows)))
             (setf new-art-chunks (cons (gethash chunk-key rules) new-art-chunks))))
         (setf new-art-chunks (cons row-chunks new-art-chunks))))
     ;; now turn new-art-chunks into new art

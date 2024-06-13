@@ -4,14 +4,14 @@
 (ql:quickload :alexandria)
 (ql:quickload :split-sequence)
 
-(defun cat (&rest strings)
+(defun concat (&rest strings)
   (apply 'concatenate 'string strings))
 
 (defun flatten (l) (alexandria:flatten l))
 
-(defun drop (n l) (subseq l n))
+(defun drop (l n) (subseq l (min n (length l))))
 
-(defun take (n l) (subseq l 0 n))
+(defun take (l n) (subseq l 0 (min n (length l))))
 
 (defun to-integer (str)
   (if str
@@ -22,12 +22,15 @@
       nil))
 
 (defun split-by-space (string)
-  "Returns a list of substrings of string divided by whitespace."
+  "Returns a list of substrings of `string` divided by whitespace."
   (cl-ppcre:split "\\s+" string))
 
 (defun split-by (regex string)
-  "Returns a list of substrings of string divided by whitespace."
+  "Returns a list of substrings of `string` divided by `regex`."
   (cl-ppcre:split regex string))
+
+(defun starts-with-p (str substr)
+  (equal substr (take str (length substr))))
 
 ;;; ================ queue ================
 ;;; From Common Lisp Recipes (http://weitz.de/cl-recipes/), section 2-10.

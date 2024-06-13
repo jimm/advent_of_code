@@ -3,7 +3,10 @@
 (defun run-test (func chunk part)
   "Run func and return t if matches the expected value from the first line."
   (let* ((first-line (subseq (car chunk) 2)) ; skip leading "# " or "; "
-         (expected (nth (1- part) (split-sequence:split-sequence #\, first-line)))
+         (expected-list (split-sequence:split-sequence #\, first-line))
+         (expected (if (and (= part 2) (>= (length expected-list) 2))
+                       (nth 1 expected-list)
+                       (car expected-list)))
          (input (cdr chunk)))
     ;; try converting expected value into integer, but it's OK if we can't
     (equal (or (parse-integer expected :junk-allowed t)
