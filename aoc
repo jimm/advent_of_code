@@ -193,6 +193,13 @@ if [ $init == 1 ] ; then
             m4 -DPUZZLENAME="# $puzzle_name" -DYEARNAME="Y${year}" \
                -DDAYNAME="Day${two_digit_day}" lib/template.ex > $f
             ;;
+        janet)
+            mkdir -p "y${year}"
+            f="y${year}/day${two_digit_day}.janet"
+            exit_if_exists "$f"
+            m4 -DPUZZLENAME="$puzzle_name" -DYEAR=$year -DDAY=$day \
+               template.janet > $f
+            ;;
         lisp)
             mkdir -p "y${year}"
             f="y${year}/day${two_digit_day}.lisp"
@@ -258,6 +265,19 @@ Y$year.Day$day.run$part_num$test
 System.halt(0)
 EOS
     ;;
+    janet)
+        day=$(printf '%02d' $day)
+        part="part"
+        if [ $year = "2017" ] && ( [ $day = "10" ] || [ $day = "14" ] ) ; then
+            part="day${day}-part"
+        fi
+        import="(import ./y${year}/day${day} :as day)"
+        if [ -n "$testing" ] ; then
+            $run_or_echo /usr/bin/env janet -e "$import (day/test-${part}${part_num})"
+        else
+            $run_or_echo /usr/bin/env janet -e "$import (print (day/${part}${part_num}))"
+        fi
+        ;;
     lisp)
         cd y$year
         day=$(printf '%02d' $day)
