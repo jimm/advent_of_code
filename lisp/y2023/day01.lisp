@@ -1,6 +1,3 @@
-(defvar *year* 2023)
-(defvar *day* 1)
-
 ;; ================ part 1 ================
 
 (defun first-and-last-digits (str)
