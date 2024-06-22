@@ -1,1 +1,9 @@
 https://janet-lang.org/
+
+When running a day as a script, the first optional arg is "-t" to set
+testing true. The final arg is the part number.
+
+  #+begin_src sh
+  cd y2023
+  janet day01.janet -t 1
+  #+end_src

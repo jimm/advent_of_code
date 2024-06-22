@@ -266,17 +266,12 @@ System.halt(0)
 EOS
     ;;
     janet)
+        cd y$year
         day=$(printf '%02d' $day)
-        part="part"
-        if [ $year = "2017" ] && ( [ $day = "10" ] || [ $day = "14" ] ) ; then
-            part="day${day}-part"
-        fi
-        import="(import ./y${year}/day${day} :as day)"
         if [ -n "$testing" ] ; then
-            $run_or_echo /usr/bin/env janet -e "$import (day/test-${part}${part_num})"
-        else
-            $run_or_echo /usr/bin/env janet -e "$import (print (day/${part}${part_num}))"
+            testing="-t"
         fi
+        $run_or_echo /usr/bin/env janet ./day${day}.janet $testing $part_num
         ;;
     lisp)
         cd y$year

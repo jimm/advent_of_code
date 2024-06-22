@@ -1,7 +1,10 @@
+#!/usr/bin/env janet
+
 # ================ PUZZLENAME ================
 
 (import ../data :as data)
 (import ../testing :as testing)
+(import ../running :as running)
 
 # ================ part 1 ================
 
@@ -26,3 +29,6 @@
 
 (defn test-part2 []
   (testing/run-tests do-part2 YEAR DAY 2))
+
+(defn main [& args]
+  (running/run part1 test-part1 part2 test-part2 ;args))

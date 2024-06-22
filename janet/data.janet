@@ -16,8 +16,7 @@ If `testing` is non-nil, adds \"_test\" before the file extension."
   (var fname (string/format "day%02d" day))
   (when part (set fname (string fname "_" part)))
   (when testing (set fname (string fname "_test")))
-  # we run from the janet dir, not the janet/yYYYY dir
-  (string "../data/y" year "/" fname ".txt"))
+  (string "../../data/y" year "/" fname ".txt"))
 
 (defn input-lines
   [year day part &keys {:testing testing :keep-blank-lines keep-blank-lines}]
@@ -39,5 +38,5 @@ found, try it without a part number at all."
     (do
       (file/close file)
       (input-lines-from path :keep-blank-lines keep-blank-lines))
-    (error (string "can't find file matching year " year " day " day " part " part " testing " testing))))
+    (error (string "can't find data file matching year " year ", day " day ", part " part ", testing " (truthy? testing)))))
 

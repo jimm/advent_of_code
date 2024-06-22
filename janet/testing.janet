@@ -11,7 +11,8 @@
                    (expected-list  1)
                    (first expected-list))
         input (slice chunk 1)]
-    (= expected (string (func input)))))
+    [expected (string (func input))]))
+    # (= expected (string (func input)))))
 
 (defn -find-chunks
   [lines]
@@ -22,16 +23,20 @@
 (defn run-tests
   [func year day part]
   (var test-count 0)
-  (var pass-count 0)
+  (var fail-messages @[])
   (each chunk (-find-chunks (data/input-lines year day part :testing true))
-    (let [ok-p (run-test func chunk part)]
+    (do
+      (def [expected result] (run-test func chunk part))
       (+= test-count 1)
-      (if ok-p
+      (if (= expected result)
         (do
-          (+= pass-count 1)
           (prin "."))
-        (prin "F")))
-    (print "")
-    (print " Tests: " test-count)
-    (print "Passed: " pass-count)
-    (print "Failed: " (- test-count pass-count))))
+        (do
+          (prin "F")
+          (array/push fail-messages
+                      (string "Test " test-count " failed: expected " expected ", got " result))))))
+  (print "")
+  (print " Tests: " test-count)
+  (print "Passed: " (- test-count (length fail-messages)))
+  (print "Failed: " (length fail-messages))
+  (print (string/join fail-messages "\n")))
