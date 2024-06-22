@@ -11,7 +11,6 @@
                    (expected-list  1)
                    (first expected-list))
         input (slice chunk 1)]
-    # try converting expected value into integer, but it's OK if we can't
     (= expected (string (func input)))))
 
 (defn -find-chunks

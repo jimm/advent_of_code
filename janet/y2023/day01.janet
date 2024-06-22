@@ -5,14 +5,14 @@
 
 # ================ part 1 ================
 
-(defn digitp [val]
+(defn digit? [val]
   (and (>= val 48) (<= val 57)))
 
 (defn ascii-to-int [val]
   (- val 48))
 
 (defn first-and-last-digits [str]
-  (let [digits (filter digitp (string/bytes str))]
+  (let [digits (filter digit? (string/bytes str))]
     [(ascii-to-int (first digits)) (ascii-to-int (first (reverse digits)))]))
 
 (defn first-and-last-digits-to-number [str]
@@ -27,8 +27,33 @@
 
 # ================ part 2 ================
 
+(def digit-names ["zero" "one" "two" "three" "four" "five" "six" "seven" "eight" "nine"])
+
+(defn do-replace-words-with-digits [input output]
+  (if (zero? (length input))
+    output
+    (do
+      (var new-input nil)
+      (var new-output nil)
+      (for i 0 10
+        (let [dname (digit-names i)]
+          (when (and (not new-input)
+                     (string/has-prefix? dname input))
+            (do
+              (set new-input (drop (length dname) input))
+              (set new-output (string output i))))))
+      (if new-input
+        (do-replace-words-with-digits new-input new-output)
+        (do-replace-words-with-digits (drop 1 input) (string output (take 1 input)))))))
+
+(defn replace-words-with-digits [line]
+  (do-replace-words-with-digits line ""))
+
 (defn do-part2 [lines]
-  )
+  (var total 0)
+  (each line lines
+    (+= total (first-and-last-digits-to-number (replace-words-with-digits line))))
+  total)
 
 # ================ main ================
 
