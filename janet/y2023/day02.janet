@@ -69,5 +69,5 @@
 (defn test-part2 []
   (testing/run-tests do-part2 2023 2 2))
 
-(defn main [& args]
-  (running/run part1 test-part1 part2 test-part2 ;args))
+(defn main [&]
+  (running/run part1 test-part1 part2 test-part2))
