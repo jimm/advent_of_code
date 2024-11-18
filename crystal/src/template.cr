@@ -1,6 +1,7 @@
 require "../day"
 
-PUZZLENAME
+# ================ PUZZLENAME ================
+# URL
 
 module YEARNAME
   class DAYNAME < Day

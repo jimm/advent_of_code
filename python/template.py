@@ -1,4 +1,5 @@
-PUZZLENAME
+# ================ PUZZLENAME ================
+# URL
 
 from utils import *
 
@@ -8,7 +9,9 @@ def part1(ctx):
 
 
 def part1_test(ctx):
-    run_chunk_tests(ctx, lambda expected, lines: (expected == lines[0], lines[0]))
+    run_chunk_tests(
+        ctx, lambda expected, lines: (expected == lines[0], lines[0])
+    )
 
 
 def part2(ctx):
@@ -16,4 +19,6 @@ def part2(ctx):
 
 
 def part2_test(ctx):
-    run_chunk_tests(ctx, lambda expected, lines: (expected == lines[0], lines[0]))
+    run_chunk_tests(
+        ctx, lambda expected, lines: (expected == lines[0], lines[0])
+    )

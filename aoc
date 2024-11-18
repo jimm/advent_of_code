@@ -183,43 +183,45 @@ if [ $init == 1 ] ; then
             mkdir -p "src/y${year}"
             f="src/y${year}/day${two_digit_day}.ex"
             exit_if_exists "$f"
-            m4 -DPUZZLENAME="# $puzzle_name" -DYEARNAME="Year${year}" \
-               -DDAYNAME="Day${two_digit_day}" src/template.cr > $f
+            m4 -DPUZZLENAME="$puzzle_name" -DYEARNAME="Year${year}" \
+               -DDAYNAME="Day${two_digit_day}" -DURL="$url" \
+               src/template.cr > $f
             ;;
         elixir)
             mkdir -p "lib/y${year}"
             f="y${year}/day${two_digit_day}.ex"
             exit_if_exists "$f"
-            m4 -DPUZZLENAME="# $puzzle_name" -DYEARNAME="Y${year}" \
-               -DDAYNAME="Day${two_digit_day}" lib/template.ex > $f
+            m4 -DPUZZLENAME="$puzzle_name" -DYEARNAME="Y${year}" \
+               -DDAYNAME="Day${two_digit_day}"  -DURL="$url" \
+               lib/template.ex > $f
             ;;
         janet)
             mkdir -p "y${year}"
             f="y${year}/day${two_digit_day}.janet"
             exit_if_exists "$f"
             m4 -DPUZZLENAME="$puzzle_name" -DYEAR=$year -DDAY=$day \
-               template.janet > $f
+                -DURL="$url" template.janet > $f
             ;;
         lisp)
             mkdir -p "y${year}"
             f="y${year}/day${two_digit_day}.lisp"
             exit_if_exists "$f"
             m4 -DPUZZLENAME="$puzzle_name" -DYEAR=$year -DDAY=$day \
-               template.lisp > $f
+                -DURL="$url" template.lisp > $f
             ;;
         python)
             mkdir -p "y${year}"
             f="y${year}/day${two_digit_day}.py"
             exit_if_exists "$f"
-            m4 -DPUZZLENAME="# $puzzle_name" -DYEARNAME="$year" -DDAYNAME="$day" \
-               template.py > $f
+            m4 -DPUZZLENAME="$puzzle_name" -DYEARNAME="$year" -DDAYNAME="$day" \
+                -DURL="$url" template.py > $f
             ;;
         ruby)
             mkdir -p "y${year}"
             f="y${year}/day${two_digit_day}.rb"
             exit_if_exists "$f"
-            m4 -DYEAR=$year -DDAY=$day -DPUZZLENAME="# $puzzle_name" -DDAYNAME="Day${two_digit_day}" \
-               template.rb > $f
+            m4 -DYEAR=$year -DDAY=$day -DPUZZLENAME="$puzzle_name" -DDAYNAME="Day${two_digit_day}" \
+                -DURL="$url" template.rb > $f
             ;;
         *)
             echo error: language required

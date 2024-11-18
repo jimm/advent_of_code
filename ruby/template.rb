@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
-#
-PUZZLENAME
+
+# ================ PUZZLENAME ================
+# URL
 
 require_relative '../day'
 
