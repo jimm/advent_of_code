@@ -188,7 +188,8 @@ class Day
     path = data_file_path(part_number)
     path = data_file_path(1) if !File.exist?(path) && part_number > 1
     path = data_file_path(nil) unless File.exist?(path)
-    return nil unless File.exist?(path)
+
+    raise "error: data file not found for year = #{year}, day = #{day}, part = #{part}" unless File.exist?(path)
 
     IO.readlines(path).map(&:chomp!)
   end

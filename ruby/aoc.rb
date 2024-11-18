@@ -33,7 +33,12 @@ def aoc(file = nil)
   day_str = '%02d' % day
 
   klass_name = "Day#{day_str}"
-  require_relative "y#{year}/day#{day_str}.rb" unless Object.const_defined?(klass_name)
+  begin
+    require_relative "y#{year}/day#{day_str}.rb" unless Object.const_defined?(klass_name)
+  rescue LoadError
+    warn "error: year #{year} day #{day} not found"
+    exit 1
+  end
   Object.const_get(klass_name).new(year, day, part_number, testing).run
 end
 

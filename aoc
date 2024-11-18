@@ -241,7 +241,7 @@ if [ $open_puzzle = "yes" ] ; then
 fi
 
 if [ $makeup == 1 ] ; then
-   makeup || exit 1
+    makeup || exit 1
 fi
 
 # We are currently in the directory ./$lang. Call the corresponding runner

@@ -84,10 +84,10 @@ class Day18 < Day
                              .select { |p0, p1| p0.y == p1.y }
                              .map { |p0, p1| p0.x > p1.x ? [p1, p0] : [p0, p1] }
 
-    # DEBUG
-    map = points_to_map(points)
-    points.each_cons(2) { |p0, p1| map.draw(p0.x, p0.y, p1.x, p1.y) }
-    puts map
+    # # DEBUG
+    # map = points_to_map(points)
+    # points.each_cons(2) { |p0, p1| map.draw(p0.x, p0.y, p1.x, p1.y) }
+    # puts map
 
     # now go between each of the x coords, creating horizontal rectangles by
     # storing upper left and bottom right
@@ -107,13 +107,12 @@ class Day18 < Day
     area
   end
 
-  # DEBUG
   def points_to_map(points)
     minx, maxx = points.map(&:x).minmax
     miny, maxy = points.map(&:y).minmax
     m = Map.from_size(maxx - minx + 1, maxy - miny + 1)
     points.each { |p| m.set(p.x - minx, p.y - miny, '#') }
-    warn "m.class.name = #{m.class.name}" # DEBUG
+    # warn "m.class.name = #{m.class.name}" # DEBUG
     m
   end
 
