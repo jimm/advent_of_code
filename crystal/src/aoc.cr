@@ -17,13 +17,13 @@ class AoC
   end
 
   def self.run
-    now = Time.now
+    now = Time.local
     year = now.year
     day = now.day
     part_number = 1
     testing = false
 
-    OptionParser.parse! do |parser|
+    OptionParser.parse do |parser|
       parser.banner = "usage: aoc [options] part_number"
       parser.on("-y YEAR", "--year YEAR", "Year (default is current year)") { |val| year = val }
       parser.on("-d DAY", "--day DAY", "Day (default is current day of the month)") { |val| day = val }
