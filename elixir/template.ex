@@ -1,5 +1,4 @@
-# ================ PUZZLENAME ================
-# URL
+PUZZLENAME
 
 defmodule YEARNAME.DAYNAME do
   use Common.File

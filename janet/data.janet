@@ -1,3 +1,5 @@
+(import spork/sh)
+
 # ================ data input ================
 
 (defn input-lines-from
@@ -20,23 +22,22 @@ If `testing` is non-nil, adds \"_test\" before the file extension."
 
 (defn input-lines
   [year day part &keys {:testing testing :keep-blank-lines keep-blank-lines}]
-  "INPUT-LINES calls INPUT-LINES-FROM with the path to the data file for
-`year`, `day`, `part`, and optionally \"_test\" before the file extension.
-Keeps blank lines if `keep-blank-lines` is non-nil.
+  "Returns an array of lines from the data file for year, day, and the testing
+flag. Keeps blank lines if `keep-blank-lines` is non-nil.
 
-If the file is not found and `part` > `, try with `part` = 1. If that is not
-found, try it without a part number at all."
+If the file is not found and `part` > 1, try with `part` = 1. If that is not
+found, try it without a part number at all. Prints a message and rases an error
+if no file is found."
   (var path (data-file-path year day part testing))
-  (var file (file/open path))
-  (when (and (not file) (not (= part 1)))
-    (set path (data-file-path year day 1 testing))
-    (set file (file/open path)))
-  (when (not file)
-    (set path (data-file-path year day nil testing))
-    (set file (file/open path)))
-  (if file
-    (do
-      (file/close file)
-      (input-lines-from path :keep-blank-lines keep-blank-lines))
-    (error (string "can't find data file matching year " year ", day " day ", part " part ", testing " (truthy? testing)))))
+  # if not found and part > 1, look for part 1
+  (when (and (not (sh/exists? path)) (not (= part 1)))
+    (set path (data-file-path year day 1 testing)))
+  # if not found, look for file with no part number
+  (when (not (sh/exists? path))
+    (set path (data-file-path year day nil testing)))
+  # if not found, print a message and raise an error
+  (when (not (sh/exists? path))
+    (errorf "can't find data file matching year %d day %d part %d, testing %v"
+            year day part (truthy? testing)))
+  (input-lines-from path :keep-blank-lines keep-blank-lines))
 

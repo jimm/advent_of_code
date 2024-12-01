@@ -1,5 +1,4 @@
-# A two-dimensional map where each cell is a single value. There is also a
-# single convenience "cursor" consisting of writable row and column indexes.
+# A two-dimensional map where each cell is a single value.
 #
 # [0, 0] is at the top left of the map. @row increases down, @col increases
 # to the right.
@@ -142,12 +141,12 @@ class Map
   def wrap(row, col)
     case wrap_type
     when :both
-      row = row % @height
-      col = col % @width
+      row %= @height
+      col %= @width
     when :row
-      row = row % @height
+      row %= @height
     when :col
-      col = col % @width
+      col %= @width
     end
     [row, col]
   end

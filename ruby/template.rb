@@ -1,8 +1,5 @@
 #!/usr/bin/env ruby
 
-# ================ PUZZLENAME ================
-# URL
-
 require_relative '../day'
 
 class DAYNAME < Day

@@ -1,5 +1,4 @@
-# ================ PUZZLENAME ================
-# URL
+PUZZLENAME
 
 from utils import *
 
