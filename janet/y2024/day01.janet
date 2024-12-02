@@ -8,12 +8,9 @@
 
 # ================ helpers ================
 
-(defn extract-nums [line]
-  (map (fn [s] (misc/string->int s)) (util/words line)))
-
 (defn read-cols [lines]
   "Returns two columns of numbers."
-  (let [pairs (map extract-nums lines)]
+  (let [pairs (map util/extract-nums lines)]
     (array (map first pairs) (map last pairs))))
 
 # ================ part 1 ================

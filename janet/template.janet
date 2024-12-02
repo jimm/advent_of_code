@@ -21,4 +21,4 @@ PUZZLENAME
 # ================ main ================
 
 (defn main [& args]
-  (running/run-main part1part2 YEAR DAY))
+  (running/run-main part1 part2 YEAR DAY))

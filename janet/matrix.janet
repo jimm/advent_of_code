@@ -15,6 +15,16 @@
   (map (fn [line] (array ;(string/bytes line)))
        lines))
 
+(defn num-rows
+  "Returns the number of rows in the matrix."
+  [matrix]
+  (length matrix))
+
+(defn num-cols
+  "Returns the number of columns in the matrix."
+  [matrix]
+  (length (get matrix 0)))
+
 (defn row
   "Returns row r of the matrix."
   [matrix r]
