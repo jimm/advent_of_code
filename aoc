@@ -2,6 +2,8 @@
 #
 # Advent of Code launcher and utilities.
 
+HERE="$(cd "$(dirname "$0")" && pwd)"
+
 usage() {
     cat <<EOS
 usage: $(basename "$0") [-m] [-i] [-y year] [-d day] [-l lang] [-Y] [-L] \\
@@ -157,6 +159,7 @@ cd "$lang" > /dev/null 2>&1 || ( echo "error: language required" ; exit 1 )
 
 if [ $init == 1 ] ; then
     tmpfile="/tmp/day${day}.html"
+    datafile="${HERE}/data/y${year}/day${two_digit_day}_1.txt"
     if [ $keep_tmpfile = "no" ] ; then
         trap "rm -f $tmpfile" EXIT HUP INT TERM
     fi
