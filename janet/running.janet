@@ -4,6 +4,8 @@
 # ================ running ================
 
 (defn run [p1 tp1 p2 tp2]
+  (when (= 1 (length(dyn :args)))
+    (error "part number argument is required"))
   (def testing (= ((dyn :args) 1) "-t"))
   (def part (parse ((dyn :args) (if testing 2 1))))
   (when (= part 1)

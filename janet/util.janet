@@ -9,6 +9,20 @@ multiple consecutive spaces."
   (filter (fn [s] (> (length s) 0))
           (string/split " " line)))
 
+(defn dig
+  "Finds and returns obj in nested objs specified by keys."
+  [obj & keys]
+  (var result obj)
+  (loop [key :in keys
+         :while result]
+    (set result (get result key)))
+  result)
+    
+(defmacro ord
+  "Converts a byte to a one-character string."
+  [s]
+  (string/from-bytes s))
+
 (defn stoi
   [s]
   (misc/string->int s))
