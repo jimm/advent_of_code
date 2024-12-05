@@ -6,7 +6,7 @@
 Can't just call string/split because it returns empty strings if there are
 multiple consecutive spaces."
   [line]
-  (filter |(not (empty? $))
+  (filter (complement empty?)
           (string/split " " line)))
 
 (defn dig
@@ -34,4 +34,6 @@ multiple consecutive spaces."
 
 (defn includes?
   [xs val]
+  # for my own edification: equivalent to
+  # (find (partial = val) xs)
   (find |(= val $) xs))
