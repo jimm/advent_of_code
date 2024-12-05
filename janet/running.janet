@@ -15,17 +15,17 @@
 
 (defn run-main
   "Defines part{1,2}, test-part{1,2}, and main functions."
-  [do-part1 do-part2 year day]
+  [do-part1 do-part2 year day &opt keep-blank-lines]
   (defn part1 []
-    (do-part1 (data/input-lines year day 1)))
+    (do-part1 (data/input-lines year day 1 :keep-blank-lines keep-blank-lines)))
 
   (defn test-part1 []
-    (testing/run-tests do-part1 year day 1))
+    (testing/run-tests do-part1 year day 1 keep-blank-lines))
 
   (defn part2 []
-    (do-part2 (data/input-lines year day 2)))
+    (do-part2 (data/input-lines year day 2 :keep-blank-lines keep-blank-lines)))
 
   (defn test-part2 []
-    (testing/run-tests do-part2 year day 2))
+    (testing/run-tests do-part2 year day 2 keep-blank-lines))
 
   (run part1 test-part1 part2 test-part2))

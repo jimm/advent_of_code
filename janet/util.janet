@@ -6,7 +6,7 @@
 Can't just call string/split because it returns empty strings if there are
 multiple consecutive spaces."
   [line]
-  (filter (fn [s] (> (length s) 0))
+  (filter |(not (empty? $))
           (string/split " " line)))
 
 (defn dig
@@ -27,6 +27,11 @@ multiple consecutive spaces."
   [s]
   (misc/string->int s))
 
-(defn extract-nums [line]
+(defn extract-nums
   "Returns numbers in a line, skipping multiple consecutive spaces."
-  (map (fn [s] (stoi s)) (words line)))
+  [line]
+  (map stoi (words line)))
+
+(defn includes?
+  [xs val]
+  (find |(= val $) xs))

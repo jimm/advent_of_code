@@ -3,8 +3,8 @@
 (import ./data :as data)
 
 (defn run-test
+  "Run func and return [expected result]."
   [func chunk part]
-  "Run func and return true if matches the expected value from the first line."
   (let [first-line (string/slice (first chunk) 2) # skip leading "# " or "; "
         expected-list (string/split "," first-line)
         expected (if (and (= part 2) (>= (length expected-list) 2))
@@ -12,19 +12,30 @@
                    (first expected-list))
         input (slice chunk 1)]
     [expected (string (func input))]))
-    # (= expected (string (func input)))))
 
-(defn -find-chunks
+(defn find-chunks
+  "Returns a list of lists of lines used as a test."
   [lines]
-  "Returns a list of lists of lines."
-  (filter |(not (= "" (first $)))
-          (partition-by |(= $ "") lines)))
+  (var expecteds-and-datas
+    (partition-by |(and (not (empty? $))
+                        (or (= (slice $ 0 1) "#")
+                            (= (slice $ 0 1) ";")))
+                  lines))
+  # remove trailing empty lines
+  (set expecteds-and-datas (map |(if (empty? (last $)) (slice $ 0 -2) $)
+                                expecteds-and-datas))
+  (map (fn [[expected-lines data-lines]]
+         (array (first expected-lines) ;data-lines))
+       (partition 2 expecteds-and-datas)))
 
 (defn run-tests
-  [func year day part]
+  [func year day part &opt keep-blank-lines]
   (var test-count 0)
   (var fail-messages @[])
-  (each chunk (-find-chunks (data/input-lines year day part :testing true))
+  (each chunk (find-chunks (data/input-lines
+                             year day part
+                             :testing true
+                             :keep-blank-lines keep-blank-lines))
     (do
       (def [expected result] (run-test func chunk part))
       (+= test-count 1)

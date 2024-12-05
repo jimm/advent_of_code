@@ -2,9 +2,7 @@
 #
 PUZZLENAME
 
-(import spork/misc)
-(import ../running :as running)
-(import ../util :as util)
+(import ../running)
 
 # ================ helpers ================
 
