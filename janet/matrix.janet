@@ -6,10 +6,10 @@
 (defn from-size
   "Returns a rows x cols array of arrays filled with initial-value or nil."
   [rows cols &opt initial-value]
-  (let [matrix (array/new rows)]
+  (let [m (array/new rows)]
     (for i 0 cols
-      (put matrix i (array/new-filled cols initial-value)))
-    matrix))
+      (put m i (array/new-filled cols initial-value)))
+    m))
 
 (defn from-lines
   "Returns a matrix created from lines. Cells will contain byte values."
@@ -19,34 +19,55 @@
 
 (defn height
   "Returns the number of rows in the matrix."
-  [matrix]
-  (length matrix))
+  [m]
+  (length m))
 
 (defn width
   "Returns the number of columns in the matrix."
-  [matrix]
-  (length (get matrix 0)))
+  [m]
+  (length (get m 0)))
+
+(defn in-bounds?
+  [m r c]
+  (and (>= r 0)
+       (>= c 0)
+       (< r (height m))
+       (< c (width m))))
 
 (defn row
   "Returns row r of the matrix."
-  [matrix r]
-  (get matrix r))
+  [m r]
+  (get m r))
 
 (defn col
   "Returns column c of the matrix."
-  [matrix c]
-  (map (fn [r] (get r c)) matrix))
+  [m c]
+  (map (fn [r] (get r c)) m))
 
 (defn mget
   "Returns cell (r, c) of the matrix or nil if out of bounds."
-  [matrix r c]
-  (util/dig matrix r c))
+  [m r c]
+  (util/dig m r c))
 
 (defn mput
   "Sets cell (r, c) of the matrix to val."
-  [matrix r c val]
-  (put (get matrix r) c val))
+  [m r c val]
+  (put (get m r) c val))
+
+(defn find
+  "Returns the [r, c] loc of the first occurrence of val or nil if not
+found. Search is done row by row, col by col."
+  [m val]
+  (var loc nil)
+  (loop [r :range [0 (height m)]
+         :while (not loc)]
+    (def row (m r))
+    (loop [c :range [0 (width m)]
+           :while (not loc)]
+      (when (= (row c) val)
+        (set loc [r c]))))
+  loc)
 
 (defn pprint
-  [matrix]
-  (map (fn [row] (print (string/from-bytes ;row))) matrix))
+  [m]
+  (map (fn [row] (print (string/from-bytes ;row))) m))

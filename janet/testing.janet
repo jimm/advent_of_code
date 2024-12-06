@@ -16,10 +16,10 @@
 (defn find-chunks
   "Returns a list of lists of lines used as a test."
   [lines]
+  (def expected-char (slice (first lines) 0 1))
   (var expecteds-and-datas
     (partition-by |(and (not (empty? $))
-                        (or (= (slice $ 0 1) "#")
-                            (= (slice $ 0 1) ";")))
+                        (= (slice $ 0 1) expected-char))
                   lines))
   # remove trailing empty lines
   (set expecteds-and-datas (map |(if (empty? (last $)) (slice $ 0 -2) $)
