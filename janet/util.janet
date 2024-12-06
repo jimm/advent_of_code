@@ -21,7 +21,7 @@ multiple consecutive spaces."
 (defmacro ord
   "Converts a byte to a one-character string."
   [s]
-  (string/from-bytes s))
+  ~(string/from-bytes ,s))
 
 (defn stoi
   [s]
