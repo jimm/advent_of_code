@@ -82,16 +82,20 @@ pass through it and a symbol stating if the guard ended up :out-of-bounds or
   [m (if done :out-of-bounds :stuck-in-a-loop)])
 
 (defn ok-to-place-obstacle?
-  [m r c]
-  (def cell (matrix/mget m r c))
-  (not (util/includes? [obstacle guard] cell)))
+  [m start-r start-c r c]
+  (and
+    (visited? m r c)            # on original path
+    (not (and (= r start-r) (= c start-c))) # not guard start loc
+    (not (= (matrix/mget m r c) obstacle)))) # not an obstacle already
 
 (defn count-loop-obstructions
   [orig-map]
   (var count 0)
+  (var [start-row start-col] (matrix/find orig-map guard))
+  (var [paths-map _] (trace-guard-path (matrix/copy orig-map)))
   (loop [r :range [0 (matrix/height orig-map)]
          c :range [0 (matrix/height orig-map)]
-         :when (ok-to-place-obstacle? orig-map r c)]
+         :when (ok-to-place-obstacle? paths-map start-row start-col r c)]
     (var m (matrix/copy orig-map))
     (matrix/mput m r c obstacle)
     (def [_ reason] (trace-guard-path m))
