@@ -9,6 +9,7 @@
 # ================ helpers ================
 
 (def obstacle (chr "#"))
+(def guard (chr "^"))
 (def dir-offsets
   {:up [-1 0]
    :down [1 0]
@@ -53,35 +54,63 @@
       (++ count)))
   count)
 
-# ================ part 1 ================
-
-(defn part1 [lines]
-  (def map (load-map lines))
-  (var [r c] (matrix/find map (chr "^")))
+(defn trace-guard-path
+  "Traces the guard's path, returning a tuple containing a copy of the map
+with each visited cell containing an array of directions the guard used to
+pass through it and a symbol stating if the guard ended up :out-of-bounds or
+:stuck-in-a-loop."
+  [orig-map]
+  (var m (matrix/copy orig-map))
+  (var [r c] (matrix/find m guard))
   (var dir :up)
   (var done false)
   (while (and (not done)
-              (not (visited-same-dir? map r c dir)))
-    (mark-visited map r c dir)
+              (not (visited-same-dir? m r c dir)))
+    (mark-visited m r c dir)
     (def [dr dc] (dir-offsets dir))
     (+= r dr)
     (+= c dc)
-    (if (matrix/in-bounds? map r c)
+    (if (matrix/in-bounds? m r c)
       (do
-        (def goal (matrix/mget map r c))
+        (def goal (matrix/mget m r c))
         (when (= goal obstacle)
           (set dir (right-turns dir))
           (-= r dr)
           (-= c dc)))
-      (do
-        (set done true)
-        )))
-  (count-visited map))
+      # out of bounds
+      (set done true)))
+  [m (if done :out-of-bounds :stuck-in-a-loop)])
+
+(defn ok-to-place-obstacle?
+  [m r c]
+  (def cell (matrix/mget m r c))
+  (not (util/includes? [obstacle guard] cell)))
+
+(defn count-loop-obstructions
+  [orig-map]
+  (var count 0)
+  (loop [r :range [0 (matrix/height orig-map)]
+         c :range [0 (matrix/height orig-map)]
+         :when (ok-to-place-obstacle? orig-map r c)]
+    (var m (matrix/copy orig-map))
+    (matrix/mput m r c obstacle)
+    (def [_ reason] (trace-guard-path m))
+    (when (= reason :stuck-in-a-loop)
+      (++ count)))
+  count)
+
+# ================ part 1 ================
+
+(defn part1 [lines]
+  (def m (load-map lines))
+  (def [m _] (trace-guard-path m))
+  (count-visited m))
 
 # ================ part 2 ================
 
 (defn part2 [lines]
-  )
+  (def m (load-map lines))
+  (count-loop-obstructions m))
 
 # ================ main ================
 

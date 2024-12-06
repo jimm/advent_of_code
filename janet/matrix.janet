@@ -68,6 +68,10 @@ found. Search is done row by row, col by col."
         (set loc [r c]))))
   loc)
 
+(defn copy
+  [m]
+  (map |(array ;(slice $)) m))
+
 (defn pprint
   [m]
   (map (fn [row] (print (string/from-bytes ;row))) m))
