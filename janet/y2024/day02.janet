@@ -2,9 +2,8 @@
 #
 # Year 2024, Day 2
 
-(import spork/misc)
-(import ../running :as running)
-(import ../util :as util)
+(import ../running)
+(import ../util)
 
 # ================ helpers ================
 

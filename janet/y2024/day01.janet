@@ -2,9 +2,8 @@
 #
 # Historian Hysteria
 
-(import spork/misc)
-(import ../running :as running)
-(import ../util :as util)
+(import ../running)
+(import ../util)
 
 # ================ helpers ================
 

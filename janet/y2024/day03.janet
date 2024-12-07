@@ -2,8 +2,7 @@
 #
 # Mull It Over
 
-(import ../running :as running)
-(import ../util :as util)
+(import ../running)
 
 (def mul-peg
   '{:dig (range "09")
@@ -18,7 +17,7 @@
   "Performs the multiplication instruction found at loc in line."
   [line loc]
   (var mul-nums (slice line (+ loc 4) (string/find ")" line loc)))
-  (* ;(map util/stoi (string/split "," mul-nums))))
+  (* ;(map scan-number (string/split "," mul-nums))))
 
 (defn sum-of-muls
   "Finds all mul() commands, runs them, and returns the sum."

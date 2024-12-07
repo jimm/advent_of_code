@@ -2,7 +2,6 @@
 #
 # Print Queue
 
-(import spork/misc)
 (import ../running)
 (import ../util)
 
@@ -10,7 +9,7 @@
 
 (defn read-rules-and-updates
   [lines]
-  (def rules-pairs (map |(map util/stoi (string/split "|" $))
+  (def rules-pairs (map |(map scan-number (string/split "|" $))
                         (take-while |(not (empty? $)) lines)))
   (var rules @{})
   (each pair rules-pairs
@@ -19,7 +18,7 @@
       (set (rules a) @[]))
     (array/push (rules a) b))
   (def updates-lines (drop 1 (drop-while |(not (empty? $)) lines)))
-  (def updates (map |(map util/stoi (string/split "," $)) updates-lines))
+  (def updates (map |(map scan-number (string/split "," $)) updates-lines))
   [rules updates])
 
 (defn update-ok?
@@ -31,7 +30,7 @@
     (def a (get update i))
     (def b (get update j))
     (def b-before (get rules b))
-    (when (and b-before (util/includes? b-before a))
+    (when (and b-before (util/in? b-before a))
       (set ok false)))
   ok)
 
@@ -53,7 +52,7 @@
   [back-rules page fixed]
   (def must-be-after (get back-rules page []))
   # Find index of first page that does not have to be before this one.
-  (def i (find-index |(not (util/includes? must-be-after $))
+  (def i (find-index |(not (util/in? must-be-after $))
                      fixed))
   (array/insert fixed (or i -1) page))
 

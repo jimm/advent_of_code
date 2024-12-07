@@ -1,5 +1,3 @@
-(import spork/misc)
-
 (defn words
   "Returns words in line, consolidating multiple consecutive separators.
 Default separator is a space."
@@ -8,9 +6,14 @@ Default separator is a space."
           (string/split (or sep " ") line)))
 
 (defn dig
-  "Finds and returns obj in nested objs specified by keys."
-  [obj & keys]
-  (var result obj)
+  "Finds and returns value in nested data structure ds specified by keys, or
+nil if any key is not found. If keys is empty, returns obj.
+
+(def d {:a 1 :b {:c 42}}
+(dig d :b :c)    # => 42
+(dig d :x :c)    # => nil"
+  [ds & keys]
+  (var result ds)
   (loop [key :in keys
          :while result]
     (set result (get result key)))
@@ -21,18 +24,14 @@ Default separator is a space."
   [s]
   ~(string/from-bytes ,s))
 
-# see also scan-number which handles floats.
-(defn stoi
-  [s &opt base]
-  (misc/string->int s (or base 10)))
-
 (defn extract-nums
   "Returns numbers in a line, skipping multiple consecutive spaces."
-  [line]
-  (map stoi (words line)))
+  [line &opt sep]
+  (map scan-number (words line sep)))
 
-(defn includes?
-  [xs val]
+(defn in?
+  "Returns val if it is in ind, else nil."
+  [ind val]
   # for my own edification: equivalent to
-  # (find (partial = val) xs)
-  (find |(= val $) xs))
+  # (find (partial = val) ind)
+  (find |(= val $) ind))

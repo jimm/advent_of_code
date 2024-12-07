@@ -11,7 +11,7 @@
   "Equations are tuples of the form [test-val numbers]."
   [lines]
   (map (fn [line]
-         (def words (map util/stoi (util/words (string/replace ":" " " line))))
+         (def words (map scan-number (util/words (string/replace ":" " " line))))
          (tuple (first words) (drop 1 words)))
          lines))
 
@@ -44,7 +44,7 @@ the first one does."
 
 (defn int-concat
   [a b]
-  (util/stoi (string a b)))
+  (scan-number (string a b)))
 
 # ================ part 1 ================
 

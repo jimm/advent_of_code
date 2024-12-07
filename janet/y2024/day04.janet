@@ -2,10 +2,8 @@
 #
 # Ceres Search
 
-(import spork/misc)
 (import ../matrix :as mx)
-(import ../running :as running)
-(import ../util :as util)
+(import ../running)
 
 # ================ helpers ================
 

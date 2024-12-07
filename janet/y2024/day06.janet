@@ -2,7 +2,7 @@
 #
 # Guard Gallivant
 
-(import ../matrix)
+(import ../matrix :as mx)
 (import ../running)
 (import ../util)
 
@@ -23,33 +23,33 @@
 
 (defn load-map
   [lines]
-  (matrix/from-lines lines))
+  (mx/from-lines lines))
 
 (defn mark-visited
   "Adds dir to array at cell location."
   [map r c dir]
-  (def cell (matrix/mget map r c))
+  (def cell (mx/mget map r c))
   (if (= (type cell) :array)
-    (unless (util/includes? cell dir)
-      (matrix/mput map r c (array/push cell dir)))
-    (matrix/mput map r c @[dir])))
+    (unless (util/in? cell dir)
+      (mx/mput map r c (array/push cell dir)))
+    (mx/mput map r c @[dir])))
 
 (defn visited?
   [map r c]
-  (= (type (matrix/mget map r c)) :array))
+  (= (type (mx/mget map r c)) :array))
 
 (defn visited-same-dir?
   [map r c dir]
   (and (visited? map r c)
-       (util/includes? (matrix/mget map r c) dir)))
+       (util/in? (mx/mget map r c) dir)))
 
 (defn count-visited
   "Returns number of cells that were visited."
   [map]
   (def dirs [:up :down :left :right])
   (var count 0)
-  (loop [r :range [0 (matrix/height map)]
-         c :range [0 (matrix/width map)]]
+  (loop [r :range [0 (mx/height map)]
+         c :range [0 (mx/width map)]]
     (if (visited? map r c)
       (++ count)))
   count)
@@ -60,8 +60,8 @@ with each visited cell containing an array of directions the guard used to
 pass through it and a symbol stating if the guard ended up :out-of-bounds or
 :stuck-in-a-loop."
   [orig-map]
-  (var m (matrix/copy orig-map))
-  (var [r c] (matrix/find m guard))
+  (var m (mx/copy orig-map))
+  (var [r c] (mx/find m guard))
   (var dir :up)
   (var done false)
   (while (and (not done)
@@ -70,9 +70,9 @@ pass through it and a symbol stating if the guard ended up :out-of-bounds or
     (def [dr dc] (dir-offsets dir))
     (+= r dr)
     (+= c dc)
-    (if (matrix/in-bounds? m r c)
+    (if (mx/in-bounds? m r c)
       (do
-        (def goal (matrix/mget m r c))
+        (def goal (mx/mget m r c))
         (when (= goal obstacle)
           (set dir (right-turns dir))
           (-= r dr)
@@ -86,18 +86,18 @@ pass through it and a symbol stating if the guard ended up :out-of-bounds or
   (and
     (visited? m r c)            # on original path
     (not (and (= r start-r) (= c start-c))) # not guard start loc
-    (not (= (matrix/mget m r c) obstacle)))) # not an obstacle already
+    (not (= (mx/mget m r c) obstacle)))) # not an obstacle already
 
 (defn count-loop-obstructions
   [orig-map]
   (var count 0)
-  (var [start-row start-col] (matrix/find orig-map guard))
-  (var [paths-map _] (trace-guard-path (matrix/copy orig-map)))
-  (loop [r :range [0 (matrix/height orig-map)]
-         c :range [0 (matrix/height orig-map)]
+  (var [start-row start-col] (mx/find orig-map guard))
+  (var [paths-map _] (trace-guard-path (mx/copy orig-map)))
+  (loop [r :range [0 (mx/height orig-map)]
+         c :range [0 (mx/height orig-map)]
          :when (ok-to-place-obstacle? paths-map start-row start-col r c)]
-    (var m (matrix/copy orig-map))
-    (matrix/mput m r c obstacle)
+    (var m (mx/copy orig-map))
+    (mx/mput m r c obstacle)
     (def [_ reason] (trace-guard-path m))
     (when (= reason :stuck-in-a-loop)
       (++ count)))
