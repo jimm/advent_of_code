@@ -23,9 +23,10 @@ multiple consecutive spaces."
   [s]
   ~(string/from-bytes ,s))
 
+# see also scan-number which handles floats.
 (defn stoi
-  [s]
-  (misc/string->int s))
+  [s &opt base]
+  (misc/string->int s (or base 10)))
 
 (defn extract-nums
   "Returns numbers in a line, skipping multiple consecutive spaces."
