@@ -1,13 +1,11 @@
 (import spork/misc)
 
 (defn words
-  "Returns words in line, skipping multiple consecutive spaces.
-
-Can't just call string/split because it returns empty strings if there are
-multiple consecutive spaces."
-  [line]
+  "Returns words in line, consolidating multiple consecutive separators.
+Default separator is a space."
+  [line &opt sep]
   (filter (complement empty?)
-          (string/split " " line)))
+          (string/split (or sep " ") line)))
 
 (defn dig
   "Finds and returns obj in nested objs specified by keys."
