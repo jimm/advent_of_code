@@ -50,9 +50,12 @@
   (util/dig m r c))
 
 (defn mput
-  "Sets cell (r, c) of the matrix to val."
+  "Sets cell (r, c) of the matrix to val. Does nothing if [r c] is out of
+bounds."
   [m r c val]
-  (put (get m r) c val))
+  (if (in-bounds? m r c)
+    (put (get m r) c val)
+    (print (string/format "error: [%d %d] is out of bounds" r c))))
 
 (defn find
   "Returns the [r, c] loc of the first occurrence of val or nil if not

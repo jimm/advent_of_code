@@ -11,6 +11,11 @@
   (ev/spawn-thread (ev/give chan (f ;args))))
 
 (defn await
+  "Awaits the first value sent to chan and returns it."
+  [chan]
+  (ev/take chan))
+
+(defn gather
   "Awaits the first value sent to each channel and returns the array."
   [chans]
   (map ev/take chans))
