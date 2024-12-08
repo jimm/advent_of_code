@@ -14,6 +14,7 @@ usage: $(basename "$0") [-m] [-i] [-y year] [-d day] [-l lang] [-Y] [-L] \\
              and exit
   -Y       List years and exits
   -a dir   Advent of Code root directory. Default is \$aoc
+  -c cookie Session cookie of the form "session-...". Overrides \$AOC_COOKIE
   -d day   Default is current day of the month or, if negative, offset from
            current day (-1 == yesterday)
   -f       When initializing, overwrite existing file
@@ -24,7 +25,7 @@ usage: $(basename "$0") [-m] [-i] [-y year] [-d day] [-l lang] [-Y] [-L] \\
   -k       Keep day's HTML file /tmp/dayDD.html instead of deleting it
   -l lang  Required only if there is more than one languange for a year
   -m       Run \`makeup\` first
-  -n       Print commands but do not run them
+  -n       Print the run command but does not run it. Other commands are run
   -o       Open the day's puzzle page in a browser and exit (run after init)
   -t       Testing
   -y year  Default is current year or, if negative, offset from current year
@@ -95,8 +96,9 @@ run_or_echo=""
 force=no
 keep_tmpfile=no
 open_puzzle=no
+cookie="$AOC_COOKIE"
 
-while getopts "DLYa:d:fhiIkl:mnoty:" opt ; do
+while getopts "DLYa:c:d:fhiIkl:mnoty:" opt ; do
     case $opt in
         D)
             export DEBUG=true
@@ -105,6 +107,7 @@ while getopts "DLYa:d:fhiIkl:mnoty:" opt ; do
         L) list_langs_flag=yes ;;
         Y) list_years_flag=yes ;;
         a) dir="$OPTARG" ;;
+        c) cookie="$OPTARG" ;;
         d)
             day="$OPTARG"
             if [ $day -le 0 ] ; then
@@ -167,28 +170,25 @@ if [ $init == 1 ] ; then
     two_digit_day="$(printf '%02d' $day)"
     f=""
 
-    auth_cookie=""
-    if [ -n "$AOC_COOKIE" ] ; then
-        auth_cookie=" --cookie $AOC_COOKIE"
-    fi
-
     # Download the puzzle page
     url="https://adventofcode.com/$year/day/$day"
-    curl --silent $auth_cookie -o $tmpfile "$url"
+    if [ -n "$cookie" ] ; then
+        curl --silent --cookie "$cookie" -o $tmpfile "$url"
+    else
+        curl --silent -o $tmpfile "$url"
+    fi
     puzzle_name=$(grep -- '--- Day' < $tmpfile | sed -e 's/.*--- Day [0-9]*: //' -e 's/ ---.*//')
     if [ -z "$puzzle_name" ] ; then
         puzzle_name="Year $year, Day $day"
     fi
 
-    # Download the data file if 1. we have an auth cookie env var, 2. it's
-    # still good, and 3. the page says that we have one.
-    if [ -n "$auth_cookie" ] ; then
-        grep 'get your puzzle input' < $tmpfile >/dev/null
-        if [ $? -eq 0  ] ; then
-            data_dir="$dir/data/y$year"
-            mkdir -p "$data_dir"
-            curl --silent $auth_cookie -o "$data_dir/day${two_digit_day}_1.txt" "$url/input"
-        fi
+    # Download the data file if the page says we have input and we have a
+    # cookie to use.
+    grep 'get your puzzle input' < $tmpfile >/dev/null
+    if [ $? -eq 0 ] && [ -n "$cookie" ] ; then
+        data_dir="$dir/data/y$year"
+        mkdir -p "$data_dir"
+        curl --silent --cookie "$cookie" -o "$data_dir/day${two_digit_day}_1.txt" "$url/input"
     fi
 
     # Copy language-specific template and fill in variables PUZZLENAME,
