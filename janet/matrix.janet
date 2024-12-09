@@ -55,7 +55,7 @@ bounds."
   [m r c val]
   (if (in-bounds? m r c)
     (put (get m r) c val)
-    (print (string/format "error: [%d %d] is out of bounds" r c))))
+    (printf "warning: [%d %d] is out of bounds; matrix not updated" r c)))
 
 (defn find
   "Returns the [r, c] loc of the first occurrence of val or nil if not
