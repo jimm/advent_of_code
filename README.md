@@ -22,15 +22,14 @@ solution.
 
 Per the preference of the author of Advent of Code
 ([Reddit comment](https://www.reddit.com/r/adventofcode/comments/7lesj5/is_it_kosher_to_share_puzzle_inputs_and_answers/drlt9am/)),
-I should not be making all of my data inputs available in this repo. So I've
-removed them and will instead store them elsewhere and create a link to that
-data directory into this directory, which is now ignored by git (see
-`.gitignore`).
+my data inputs are not available in this repo. Instead I store them
+elsewhere and create a link to that data directory into this directory.
+The consequence of this is that if you run any of the tests they will
+probably fail because your data may be different than mine.
 
-If you want to use much of this code, you'll need to know my naming
-convention and the data format for the test input files.
-
-The files for each day are stored in `data/yYYYY/dayDD_P.txt` where `YYYY` is
+If you want to use much of this code and the `aoc` script, you'll need to
+know my naming convention and the data format for the test input files.
+The data for each day are stored in `data/yYYYY/dayDD_P.txt` where `YYYY` is
 the year, `DD` is the two-digit day number, and `P` is the part number 1 or
 2. Test files are stored in `data/yYYYY/dayDD_P_test.txt`.
 
