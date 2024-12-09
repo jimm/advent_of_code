@@ -1,3 +1,4 @@
+(import spork/path)
 (import spork/sh)
 
 # ================ data input ================
@@ -18,7 +19,8 @@ If `testing` is non-nil, adds \"_test\" before the file extension."
   (var fname (string/format "day%02d" day))
   (when part (set fname (string fname "_" part)))
   (when testing (set fname (string fname "_test")))
-  (string "../../data/y" year "/" fname ".txt"))
+  (string (path/dirname (dyn *current-file*))
+          "../../data/y" year "/" fname ".txt"))
 
 (defn input-lines
   [year day part &keys {:testing testing :keep-blank-lines keep-blank-lines}]
