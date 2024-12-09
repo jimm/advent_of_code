@@ -16,8 +16,9 @@
 
 (defn part1 [lines]
   (let [[col1 col2] (read-cols lines)]
-    (+ ;(map (fn [[x y]] (math/abs (- x y)))
-             (pairs (zipcoll (sort col1) (sort col2)))))))
+    (var both (interleave (sort col1) (sort col2)))
+    (+ ;(seq [i :range [0 (length both) 2]]
+             (math/abs (- (both i) (both (inc i))))))))
 
 # ================ part 2 ================
 
