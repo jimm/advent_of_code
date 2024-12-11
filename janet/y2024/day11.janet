@@ -37,17 +37,6 @@
 
 # ================ part 2 ================
 
-# TODO write a "memoize" macro
-
-(defn next-stone-val-memoized
- [stone memoized-next]
- (def memoized-val (get memoized-next stone))
- (if memoized-val
-   memoized-val
-   (let [next-stone (next-stone-val stone)]
-     (put memoized-next stone next-stone)
-     next-stone)))
-
 (defn update-stone-dict
   "Modify stone-dict to reflect the replacement of old-stone with new-stones."
   [stone-dict old-stone count new-stones]
@@ -58,11 +47,11 @@
       (put stone-dict s (+ count (or (stone-dict s) 0))))))
 
 (defn next-generation-efficient
-  [stone-dict memoized-next]
+  [stone-dict]
   (var new-stone-dict (table/clone stone-dict))
   (loop [[stone count] :pairs stone-dict
          :when (pos? count)]
-    (def next-stones (next-stone-val-memoized stone memoized-next))
+    (def next-stones (util/memoized next-stone-val stone))
     (update-stone-dict new-stone-dict stone count next-stones))
   new-stone-dict)
 
@@ -71,12 +60,7 @@
   # table with keys = stones, vals = counts
   (var stone-dict (table ;(interleave stones (seq [:repeat (length stones)] 1))))
 
-  # pre-fill the first few simple next values
-  (def memoized-next @{0 1 1 2024 20 [2 0] 24 [2 4]})
-  (each stone stones
-    (put memoized-next stone (next-stone-val stone)))
-
-  (repeat 75 (set stone-dict (next-generation-efficient stone-dict memoized-next)))
+  (repeat 75 (set stone-dict (next-generation-efficient stone-dict)))
   (+ ;(values stone-dict)))
 
 # ================ main ================

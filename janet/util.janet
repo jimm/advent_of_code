@@ -38,3 +38,16 @@ In tables, this looks in values. To see if a dict has a key, use has-key?."
   # for my own edification: equivalent to
   # (find (partial = val) ind)
   (find |(= val $) ind))
+
+(defn memoized
+  [func & args]
+  (unless (dyn :memoize-cache)  (setdyn :memoize-cache @{}))
+  (let [key [func ;args]
+        cached ((dyn :memoize-cache) key)]
+    (if cached
+      # return value, decoding :memoize-nil if necessary
+      (if (= cached :memoize-nil) nil cached)
+      # cache value, encoding :memoize-nil if necessary, and return value
+      (let [val (func ;args)]
+        (put (dyn :memoize-cache) key (if (nil? val) :memoize-nil val))
+        val))))
