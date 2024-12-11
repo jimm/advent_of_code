@@ -4,7 +4,7 @@
 (import ./util)
 
 (defn from-size
-  "Returns a rows x cols array of arrays filled with initial-value or nil."
+  "Return a rows x cols array of arrays filled with initial-value or nil."
   [rows cols &opt initial-value]
   (let [m (array/new rows)]
     (for i 0 cols
@@ -12,18 +12,18 @@
     m))
 
 (defn from-lines
-  "Returns a matrix created from lines. Cells will contain byte values."
+  "Return a matrix created from lines. Cells will contain byte values."
   [lines]
   (map (fn [line] (array ;(string/bytes line)))
        lines))
 
 (defn height
-  "Returns the number of rows in the matrix."
+  "Return the number of rows in the matrix."
   [m]
   (length m))
 
 (defn width
-  "Returns the number of columns in the matrix."
+  "Return the number of columns in the matrix."
   [m]
   (length (get m 0)))
 
@@ -35,46 +35,57 @@
        (< c (width m))))
 
 (defn row
-  "Returns row r of the matrix."
+  "Return row r of the matrix."
   [m r]
   (get m r))
 
 (defn col
-  "Returns column c of the matrix."
+  "Return column c of the matrix."
   [m c]
   (map (fn [r] (get r c)) m))
 
 (defn mget
-  "Returns cell (r, c) of the matrix or nil if out of bounds."
+  "Return cell (r, c) of the matrix or nil if out of bounds."
   [m r c]
   (util/dig m r c))
 
 (defn mput
-  "Sets cell (r, c) of the matrix to val. Does nothing if [r c] is out of
+  "Set cell (r, c) of the matrix to val. Does nothing if [r c] is out of
 bounds."
   [m r c val]
-  (if (in-bounds? m r c)
-    (put (get m r) c val)
-    (printf "warning: [%d %d] is out of bounds; matrix not updated" r c)))
+  (when (in-bounds? m r c)
+    (put (get m r) c val)))
 
-(defn find
-  "Returns the [r, c] loc of the first occurrence of val or nil if not
+(defn find-loc
+  "Return the [r, c] loc of the first occurrence of val or nil if not
 found. Search is done row by row, col by col."
   [m val]
   (var loc nil)
-  (loop [r :range [0 (height m)]
+  (loop [[r row] :pairs m
+         [c cell] :pairs row
          :while (not loc)]
-    (def row (m r))
-    (loop [c :range [0 (width m)]
-           :while (not loc)]
-      (when (= (row c) val)
-        (set loc [r c]))))
+      (when (= cell val)
+        (set loc [r c])))
   loc)
 
+(defn find-all-locs
+  "Return an array containing the [r, c] locs of all occurrences of val, or
+an empty array if not found. Search is done row by row, col by col."
+  [m val]
+  (var locs @[])
+  (loop [[r row] :pairs m
+         [c cell] :pairs row]
+      (when (= cell val)
+        (array/push locs [r c])))
+  locs)
+
 (defn copy
+  "Return a copy of m."
   [m]
   (map |(array ;(slice $)) m))
 
-(defn pprint
+(defn pp
+  "Pretty-print the matrix. Assumes values are bytes and prints the rows as
+strings."
   [m]
   (map (fn [row] (print (string/from-bytes ;row))) m))

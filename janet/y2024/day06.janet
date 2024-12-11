@@ -61,7 +61,7 @@ pass through it and a symbol stating if the guard ended up :out-of-bounds or
 :stuck-in-a-loop."
   [orig-map]
   (var m (mx/copy orig-map))
-  (var [r c] (mx/find m guard))
+  (var [r c] (mx/find-loc m guard))
   (var dir :up)
   (var done false)
   (while (and (not done)
@@ -91,7 +91,7 @@ pass through it and a symbol stating if the guard ended up :out-of-bounds or
 (defn count-loop-obstructions
   [orig-map]
   (var count 0)
-  (var [start-row start-col] (mx/find orig-map guard))
+  (var [start-row start-col] (mx/find-loc orig-map guard))
   (var [paths-map _] (trace-guard-path (mx/copy orig-map)))
   (loop [r :range [0 (mx/height orig-map)]
          c :range [0 (mx/height orig-map)]
