@@ -1,17 +1,23 @@
 (defn words
-  "Returns words in line, consolidating multiple consecutive separators.
-Default separator is a space."
+  "Return the words in line, consolidating multiple consecutive separators.
+The default separator is a space."
   [line &opt sep]
   (filter (complement empty?)
           (string/split (or sep " ") line)))
 
+(defn extract-nums
+  "Return the numbers in a line, skipping multiple consecutive spaces."
+  [line &opt sep]
+  (map scan-number (words line sep)))
+
 (defn dig
-  "Finds and returns value in nested data structure ds specified by keys, or
-nil if any key is not found. If keys is empty, returns obj.
+  "Find and return a value in a nested data structure `ds` specified by
+`keys`, or nil if any key is not found. If `keys` is empty, returns .
 
 (def d {:a 1 :b {:c 42}}
 (dig d :b :c)    # => 42
-(dig d :x :c)    # => nil"
+(dig d :x :c)    # => nil
+(dig d)          # => {:a 1 :b {:c 42}}"
   [ds & keys]
   (var result ds)
   (loop [key :in keys
@@ -20,17 +26,14 @@ nil if any key is not found. If keys is empty, returns obj.
   result)
     
 (defmacro ord
-  "Converts a byte to a one-character string."
+  "Convert a byte to a one-character string."
   [s]
   ~(string/from-bytes ,s))
 
-(defn extract-nums
-  "Returns numbers in a line, skipping multiple consecutive spaces."
-  [line &opt sep]
-  (map scan-number (words line sep)))
-
 (defn in?
-  "Returns val if it is in ind, else nil."
+  "Return `val` if it is in `ind`, else nil.
+
+In tables, this looks in values. To see if a dict has a key, use has-key?."
   [ind val]
   # for my own edification: equivalent to
   # (find (partial = val) ind)
