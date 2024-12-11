@@ -22,7 +22,7 @@
   (let [digits (first-and-last-digits str)]
     (+ (* 10 (digits 0)) (digits 1))))
 
-(defn do-part1 [lines]
+(defn part1 [lines]
   (var total 0)
   (each line lines
     (+= total (first-and-last-digits-to-number line)))
@@ -52,7 +52,7 @@
 (defn replace-words-with-digits [line]
   (do-replace-words-with-digits line ""))
 
-(defn do-part2 [lines]
+(defn part2 [lines]
   (var total 0)
   (each line lines
     (+= total (first-and-last-digits-to-number (replace-words-with-digits line))))
@@ -60,17 +60,5 @@
 
 # ================ main ================
 
-(defn part1 []
-  (do-part1 (data/input-lines 2023 1 1)))
-
-(defn test-part1 []
-  (testing/run-tests do-part1 2023 1 1))
-
-(defn part2 []
-  (do-part2 (data/input-lines 2023 1 2)))
-
-(defn test-part2 []
-  (testing/run-tests do-part2 2023 1 2))
-
-(defn main [&]
-  (running/run part1 test-part1 part2 test-part2))
+(defn main [& args]
+  (running/run-main part1 part2 2023 1))

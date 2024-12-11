@@ -34,7 +34,7 @@
   (all |(draw-possible? $ bag-contents)
        (game :draws)))
 
-(defn do-part1 [lines]
+(defn part1 [lines]
   (let [bag-contents {:red 12 :green 13 :blue 14}
         games (read-games lines)]
     (+ ;(map |($ :id)
@@ -51,23 +51,11 @@
    [:red :green :blue])
   (* (get color-maxes :red) (get color-maxes :green) (get color-maxes :blue)))
 
-(defn do-part2 [lines]
+(defn part2 [lines]
   (let [games (read-games lines)]
     (+ ;(map power-of-minimum-cubes games))))
 
 # ================ main ================
 
-(defn part1 []
-  (do-part1 (data/input-lines 2023 2 1)))
-
-(defn test-part1 []
-  (testing/run-tests do-part1 2023 2 1))
-
-(defn part2 []
-  (do-part2 (data/input-lines 2023 2 2)))
-
-(defn test-part2 []
-  (testing/run-tests do-part2 2023 2 2))
-
-(defn main [&]
-  (running/run part1 test-part1 part2 test-part2))
+(defn main [& args]
+  (running/run-main part1 part2 2023 2))

@@ -1,17 +1,36 @@
+(import spork/argparse)
+(import spork/path)
 (import ./data)
 (import ./testing)
 
 # ================ running ================
 
 (defn run [p1 tp1 p2 tp2]
-  (when (= 1 (length(dyn :args)))
-    (error "part number argument is required"))
-  (def testing (= ((dyn :args) 1) "-t"))
-  (def part (parse ((dyn :args) (if testing 2 1))))
-  (when (= part 1)
-    (if testing (tp1) (print (p1))))
-  (when (= part 2)
-    (if testing (tp2) (print (p2)))))
+  (def opts
+    (argparse/argparse
+     "Run an AoC solution."
+     "test" {:short "t"
+             :kind :flag
+             :help "Run tests"}
+     "timer" {:short "T"
+              :kind :flag
+                :help "Output execution time"}
+     :default {:kind :option
+               :map scan-number}))
+  (def start-time (when (opts "timer") (os/clock :monotonic)))
+
+  (let [part (opts :default)
+        testing (opts "test")]
+    (cond (= part 1)
+          (if testing (tp1) (print (p1)))
+          (= part 2)
+          (if testing (tp2) (print (p2)))
+          true
+          (errorf "Only part numbers 1 and 2 make sense.")))
+
+  (when (opts "timer")
+    (def now (os/clock :monotonic))
+    (printf "Runtime: %0.3f seconds" (- now start-time))))
 
 (defn run-main
   "Defines part{1,2}, test-part{1,2}, and main functions."

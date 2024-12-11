@@ -27,6 +27,7 @@ usage: $(basename "$0") [-m] [-i] [-y year] [-d day] [-l lang] [-Y] [-L] \\
   -m       Run \`makeup\` first
   -n       Print the run command but does not run it. Other commands are run
   -o       Open the day's puzzle page in a browser and exit (run after init)
+  -T       Use `time` to output the solution execution time after it has run
   -t       Testing
   -y year  Default is current year or, if negative, offset from current year
            (-1 == last year)
@@ -97,8 +98,9 @@ force=no
 keep_tmpfile=no
 open_puzzle=no
 cookie="$AOC_COOKIE"
+time=""
 
-while getopts "DLYa:c:d:fhiIkl:mnoty:" opt ; do
+while getopts "DLYa:c:d:fhiIkl:mnoTty:" opt ; do
     case $opt in
         D)
             export DEBUG=true
@@ -127,6 +129,7 @@ while getopts "DLYa:c:d:fhiIkl:mnoty:" opt ; do
         n) run_or_echo="echo" ;;
         o) open_puzzle=yes ;;
         t) testing=1 ;;
+        T) time="time" ;;
         y)
             year="$OPTARG"
             if [ $year -le 0 ] ; then
@@ -250,7 +253,7 @@ if [ $init == 1 ] ; then
     if [ -n "$f" ] ; then
         echo "$(pwd)/$f"
         if [ $edit == 1 ] ; then
-            $EDITOR "$f"
+            exec $EDITOR "$f"
         fi
         exit 0
     else
@@ -276,7 +279,7 @@ case $lang in
         if [ -n "$testing" ] ; then
             testing="-t"
         fi
-        $run_or_echo bin/aoc -y $year -d $day $testing $part_num
+        $run_or_echo $time bin/aoc -y $year -d $day $testing $part_num
     ;;
     elixir)
         day=$(printf '%02d' $day)
@@ -284,21 +287,21 @@ case $lang in
         if [ -n "$testing" ] ; then
             test="_test"
         fi
-        $run_or_echo iex -S mix <<EOS
+        $run_or_echo $time iex -S mix <<EOS
 Y$year.Day$day.run$part_num$test
 System.halt(0)
 EOS
     ;;
     janet)
-        cd y$year
+        cd y$year > /dev/null 2>&1 || ( echo "error: dir y$year missing" ; exit 1 )
         day=$(printf '%02d' $day)
         if [ -n "$testing" ] ; then
             testing="-t"
         fi
-        $run_or_echo /usr/bin/env janet ./day${day}.janet $testing $part_num
+        $run_or_echo $time /usr/bin/env janet ./day${day}.janet $testing $part_num
         ;;
     lisp)
-        cd y$year
+        cd y$year > /dev/null 2>&1 || ( echo "error: dir y$year missing" ; exit 1 )
         day=$(printf '%02d' $day)
         test=""
         part="part"
@@ -315,13 +318,13 @@ EOS
 (load "day$day")
 (print (${test}${part}${part_num}))
 EOF
-        $run_or_echo /usr/bin/env sbcl --noinform --non-interactive --load "$TMPFILE"
+        $run_or_echo $time /usr/bin/env sbcl --noinform --non-interactive --load "$TMPFILE"
     ;;
     python)
         if [ -n "$testing" ] ; then
             testing="-t"
         fi
-        $run_or_echo ./aoc.py -y $year -d $day $testing $part_num
+        $run_or_echo $time ./aoc.py -y $year -d $day $testing $part_num
         ;;
     ruby)
         debug=""
@@ -331,6 +334,6 @@ EOF
         if [ -n "$testing" ] ;then
             testing="-t"
         fi
-        $run_or_echo ./aoc.rb -y $year -d $day $testing $debug $part_num
+        $run_or_echo $time ./aoc.rb -y $year -d $day $testing $debug $part_num
         ;;
 esac
