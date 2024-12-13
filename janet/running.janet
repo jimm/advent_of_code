@@ -17,6 +17,7 @@
                 :help "Output execution time"}
      :default {:kind :option
                :map scan-number}))
+
   (def start-time (when (opts "timer") (os/clock :monotonic)))
 
   (let [part (opts :default)

@@ -57,26 +57,28 @@ bounds."
     (put (get m r) c val)))
 
 (defn find-loc
-  "Return the [r, c] loc of the first occurrence of val or nil if not
-found. Search is done row by row, col by col."
-  [m val]
+  "Return the [r, c] loc of the first cell that satisfies a predicate or
+equals a value, or nil if not found. Search is done row by row, col by col."
+  [m pred-or-val]
+  (def pred (if (function? pred-or-val) pred-or-val |(= $ pred-or-val)))
   (var loc nil)
   (loop [[r row] :pairs m
-         [c cell] :pairs row
          :while (not loc)]
-      (when (= cell val)
-        (set loc [r c])))
+    (if-let [c (find-index pred row)]
+      (set loc [r c])))
   loc)
 
-(defn find-all-locs
-  "Return an array containing the [r, c] locs of all occurrences of val, or
-an empty array if not found. Search is done row by row, col by col."
-  [m val]
+(defn find-locs
+  "Return an array containing the [r, c] locs of all cells that satisfy a
+predicate or equal a value, or an empty array if not found. Search is done
+row by row, col by col."
+  [m pred-or-val]
+  (def pred (if (function? pred-or-val) pred-or-val |(= $ pred-or-val)))
   (var locs @[])
   (loop [[r row] :pairs m
          [c cell] :pairs row]
-      (when (= cell val)
-        (array/push locs [r c])))
+    (when (pred cell)
+      (array/push locs [r c])))
   locs)
 
 (defn copy

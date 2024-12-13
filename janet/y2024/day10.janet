@@ -35,7 +35,7 @@
   "Return an array of tables of 0->1s, 2->2s, etc."
   [m]
   (def reachables (seq [_ :range [0 9]] @{}))
-  (var locs (set/new ;(mx/find-all-locs m 0)))
+  (var locs (set/new ;(mx/find-locs m 0)))
   (loop [i :range [0 9]]
     (def next-locs (set/new))
     (each loc locs

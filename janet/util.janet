@@ -51,3 +51,11 @@ In tables, this looks in values. To see if a dict has a key, use has-key?."
       (let [val (func ;args)]
         (put (dyn :memoize-cache) key (if (nil? val) :memoize-nil val))
         val))))
+
+(defmacro inspect
+  [form]
+  (def result (gensym))
+  ~(do
+     (def ,result ,form)
+     (printf "%j => %j" (quote ,form) ,result)
+     ,result))

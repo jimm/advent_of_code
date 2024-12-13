@@ -21,9 +21,10 @@ usage: $(basename "$0") [-m] [-i] [-y year] [-d day] [-l lang] [-Y] [-L] \\
   -h       Print this help and exit
   -i       Initialize the current/specified day (language specific)
   -I       Initialize the current/specified day (language specific)
-             and open it using $EDITOR
+             and open it using \$EDITOR
   -k       Keep day's HTML file /tmp/dayDD.html instead of deleting it
-  -l lang  Required only if there is more than one languange for a year
+  -l lang  Which language to use. Required only if there is more than one
+             languange for a year and \$AOC_LANG is not defined
   -m       Run \`makeup\` first
   -n       Print the run command but does not run it. Other commands are run
   -o       Open the day's puzzle page in a browser and exit (run after init)
