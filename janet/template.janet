@@ -8,12 +8,14 @@ PUZZLENAME
 
 # ================ part 1 ================
 
-(defn part1 [lines]
+(defn part1
+  [lines]
   )
 
 # ================ part 2 ================
 
-(defn part2 [lines]
+(defn part2
+  [lines]
   )
 
 # ================ main ================

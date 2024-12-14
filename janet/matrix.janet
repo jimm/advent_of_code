@@ -1,15 +1,11 @@
 # A two-dimensional mutable matrix. [0, 0] is at the top left of the matrix.
 # Row increases down, column increases to the right.
 
-(import ./util)
-
 (defn from-size
   "Return a rows x cols array of arrays filled with initial-value or nil."
   [rows cols &opt initial-value]
-  (let [m (array/new rows)]
-    (for i 0 cols
-      (put m i (array/new-filled cols initial-value)))
-    m))
+  (seq [_ :range [0 rows]]
+       (array/new-filled cols initial-value)))
 
 (defn from-lines
   "Return a matrix created from lines. Cells will contain byte values."
@@ -47,7 +43,7 @@
 (defn mget
   "Return cell (r, c) of the matrix or nil if out of bounds."
   [m r c]
-  (util/dig m r c))
+  (get-in m [r c]))
 
 (defn mput
   "Set cell (r, c) of the matrix to val. Does nothing if [r c] is out of

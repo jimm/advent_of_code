@@ -32,6 +32,7 @@
   [func year day part &opt keep-blank-lines]
   (var test-count 0)
   (var fail-messages @[])
+  (setdyn :testing true)
   (each chunk (find-chunks (data/input-lines
                              year day part
                              :testing true
@@ -46,6 +47,7 @@
           (prin "F")
           (array/push fail-messages
                       (string "Test " test-count " failed: expected " expected ", got " result))))))
+  (setdyn :testing false)
   (print "")
   (print " Tests: " test-count)
   (print "Passed: " (- test-count (length fail-messages)))

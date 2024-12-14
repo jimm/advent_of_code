@@ -5,7 +5,6 @@
 (import ../matrix :as mx)
 (import ../running)
 (import ../set)
-(import ../util)
 
 # ================ helpers ================
 
@@ -49,22 +48,22 @@
   [reachables zero-loc]
   # next-locs contains a list of locs that are reachable from the current
   # loc. We initialize it with the 1s reachably by zero-loc.
-  (var next-locs (util/dig reachables 0 zero-loc))
+  (var next-locs (get-in reachables [0 zero-loc]))
   (loop [i :range [1 9]]
     (def new-next-locs (set/new))
     (loop [next :in next-locs]
-      (set/add new-next-locs ;(util/dig reachables i next)))
+      (set/add new-next-locs ;(get/in reachables [i next])))
     (set next-locs new-next-locs))
   (length next-locs))
   
 
 (defn rating
   [reachables zero-loc]
-  (var next-locs (util/dig reachables 0 zero-loc))
+  (var next-locs (get-in reachables [0 zero-loc]))
   (loop [i :range [1 9]]
     (def new-next-locs @[])
     (loop [next :in next-locs]
-      (array/concat new-next-locs (util/dig reachables i next)))
+      (array/concat new-next-locs (get-in reachables [i next])))
     (set next-locs new-next-locs))
   (length next-locs))
 

@@ -9,21 +9,6 @@ The default separator is a space."
   "Return the numbers in a line, skipping multiple consecutive spaces."
   [line &opt sep]
   (map scan-number (words line sep)))
-
-(defn dig
-  "Find and return a value in a nested data structure `ds` specified by
-`keys`, or nil if any key is not found. If `keys` is empty, returns .
-
-(def d {:a 1 :b {:c 42}}
-(dig d :b :c)    # => 42
-(dig d :x :c)    # => nil
-(dig d)          # => {:a 1 :b {:c 42}}"
-  [ds & keys]
-  (var result ds)
-  (loop [key :in keys
-         :while result]
-    (set result (get result key)))
-  result)
     
 (defmacro ord
   "Convert a byte to a one-character string."
@@ -40,6 +25,17 @@ In tables, this looks in values. To see if a dict has a key, use has-key?."
   (find |(= val $) ind))
 
 (defn memoized
+  "First time `func` is called with `args`, cache the result. Return that
+cached value on subsequent calls.
+
+Example
+
+    (defn foo [x] (print \"calc x = \" x) (+ x 42))
+
+    (pp (memoized foo 42))       # prints calc message, then value
+    (pp (memoized foo (+ 2 40))) # value
+    (pp (memoized foo (+ 3 39))) # prints value
+    (pp (memoized foo 3))        # prints calc message then value"
   [func & args]
   (unless (dyn :memoize-cache)  (setdyn :memoize-cache @{}))
   (let [key [func ;args]
@@ -52,10 +48,12 @@ In tables, this looks in values. To see if a dict has a key, use has-key?."
         (put (dyn :memoize-cache) key (if (nil? val) :memoize-nil val))
         val))))
 
+
 (defmacro inspect
+  "Run `form`, print \"form => result\", and return the result."
   [form]
   (def result (gensym))
   ~(do
      (def ,result ,form)
-     (printf "%j => %j" (quote ,form) ,result)
+     (printf "%j => %j" ',form ,result)
      ,result))

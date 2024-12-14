@@ -45,7 +45,7 @@
 (defn power-of-minimum-cubes [game]
   (var color-maxes @{:red 0 :green 0 :blue 0})
   (map (fn [color]
-         (let [color-max (max ;(map |(or ($ color) 0) (game :draws)))]
+         (let [color-max (max-of (map |(or ($ color) 0) (game :draws)))]
            (when (> color-max (color-maxes color))
              (put color-maxes color color-max))))
    [:red :green :blue])
