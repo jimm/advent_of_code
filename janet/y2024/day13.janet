@@ -26,7 +26,34 @@
 
 (defn min-score
   "Return the min score needed to get the prize, or nil if it's not possible."
-  [machine & max-presses]
+  [machine &opt max-presses]
+  # (var min-score nil)
+
+  # We have
+  #   ax*na + bx*nb = px
+  #   ay*na + by*nb = py
+  # Renaming
+  #   Ax + By = C
+  #   Dx = Ey = F
+  (def integer? |(= $ (math/trunc $)))
+  (let [A ((machine :a) :x) D ((machine :a) :y)
+        B ((machine :b) :x) E ((machine :b) :y)
+        C ((machine :prize) :x) F ((machine :prize) :y)]
+    (def x (/
+             # numerator
+             (- (* C E) (* B F))
+             # denominator
+             (- (* A E) (* D B))))
+    (def y (/ (- C (* A x)) B))
+    (if (or (neg? x) (not (integer? x))
+            (neg? y) (not (integer? y)))
+      nil
+      (+ (* x 3) y))))
+
+# This was used to solve part1 originally. It works.
+(defn non-performant-min-score
+  "Return the min score needed to get the prize, or nil if it's not possible."
+  [machine &opt max-presses]
   (var min-score nil)
   (let [ax ((machine :a) :x) ay ((machine :a) :y)
         bx ((machine :b) :x) by ((machine :b) :y)
