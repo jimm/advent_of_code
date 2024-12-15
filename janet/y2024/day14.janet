@@ -53,7 +53,6 @@
                                (< y middle-y) (inc-quadrant :ne))
           (< x middle-x) (cond (> y middle-y) (inc-quadrant :sw)
                                (< y middle-y) (inc-quadrant :nw))))
-  # (pp quadrant-counts)          #WRONG! --- doesn't match locs I print in part1
   (* ;(values quadrant-counts)))
 
 # ================ part 1 ================
@@ -68,50 +67,47 @@
 
 (defn show-locs
   [locs width height &opt no-gap]
-  (pp locs)
-  (def m (mx/from-size height width (chr ".")))
+  (def m (mx/from-size height width (chr " ")))
   (loop [[i [x y]] :pairs locs
          :let [val (mx/mget m y x)]]
-    # (mx/mput m y x (+ (chr "a") i)))
     (mx/mput m y x (chr "*")))
-  (unless no-gap
-    (def middle-x (/ (dec width) 2))
-    (def middle-y (/ (dec height) 2))
-    (loop [r :range [0 height]]
-      (mx/mput m r middle-x (chr " ")))
-    (loop [c :range [0 width]]
-      (mx/mput m middle-y c (chr " "))))
   (mx/pp m))
 
-# (defn max-run
-#   "Return [start length] of max run in row i of locs."
-#   [locs i]
-#   (def row (sorted-by last (filter |(= i ($ 1)))))
-#   (
-  
+(defn near?
+  [a b]
+  (and (< (math/abs (- (a 0) (b 0))) 20)
+       (< (math/abs (- (a 1) (b 1))) 20)))
 
-# (defn tree-formation?
-#   [locs width height]
-#   (def run-len nil)
-#   (def run-start nil)
-#   (loop [i :down [(dec height) -1]]
-#     (def run (max-run locs i)))
-#     (if (nil? run-len)      # looking for bottom row
-#       (if (> row-max-run-len 20)
-#         (run-len 
+(defn maybe-tree?
+  [locs]
+  (def xs (map first locs))
+  (def ys (map last locs))
+  (def avg-x (/ (sum (map first locs)) (length locs)))
+  (def avg-y (/ (sum (map last locs)) (length locs)))
+  (def threshold (/ (length locs) 4))
+  (def num-near-avg (length (filter |(near? $ [avg-x avg-y]) locs)))
+  (> num-near-avg threshold))
 
+# This one must be run manually. Look for the tree!
 (defn part2 [lines]
-)
-  # (def robots (read-robots lines))
-  # (def [width height] [101 103])
-  # (var generation 1)
-  # (while true
-  #   (def locs (map |(run-robot $ width height i) robots))
-  #   (when (tree-formation? locs width height)
-  #     (printf "\e[2J================ %d ================" generation)
-  #     (show-locs locs width height true)
-  #     (getline))
-  #   (+= generation 1)))
+  (def robots (read-robots lines))
+  (def [width height] [101 103])
+  (var generation 1)
+  (var done false)
+  (var prev-tree-generation 0)
+  (while (not done)
+    (def locs (map |(run-robot $ width height generation) robots))
+    (if (maybe-tree? locs)
+      (do
+        (printf "================ %d ================" generation)
+        (show-locs locs width height true)
+        (let [ch (first (getline))]
+          (cond (= ch (chr "b")) (set generation prev-tree-generation)
+                (= ch (chr "q")) (set done true)
+                true (do
+                       (set prev-tree-generation generation)
+                       (+= generation 1))))))
+    (+= generation 1)))
 
 # ================ main ================
 

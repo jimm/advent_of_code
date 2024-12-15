@@ -1,3 +1,5 @@
+# See also the `distinct` Janet func.
+
 (defn add
   "Add items to a set and return the set."
   [s & items]
