@@ -47,14 +47,15 @@
 
 (defn mput
   "Set cell (r, c) of the matrix to val. Does nothing if [r c] is out of
-bounds."
+  bounds."
   [m r c val]
   (when (in-bounds? m r c)
     (put (get m r) c val)))
 
 (defn find-loc
   "Return the [r, c] loc of the first cell that satisfies a predicate or
-equals a value, or nil if not found. Search is done row by row, col by col."
+  equals a value, or nil if not found. Search is done row by row, col by
+  col."
   [m pred-or-val]
   (def pred (if (function? pred-or-val) pred-or-val |(= $ pred-or-val)))
   (var loc nil)
@@ -66,8 +67,8 @@ equals a value, or nil if not found. Search is done row by row, col by col."
 
 (defn find-locs
   "Return an array containing the [r, c] locs of all cells that satisfy a
-predicate or equal a value, or an empty array if not found. Search is done
-row by row, col by col."
+  predicate or equal a value, or an empty array if not found. Search is done
+  row by row, col by col."
   [m pred-or-val]
   (def pred (if (function? pred-or-val) pred-or-val |(= $ pred-or-val)))
   (var locs @[])
@@ -83,7 +84,13 @@ row by row, col by col."
   (map |(array ;(slice $)) m))
 
 (defn pp
-  "Pretty-print the matrix. Assumes values are bytes and prints the rows as
-strings."
-  [m]
-  (map (fn [row] (print (string/from-bytes ;row))) m))
+  "Pretty-print the matrix. If `val-table` is defined, looks up each cell
+  and prints the value found or '.' if not found. Else assumes values are
+  bytes and prints each cell as a single character."
+  [m &opt val-table]
+  (if val-table
+    (loop [row :in m
+           :after (print)
+           cell :in row]
+      (prin (or (val-table cell) ".")))
+    (map (fn [row] (print (string/from-bytes ;row))) m)))

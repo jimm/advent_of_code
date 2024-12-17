@@ -2,15 +2,23 @@
 
 (import ./data :as data)
 
+(defn- parse-expected-line
+  "If line starts with \"#j \" or \";j \" eval the remainder of the line,
+  which should be a collection. Else split the line at commas."
+  [line]
+  (if (= (line 1) (chr "j"))
+    (eval-string (slice line 3))
+    (string/split "," (slice line 2))))
+
 (defn run-test
   "Run func and return [expected result]."
   [func chunk part]
-  (let [first-line (string/slice (first chunk) 2) # skip leading "# " or "; "
-        expected-list (string/split "," first-line)
+  (let [expected-list (parse-expected-line (first chunk))
         expected (if (and (= part 2) (>= (length expected-list) 2))
                    (expected-list  1)
                    (first expected-list))
         input (slice chunk 1)]
+    (setdyn :testing-expected-value expected)
     [expected (string (func input))]))
 
 (defn find-chunks
