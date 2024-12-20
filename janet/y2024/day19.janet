@@ -4,6 +4,7 @@
 
 (import spork/regex)
 (import ../running)
+(use ../util)
 
 # ================ helpers ================
 
@@ -28,11 +29,19 @@
 
 (defn num-pattern-combos
   [ps s]
-  (cond (zero? (length s)) 1
-        (find |(= $ s) ps) 1
-        (let [try-next (filter |(prefix? $ s) ps)]
-          (+ ;(map |(num-pattern-combos ps (slice s (length $)))
-                   try-next)))))
+  (cond
+    (zero? (length s))
+    0
+
+    (find |(= $ s) ps)
+    # yes this matches so that's one, but try the others, too
+    (+ 1 (let [prefix-pats (filter |(and (not= $ s) (prefix? $ s)) ps)]
+           (+ ;(map |(memoized num-pattern-combos ps (slice s (length $)))
+                    prefix-pats))))
+
+    (let [prefix-pats (filter |(prefix? $ s) ps)]
+      (+ ;(map |(memoized num-pattern-combos ps (slice s (length $)))
+               prefix-pats)))))
 
 # ================ part 1 ================
 
@@ -46,9 +55,7 @@
 (defn part2
   [lines]
   (def [patterns designs] (read-towel-data lines))
-  (each design designs
-    (printf "%j => %j" design (num-pattern-combos patterns design)))
-  (+ ;(map |(num-pattern-combos patterns $) designs)))
+  (+ ;(map |(memoized num-pattern-combos patterns $) designs)))
 
 # ================ main ================
 
