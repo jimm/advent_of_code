@@ -39,7 +39,7 @@ if no file is found."
     (set path (data-file-path year day nil testing)))
   # if not found, print a message and raise an error
   (when (not (sh/exists? path))
-    (errorf "can't find data file matching year %d day %d part %d, testing %v"
-            year day part (truthy? testing)))
+    (errorf "can't find %s file for %d day %d part %d"
+            (if (truthy? testing) "test" "data") year day part))
   (input-lines-from path :keep-blank-lines keep-blank-lines))
 
