@@ -15,11 +15,13 @@
                [[0 1] [0 -1] [1 0] [-1 0]])))
 
 (defn dead-end?
+  "Return true if [r c] is a dead end."
   [maze r c]
   (and (= path (mx/mget maze r c))
        (= 1 (length (path-neighbors maze r c)))))
 
 (defn find-dead-ends
+  "Return the locations of all dead ends in a maze."
   [maze]
   (def dead-ends @[])
   (loop [[r row] :pairs maze
