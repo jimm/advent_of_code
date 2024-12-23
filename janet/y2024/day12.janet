@@ -36,7 +36,7 @@
   (var loc (mx/find-loc m (complement zero?)))
   (while loc
     (array/push regions (flood-find m loc))
-    (set loc (mx/find-loc m |(not (zero? $)))))
+    (set loc (mx/find-loc m (complement zero?))))
   regions)
 
 # ================ part 1 ================

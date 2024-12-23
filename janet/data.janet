@@ -10,7 +10,7 @@ newlines. Does not return blank lines unless `:keep-blank-lines` is true."
   (let [lines (string/split "\n" (slurp path))]
     (if keep-blank-lines
       lines
-      (filter |(not (= "" $)) lines))))
+      (filter |(not= "" $) lines))))
 
 (defn data-file-path
   [year day part testing]

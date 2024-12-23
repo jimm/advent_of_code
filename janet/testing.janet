@@ -48,7 +48,7 @@
     (do
       (def [expected result] (run-test func chunk part))
       (+= test-count 1)
-      (if (= expected result)
+      (if (= (string expected) (string result))
         (do
           (prin "."))
         (do

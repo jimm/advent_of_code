@@ -68,8 +68,14 @@
 # ================ part 2 ================
 
 (defn part2
-  [lines]
-  )
+  (setdyn :min-savings (if (dyn :testing) 50 100))
+  (def maze (maze/from-lines lines))
+  (def path (trace-path maze (mx/find-loc maze (chr "S")) (mx/find-loc maze (chr "E"))))
+  (def path-len (length path))
+  (var n 0)
+  (loop [[i loc] :pairs (slice path 0 (- 0 (dyn :min-savings)))]
+    (+= n (num-cheat-paths-from maze path i loc)))
+  n)
 
 # ================ main ================
 

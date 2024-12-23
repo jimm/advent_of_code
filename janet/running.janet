@@ -16,6 +16,7 @@
               :kind :flag
                 :help "Output execution time"}
      :default {:kind :option
+               :required true
                :map scan-number}))
 
   (def start-time (when (opts "timer") (os/clock :monotonic)))

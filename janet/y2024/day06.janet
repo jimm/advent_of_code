@@ -84,9 +84,9 @@ pass through it and a symbol stating if the guard ended up :out-of-bounds or
 (defn ok-to-place-obstacle?
   [m start-r start-c r c]
   (and
-    (visited? m r c)            # on original path
+    (visited? m r c)                        # on original path
     (not (and (= r start-r) (= c start-c))) # not guard start loc
-    (not (= (mx/mget m r c) obstacle)))) # not an obstacle already
+    (not= (mx/mget m r c) obstacle)))       # not an obstacle already
 
 (defn count-loop-obstructions
   [orig-map]
