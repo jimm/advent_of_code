@@ -7,7 +7,7 @@
 
 # ================ helpers ================
 
-(defn next-stone-val
+(util/defmem next-stone-val
   [val]
   (if (zero? val)
     1
@@ -51,7 +51,7 @@
   (var new-stone-dict (table/clone stone-dict))
   (loop [[stone count] :pairs stone-dict
          :when (pos? count)]
-    (def next-stones (util/memoized next-stone-val stone))
+    (def next-stones (next-stone-val stone))
     (update-stone-dict new-stone-dict stone count next-stones))
   new-stone-dict)
 

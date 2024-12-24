@@ -24,6 +24,33 @@ In tables, this looks in values. To see if a dict has a key, use has-key?."
   # (find (partial = val) ind)
   (find |(= val $) ind))
 
+(defmacro defmem
+  "Define a function that is memoized. First time `func` is called with
+`arglist`, cache the result. Return that cached value on subsequent calls.
+
+Example
+
+    (defmem foo [x] (print \"calc x = \" x) (+ x 42))
+
+    (pp (foo 42))               # prints calc message, then value
+    (pp (foo (+ 2 40)))         # prints value
+    (pp (foo (+ 3 39)))         # prints value
+    (pp (foo 3))                # prints calc message then value"
+  [func arglist & forms]
+  (def key-func-sym (gensym))
+  ~(defn ,func
+     ,arglist
+     (unless (dyn :memoize-cache)  (setdyn :memoize-cache @{}))
+     (let [key [(keyword ',key-func-sym) ,;arglist]
+           cached ((dyn :memoize-cache) key)]
+       (if cached
+         # return value, decoding :memoize-nil if necessary
+         (if (= cached :memoize-nil) nil cached)
+         # cache value, encoding :memoize-nil if necessary, and return value
+         (let [val (do ,;forms)]
+           (put (dyn :memoize-cache) key (if (nil? val) :memoize-nil val))
+           val)))))
+
 (defn memoized
   "First time `func` is called with `args`, cache the result. Return that
 cached value on subsequent calls.
@@ -47,7 +74,6 @@ Example
       (let [val (func ;args)]
         (put (dyn :memoize-cache) key (if (nil? val) :memoize-nil val))
         val))))
-
 
 (defmacro inspect
   "Run `form`, print \"form => result\", and return the result."

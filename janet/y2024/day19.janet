@@ -27,7 +27,7 @@
         (let [try-next (filter |(prefix? $ s) ps)]
           (find |(possible? ps (slice s (length $))) try-next))))
 
-(defn num-pattern-combos
+(defmem num-pattern-combos
   [ps s]
   (cond
     (zero? (length s))
@@ -36,11 +36,11 @@
     (find |(= $ s) ps)
     # yes this matches so that's one, but try the others, too
     (+ 1 (let [prefix-pats (filter |(and (not= $ s) (prefix? $ s)) ps)]
-           (+ ;(map |(memoized num-pattern-combos ps (slice s (length $)))
+           (+ ;(map |(num-pattern-combos ps (slice s (length $)))
                     prefix-pats))))
 
     (let [prefix-pats (filter |(prefix? $ s) ps)]
-      (+ ;(map |(memoized num-pattern-combos ps (slice s (length $)))
+      (+ ;(map |(num-pattern-combos ps (slice s (length $)))
                prefix-pats)))))
 
 # ================ part 1 ================
@@ -55,7 +55,7 @@
 (defn part2
   [lines]
   (def [patterns designs] (read-towel-data lines))
-  (+ ;(map |(memoized num-pattern-combos patterns $) designs)))
+  (+ ;(map |(num-pattern-combos patterns $) designs)))
 
 # ================ main ================
 
