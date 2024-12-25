@@ -83,3 +83,22 @@ Example
      (def ,result ,form)
      (printf "%j => %j" ',form ,result)
      ,result))
+
+(defn combination
+  "Return all combinations from xs of length k."
+  [xs k]
+  (cond
+    (zero? k)
+    [[]]
+
+    (= 1 k)
+    (seq [x :in xs]
+         [x])
+
+    (>= k (length xs))
+    (tuple xs)
+
+    (let [h (first xs)
+          t (slice xs 1)
+          with-h (map |(tuple h ;$) (combination t (dec k)))]
+      (array/concat with-h (combination t k)))))

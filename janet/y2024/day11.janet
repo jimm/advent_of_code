@@ -56,6 +56,8 @@
   new-stone-dict)
 
 (defn part2 [lines]
+  (if (dyn :testing)
+    (print "NOTE: test fails but answer using real data is correct"))
   (def stones (util/extract-nums (first lines)))
   # table with keys = stones, vals = counts
   (var stone-dict (table ;(interleave stones (seq [:repeat (length stones)] 1))))
