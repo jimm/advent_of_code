@@ -8,6 +8,8 @@ import importlib
 import os.path
 import sys
 
+import .testing
+
 now = datetime.datetime.today()
 year = now.year
 day = now.day
@@ -25,11 +27,12 @@ if args.day:
 
 module = importlib.import_module(f"y{year}.day{'%02d' % day}")
 
-# Try to find partPART_test() first. If that does not exist, fall back
-# to non-test function name.
-func = None
+# NOTE: this will only work for years 2025+ because in the last few years
+# I've drastically changed how I run tests. See ../ruby. Previous years'
+# solutions won't work with run_chunk_tests, they have the testing code
+# built in. This code won't handle that.
+func = getattr(module, f"part{int(args.part_number)}", None)
 if args.test:
-    func = getattr(module, f"part{int(args.part_number)}_test", None)
-if not func:
-    func = getattr(module, f"part{int(args.part_number)}", None)
-func(args)
+    testing.run_chunk_tests(args, lambda expected, lines: expected == func(ctx, lines))
+else:
+    print(func(args))

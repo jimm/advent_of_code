@@ -106,16 +106,17 @@ class Day
   # [boolean, answer] pair or [boolean, answer, expected] triplet. Prints
   # success or failure for all the tests.
   #
-  # A test chunk starts with a line starting with
-  # '# <expected>[,<expected>]' and ends at the next such line or the end of
-  # the file. The first expected value is for part 1, the second for part 2.
+  # A test chunk starts with a line starting with '# <expected>[,<expected>]'
+  # (any beginning char will do, actually) and ends at the next such line or
+  # the end of the file. The first expected value is for part 1, the second
+  # for part 2.
   def run_chunk_tests(part_number = @part_number)
     # Look first for the test data file for the given part number. If
     # anything goes wrong and part_number == 2, try looking for the test
     # data file for part 1.
     chunks = begin
       test_chunks(part_number)
-    rescue StandardError => e
+    rescue StandardError
       if part_number == 2
         begin
           test_chunks(1)
@@ -218,9 +219,9 @@ class Day
   # test is the following lines up to the next delimiter or EOF.
   #
   # This method returns a list of two-element lists where the first element
-  # is the expected line line, minus the delimter and any leading
-  # whitespace, and the second element is the array of strings contains the
-  # data lines for that test.
+  # is the expected line, minus the delimter and any leading whitespace, and
+  # the second element is the array of strings contains the data lines for
+  # that test.
   def test_chunks(part_number = @part_number)
     chunks = []
     chunk_index = -1
