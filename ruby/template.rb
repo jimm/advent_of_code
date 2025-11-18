@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+#
+PUZZLENAME = _ignored_but_here_for_rubocop
 
 require_relative '../day'
 

@@ -28,6 +28,7 @@ usage: $(basename "$0") [-m] [-i] [-y year] [-d day] [-l lang] [-Y] [-L] \\
   -m       Run \`makeup\` first
   -n       Print the run command but does not run it. Other commands are run
   -o       Open the day's puzzle page in a browser and exit (run after init)
+  -r       Reuse (don't re-fetch) HTML file /tmp/dayDD.html
   -T       Use `time` to output the solution execution time after it has run
   -t       Testing
   -y year  Default is current year or, if negative, offset from current year
@@ -97,11 +98,12 @@ debug=""
 run_or_echo=""
 force=no
 keep_tmpfile=no
+reuse_tmpfile=no
 open_puzzle=no
 cookie="$AOC_COOKIE"
 time=""
 
-while getopts "DLYa:c:d:fhiIkl:mnoTty:" opt ; do
+while getopts "DLYa:c:d:fhiIkl:mnorTty:" opt ; do
     case $opt in
         D)
             export DEBUG=true
@@ -129,6 +131,7 @@ while getopts "DLYa:c:d:fhiIkl:mnoTty:" opt ; do
         m) makeup=1 ;;
         n) run_or_echo="echo" ;;
         o) open_puzzle=yes ;;
+        r) reuse_tmpfile=yes ;;
         t) testing=1 ;;
         T) time="time" ;;
         y)
@@ -174,21 +177,27 @@ if [ $init == 1 ] ; then
     two_digit_day="$(printf '%02d' $day)"
     f=""
 
-    # Download the puzzle page
-    url="https://adventofcode.com/$year/day/$day"
-    if [ -n "$cookie" ] ; then
-        curl --silent --cookie "$cookie" -o $tmpfile "$url"
-    else
-        curl --silent -o $tmpfile "$url"
+    if [ $reuse_tmpfile = "no" ] ; then
+        # Download the puzzle page
+        url="https://adventofcode.com/$year/day/$day"
+        if [ -n "$cookie" ] ; then
+            curl --silent --cookie "$cookie" -o $tmpfile "$url"
+        else
+            curl --silent -o $tmpfile "$url"
+        fi
     fi
-    puzzle_name=$(grep -- '--- Day' < $tmpfile | sed -e 's/.*--- Day [0-9]*: //' -e 's/ ---.*//')
+    if [ ! -f "$tmpfile" ] ; then
+        echo "error: temp file $tmpfile not downloaded or found"
+        exit 1
+    fi
+    puzzle_name=$(grep -- '--- Day' < "$tmpfile" | sed -e 's/.*--- Day [0-9]*: //' -e 's/ ---.*//')
     if [ -z "$puzzle_name" ] ; then
         puzzle_name="Year $year, Day $day"
     fi
 
     # Download the data file if the page says we have input and we have a
     # cookie to use.
-    grep 'get your puzzle input' < $tmpfile >/dev/null
+    grep 'get your puzzle input' < "$tmpfile" >/dev/null
     if [ $? -eq 0 ] && [ -n "$cookie" ] ; then
         data_dir="$dir/data/y$year"
         mkdir -p "$data_dir"
@@ -242,9 +251,11 @@ if [ $init == 1 ] ; then
             mkdir -p "y${year}"
             f="y${year}/day${two_digit_day}.rb"
             exit_if_exists "$f"
-            m4 -DPUZZLENAME="# ================ $puzzle_name ================" \
+            m4 -DPUZZLENAME="# $puzzle_name" \
                -DYEAR=$year -DDAY=$day -DDAYNAME="Day${two_digit_day}" \
-               template.rb > $f
+               template.rb \
+                | sed -e 's/ = _ignored_but_here_for_rubocop//' \
+                      > $f
             ;;
         *)
             echo error: language required
@@ -312,14 +323,14 @@ EOS
         if [ $year = "2017" ] && ( [ $day = "10" ] || [ $day = "14" ] ) ; then
             part="day${day}-part"
         fi
-        TMPFILE="$(mktemp -t "$(basename "$0")")"
-        trap 'rm -rf $TMPFILE' EXIT HUP INT TERM
-        cat > "$TMPFILE" <<EOF
+        lisp_tmpfile="$(mktemp -t "$(basename "$0")")"
+        trap 'rm -rf $lisp_tmpfile' EXIT HUP INT TERM
+        cat > "$lisp_tmpfile" <<EOF
 (load "../load")
 (load "day$day")
 (print (${test}${part}${part_num}))
 EOF
-        $run_or_echo $time /usr/bin/env sbcl --noinform --non-interactive --load "$TMPFILE"
+        $run_or_echo $time /usr/bin/env sbcl --noinform --non-interactive --load "$lisp_tmpfile"
     ;;
     python)
         if [ -n "$testing" ] ; then
