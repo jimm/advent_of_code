@@ -1,4 +1,4 @@
-import itertools
+from types import GeneratorType
 
 
 def minmax(xs):
@@ -13,9 +13,14 @@ def minmax(xs):
     return (min_val, max_val)
 
 
-def flatten(list_of_lists):
-    """Flattens one level."""
-    return itertools.chain.from_iterable(list_of_lists)
+def flatten(xs, acc=[]):
+    """Flattens a list."""
+    if isinstance(xs, list) or isinstance(xs, GeneratorType):
+        for x in xs:
+            flatten(x, acc)
+    else:
+        acc.append(xs)
+    return acc
 
 
 pause_continue = False
