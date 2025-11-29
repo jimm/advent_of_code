@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-PUZZLENAME = _ignored_but_here_for_rubocop
+PUZZLENAME = _ignored_but_here_for_rubocop # aoc script cleans this up
 
 require_relative '../day'
 

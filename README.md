@@ -18,6 +18,10 @@ the nearest Makefile, Rakefile, or similar build file and runs the
 corresponding make tool. The `-m` flag runs `makeup` before running the
 solution.
 
+Warning: over the years I've improved the support code for some of the
+languages in ways thar are not always backwards compatible. So some of the
+older solutions might not run out of the box.
+
 ## The Data
 
 Per the preference of the author of Advent of Code
@@ -79,6 +83,7 @@ If the environment variable `AOC_COOKIE` is set or the `-c cookie` command
 line argument to `aoc` is used, then the first data file will also be
 fetched if it exists. You can get the cookie from inspecting any request to
 adventofcode.com in your browser while you are logged in. It will look like
-`session=some-hex-string`. It should be good all season.
+`session=some-hex-string`. It should be good all season, and perhaps over
+multiple years.
 
     export AOC_COOKIE="session=..."

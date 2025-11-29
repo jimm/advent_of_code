@@ -254,7 +254,7 @@ if [ $init == 1 ] ; then
             m4 -DPUZZLENAME="# $puzzle_name" \
                -DYEAR=$year -DDAY=$day -DDAYNAME="Day${two_digit_day}" \
                template.rb \
-                | sed -e 's/ = _ignored_but_here_for_rubocop//' \
+                | sed -e 's/ = _ignored_but_here_for_rubocop.*//' \
                       > $f
             ;;
         *)
