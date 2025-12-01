@@ -4,22 +4,22 @@ import os.path
 import sys
 
 
-def _data_file_path(env, part_number):
+def _data_file_path(ctx, part_number):
     """Returns contents of data file as a string."""
-    fname = f"day{'%02d' % env.day}"
+    fname = f"day{'%02d' % ctx.day}"
     if part_number:
         fname += f"_{part_number}"
-    if env.test:
+    if ctx.test:
         fname += "_test"
     fname += ".txt"
     return os.path.join(
         os.path.dirname(os.path.realpath(__file__)),
-        f"../data/y{env.year}",
+        f"../data/y{ctx.year}",
         fname,
     )
 
 
-def read_data_file(env):
+def read_data_file(ctx):
     """Returns the contents of a data file as a string.
 
     Tries a few different file names. First we try "dayXX_PART.txt" then, if
@@ -27,26 +27,26 @@ def read_data_file(env):
     we try without any part number at all because both parts share the same
     data file.
 
-    In all cases, if `env.test` is True we append "_test" to the file name
-    before the extension. For example, on day 3 with env.test == True the
+    In all cases, if `ctx.test` is True we append "_test" to the file name
+    before the extension. For example, on day 3 with ctx.test == True the
     file name would be "day03_PART_test.txt" or "day03_test.txt".
 
     If there are no test data files, print an error message and exit.
     """
-    path = _data_file_path(env, env.part_number)  # with part number
-    if not os.path.isfile(path) and env.part_number != 1:
-        path = _data_file_path(env, 1)  # not part 1, try part 1
+    path = _data_file_path(ctx, ctx.part_number)  # with part number
+    if not os.path.isfile(path) and ctx.part_number != 1:
+        path = _data_file_path(ctx, 1)  # not part 1, try part 1
     if not os.path.isfile(path):
-        path = _data_file_path(env, None)  # try without any part number
+        path = _data_file_path(ctx, None)  # try without any part number
     if not os.path.isfile(path):
         raise FileNotFoundError(
-            f"no test data file found for part {env.part_number}"
+            f"no test data file found for part {ctx.part_number}"
         )
     with open(path, "r") as f:
         return f.read()
 
 
-def run_chunk_tests(env, func):
+def run_chunk_tests(ctx, func):
     """Runs tests and compares with expected answers.
 
     Given an optional part number, reads each test chunk and yields the
@@ -61,28 +61,23 @@ def run_chunk_tests(env, func):
     If there are no test data files, print an error message and exit.
     """
     errors = []
-    for expected_vals, lines in test_chunks(env):
-        expected = expected_vals.split(",")[env.part_number - 1]
-        result = func(expected, lines)
-        if len(result) == 2:
-            ok, answer = result
-            optional_expected = None
-        else:
-            ok, answer, optional_expected = result
-        if ok:
+    for expected_vals, lines in test_chunks(ctx):
+        expected = expected_vals.split(",")[ctx.part_number - 1]
+        answer = func(ctx, lines)
+        if str(answer) == expected:
             print(".", end="")
         else:
             print("F", end="")
-            errors.append((optional_expected or expected, answer))
+            errors.append((expected, answer))
     print("")
     if not errors:
         print("ok")
     else:
-        for expect, answer in errors:
+        for expected, answer in errors:
             print(f"expected {expected}, got {answer}")
 
 
-def data_file_lines(env, preserve_blank_lines=False):
+def data_file_lines(ctx, preserve_blank_lines=False):
     """Returns lines from a data file with blank lines skipped optionally.
 
     If preserve_blank_lines is False (the default), returns a list of all
@@ -90,7 +85,7 @@ def data_file_lines(env, preserve_blank_lines=False):
 
     If there are no test data files, print an error message and exit.
     """
-    lines = read_data_file(env).split("\n")
+    lines = read_data_file(ctx).split("\n")
     if not preserve_blank_lines:
         return [line for line in lines if line]
 
@@ -100,7 +95,7 @@ def data_file_lines(env, preserve_blank_lines=False):
     return [g for g in groups if g[0]]
 
 
-def test_chunks(env):
+def test_chunks(ctx):
     """Returns tuples like (expected, [lines...]).
 
     Many times test data files have multiple tests. (These are usually files
@@ -121,7 +116,7 @@ def test_chunks(env):
     chunks = []
     expected_line_char = None
     first_line = True
-    for line in data_file_lines(env):
+    for line in data_file_lines(ctx):
         if first_line:
             expected_line_char = line[0]
             first_line = False

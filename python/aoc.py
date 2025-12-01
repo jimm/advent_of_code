@@ -8,7 +8,7 @@ import importlib
 import os.path
 import sys
 
-import .testing
+import testing
 
 now = datetime.datetime.today()
 year = now.year
@@ -33,6 +33,6 @@ module = importlib.import_module(f"y{year}.day{'%02d' % day}")
 # built in. This code won't handle that.
 func = getattr(module, f"part{int(args.part_number)}", None)
 if args.test:
-    testing.run_chunk_tests(args, lambda expected, lines: expected == func(ctx, lines))
+    testing.run_chunk_tests(args, lambda expected, lines: func(args, lines))
 else:
     print(func(args))

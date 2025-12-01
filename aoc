@@ -6,8 +6,7 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 
 usage() {
     cat <<EOS
-usage: $(basename "$0") [-m] [-i] [-y year] [-d day] [-l lang] [-Y] [-L] \\
-           [-t] [-h] part_num
+usage: $(basename "$0") [OPTIONS] part_num
 
   -D       Sets environment variable DEBUG=true
   -L       List languages available for a year (current by default) year
