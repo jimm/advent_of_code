@@ -13,6 +13,12 @@ def minmax(xs):
     return (min_val, max_val)
 
 
+def chunks(xs: list, batch_size: int = 1000):
+    """Yields `xs` in batches of `batch_size`."""
+    for i in range(0, len(xs), batch_size):
+        yield xs[i : i + batch_size]
+
+
 def flatten(xs, acc=[]):
     """Flattens a list."""
     if isinstance(xs, list) or isinstance(xs, GeneratorType):
