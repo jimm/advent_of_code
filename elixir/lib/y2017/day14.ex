@@ -2,7 +2,7 @@
 
 defmodule Y2017.Day14 do
   alias Y2017.Day10, as: D10
-  use Bitwise
+  import Bitwise
 
   @puzzle_input "ugkiagan"
   @test_puzzle_input "flqrgnkx"

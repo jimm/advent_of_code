@@ -215,12 +215,13 @@ if [ $init == 1 ] ; then
                src/template.cr > $f
             ;;
         elixir)
-            mkdir -p "lib/y${year}"
-            f="y${year}/day${two_digit_day}.ex"
+            dir="lib/y${year}"
+            mkdir -p "$dir"
+            f="${dir}/day${two_digit_day}.ex"
             exit_if_exists "$f"
             m4 -DPUZZLENAME="# ================ $puzzle_name ================" \
                -DYEARNAME="Y${year}" -DDAYNAME="Day${two_digit_day}" \
-               lib/template.ex > $f
+               template.ex > $f
             ;;
         janet)
             mkdir -p "y${year}"
@@ -294,12 +295,13 @@ case $lang in
     ;;
     elixir)
         day=$(printf '%02d' $day)
+        echo day = $day
         test=""
         if [ -n "$testing" ] ; then
             test="_test"
         fi
         $run_or_echo $time iex -S mix <<EOS
-Y$year.Day$day.run$part_num$test
+Y$year.Day$day.part$part_num$test
 System.halt(0)
 EOS
     ;;

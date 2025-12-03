@@ -1,5 +1,5 @@
 defmodule Y2016.Day13 do
-  use Bitwise
+  import Bitwise
   require Integer
 
   @fave_number 1352

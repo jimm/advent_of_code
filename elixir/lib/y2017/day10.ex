@@ -2,7 +2,7 @@
 
 defmodule Y2017.Day10 do
   use Common.File
-  use Bitwise
+  import Bitwise
 
   @rope_len 256
   @test_rope_len 5

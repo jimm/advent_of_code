@@ -34,7 +34,7 @@ defmodule Y2016.Day01 do
 
   defp move(s, dir, x, y) do
     dir_change = String.at(s, 0)
-    dist = s |> String.slice(1..-1) |> String.to_integer()
+    dist = s |> String.slice(1..-1//-1) |> String.to_integer()
     add(dir_change, dir, dist, x, y)
   end
 
@@ -53,7 +53,7 @@ defmodule Y2016.Day01 do
 
   defp first_loc_visited_twice([h | t], dir, {x, y}, prev_locs) do
     new_dir = h |> String.at(0) |> new_dir(dir)
-    dist = h |> String.slice(1..-1) |> String.to_integer()
+    dist = h |> String.slice(1..-1//-1) |> String.to_integer()
     locs = move_one_at_a_time(new_dir, dist, {x, y}, [])
     new_xy = hd(locs)
 

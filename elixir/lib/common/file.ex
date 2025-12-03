@@ -23,7 +23,7 @@ defmodule Common.File do
       iex> Common.File.default_input_path(Y2016.Day08, 2)
       "data/y2016/day_08_2.txt"
   """
-  def default_input_path(mod) do
+  def default_input_path(mod) when is_atom(mod) do
     path =
       mod
       |> to_string
@@ -37,7 +37,7 @@ defmodule Common.File do
 
   def default_input_path(mod, part) do
     path = default_input_path(mod)
-    part_str = if part, do: "#{part}", else: ""
+    part_str = if part, do: "_#{part}", else: ""
     path |> String.replace(".txt", "#{part_str}.txt")
   end
 

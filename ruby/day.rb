@@ -21,7 +21,7 @@ def debug(msg)
 end
 
 def clear_screen
-  print("\e[0;0H\e[J") # DEBUG clear screen
+  print("\e[0;0H\e[J")
 end
 
 # ================

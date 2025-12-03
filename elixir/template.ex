@@ -8,17 +8,19 @@ defmodule YEARNAME.DAYNAME do
   ]
 
   def part1 do
+    lines = input_lines(default_input_path(__MODULE__, 1))
   end
 
   def part2 do
+    lines = input_lines(default_input_path(__MODULE__, 2))
   end
 
   # ================ testing ================
 
-  def test_part1 do
+  def part1_test do
   end
 
-  def test_part2 do
+  def part2_test do
   end
 
   # ================ helpers ================

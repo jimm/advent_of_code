@@ -2,7 +2,7 @@
 
 defmodule Y2015.Day07 do
   use Common.File
-  use Bitwise
+  import Bitwise
 
   def run1, do: run(& &1)
 

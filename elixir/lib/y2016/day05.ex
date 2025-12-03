@@ -1,5 +1,5 @@
 defmodule Y2016.Day05 do
-  use Bitwise
+  import Bitwise
 
   def run1(input) do
     Stream.iterate(0, &(&1 + 1))

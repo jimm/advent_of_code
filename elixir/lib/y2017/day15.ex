@@ -1,7 +1,7 @@
 # Dueling Generators
 
 defmodule Y2017.Day15 do
-  use Bitwise
+  import Bitwise
 
   @factor_a 16807
   @factor_b 48271

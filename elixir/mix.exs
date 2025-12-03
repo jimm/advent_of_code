@@ -4,11 +4,7 @@ defmodule AdventOfCode.Mixfile do
   def project do
     [
       app: :advent_of_code,
-      version: "0.1.0",
-      elixir: "~> 1.5-dev",
-      build_embedded: Mix.env() == :prod,
-      start_permanent: Mix.env() == :prod,
-      deps: deps()
+      version: "0.1.0"
     ]
   end
 
@@ -29,7 +25,7 @@ defmodule AdventOfCode.Mixfile do
   #   {:my_dep, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
   #
   # Type "mix help deps" for more examples and options
-  defp deps do
-    [{:poison, "~> 3.0"}]
-  end
+  # defp deps do
+  #   [{:poison, "~> 6.0"}]
+  # end
 end

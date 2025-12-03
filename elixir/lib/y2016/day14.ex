@@ -3,8 +3,6 @@ defmodule Y2016.Day14 do
   @num_additional_hashes 2016
   @nth_key_desired 64
 
-  use Bitwise
-
   def run1(input \\ @input) do
     nth_key(input, 0, %{}, [], 0, nibbles())
   end
