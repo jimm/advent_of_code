@@ -295,7 +295,6 @@ case $lang in
     ;;
     elixir)
         day=$(printf '%02d' $day)
-        echo day = $day
         test=""
         if [ -n "$testing" ] ; then
             test="_test"
