@@ -339,7 +339,6 @@ EOF
         $run_or_echo $time ./aoc.py -y $year -d $day $testing $part_num
         ;;
     ruby)
-        debug=""
         if [ -n "$debug" ] ; then
             debug="--debug"
         fi
