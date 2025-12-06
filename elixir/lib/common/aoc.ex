@@ -2,17 +2,19 @@ defmodule Common.AoC do
   import Common.{Context, Data}
 
   def run do
-    opts =
-      OptionParser.parse_head(System.argv(),
-        strict: [
-          year: :integer,
-          day: :integer,
-          test: :boolean,
-          debug: :boolean
-        ]
-      )
+    OptionParser.parse_head(System.argv(),
+      strict: [
+        year: :integer,
+        day: :integer,
+        test: :boolean,
+        debug: :boolean
+      ]
+    )
+    |> run
+  end
 
-    {args, [part_str], _} = opts
+  def run(options) do
+    {args, [part_str], _} = options
 
     module =
       String.to_existing_atom(
@@ -38,7 +40,7 @@ defmodule Common.AoC do
     if ctx.test do
       run_test_chunks(ctx, func)
     else
-      lines = Common.Data.data_lines(ctx)
+      lines = data_lines(ctx)
       IO.puts(func.(ctx, lines))
     end
   end
