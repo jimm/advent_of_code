@@ -1,14 +1,12 @@
 defmodule Y2017.Day12 do
-  use Common.File
-
-  def part1 do
-    read_network()
+  def part1(_ctx, lines) do
+    read_network(lines)
     |> group_members(0)
     |> length
   end
 
-  def part2 do
-    read_network()
+  def part2(_ctx, lines) do
+    read_network(lines)
     |> groups()
     |> length
   end
@@ -85,9 +83,9 @@ defmodule Y2017.Day12 do
 
   # ================ helpers ================
 
-  defp read_network do
+  defp read_network(lines) do
     one_way =
-      input_lines()
+      lines
       |> Enum.map(&parse_line/1)
       |> Map.new()
 

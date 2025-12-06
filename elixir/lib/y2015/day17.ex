@@ -1,25 +1,26 @@
 # No Such Thing as Too Much
 
 defmodule Y2015.Day17 do
-  use Common.File
-
   @liters 150
-  @input_file default_input_path()
 
   alias Common.Set
 
-  def run1(liters \\ @liters, input_file \\ @input_file) do
+  def part1(_ctx, lines) do
+    liters = @liters
+
     containers =
-      File.stream!(input_file)
+      lines
       |> Enum.map(&(&1 |> String.trim() |> String.to_integer()))
 
     fit_count(containers, liters)
   end
 
   # min container count
-  def run2(liters \\ @liters, input_file \\ @input_file) do
+  def part2(_ctx, lines) do
+    liters = @liters
+
     containers =
-      File.stream!(input_file)
+      lines
       |> Enum.map(&(&1 |> String.trim() |> String.to_integer()))
 
     min_fit_count(containers, liters)

@@ -2,30 +2,13 @@
 
 defmodule Y2025.Day02 do
   require Integer
-  use Common.File
 
-  # @tests [
-  #   {"input", "expected_result"}
-  # ]
-
-  def part1 do
-    lines = input_lines(default_input_path(__MODULE__, 1))
+  def part1(_ctx, lines) do
     part_common(hd(lines), &invalid1/1)
   end
 
-  def part2 do
-    lines = input_lines(default_input_path(__MODULE__, 1))
+  def part2(_ctx, lines) do
     part_common(hd(lines), &invalid2/1)
-  end
-
-  # ================ testing ================
-
-  def part1_test do
-    part1()
-  end
-
-  def part2_test do
-    part2()
   end
 
   # ================ helpers ================
@@ -66,6 +49,7 @@ defmodule Y2025.Day02 do
     l = String.length(s)
     half = div(l, 2)
 
+    # FIXME See Ruby version.
     1..half
     |> Enum.filter(
       &(String.at(s, 0) == String.at(s, l - &1 - 1) and

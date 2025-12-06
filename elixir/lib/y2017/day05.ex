@@ -1,25 +1,23 @@
 # A Maze of Twisty Trampolines, All Alike
 
 defmodule Y2017.Day05 do
-  use Common.File
-
-  def part1 do
-    steps_until_out_of_bounds(fn offset -> offset + 1 end)
+  def part1(_ctx, lines) do
+    steps_until_out_of_bounds(lines, fn offset -> offset + 1 end)
   end
 
-  def part2 do
-    steps_until_out_of_bounds(fn offset ->
+  def part2(_ctx, lines) do
+    steps_until_out_of_bounds(lines, fn offset ->
       if offset >= 3, do: offset - 1, else: offset + 1
     end)
   end
 
   # ================ helpers ================
 
-  defp steps_until_out_of_bounds(f) do
+  defp steps_until_out_of_bounds(lines, f) do
     indices = Stream.iterate(0, &(&1 + 1))
 
     nums =
-      input_lines()
+      lines
       |> Enum.map(&String.to_integer/1)
 
     m = Map.new(Enum.zip(indices, nums))

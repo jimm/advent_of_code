@@ -1,15 +1,13 @@
 defmodule Y2016.Day18 do
-  use Common.File
-
   @safe "."
   @trap "^"
-  @input_file default_input_path()
   @run1_rows 40
 
-  def run(num_rows \\ @run1_rows, file \\ @input_file) do
+  def part1(_ctx, lines) do
+    num_rows = @run1_rows
+
     row =
-      file
-      |> input_lines
+      lines
       |> hd
       |> String.split("", trim: true)
 

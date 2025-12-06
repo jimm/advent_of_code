@@ -1,21 +1,18 @@
 # JSAbacusFramework.io
 
 defmodule Y2015.Day12 do
-  use Common.File
-
   # sum
-  def run1 do
-    sum(fn _ -> true end)
+  def part1(_ctx, lines) do
+    sum(lines, fn _ -> true end)
   end
 
   # color filter
-  def run2 do
-    sum(fn vals -> !Enum.member?(vals, "red") end)
+  def part2(_ctx, lines) do
+    sum(lines, fn vals -> !Enum.member?(vals, "red") end)
   end
 
-  defp sum(filter) do
-    default_input_path()
-    |> File.read!()
+  defp sum(lines, filter) do
+    lines
     |> collect_numbers(filter)
     |> Enum.sum()
   end

@@ -1,22 +1,20 @@
 # Inverse Captcha
 
 defmodule Y2017.Day01 do
-  use Common.File
-
-  def part1 do
-    digits = puzzle_digits()
+  def part1(_ctx, lines) do
+    digits = puzzle_digits(lines)
     wrapped = digits ++ [hd(digits)]
     sum_next_matchers(wrapped, 0)
   end
 
-  def part2 do
-    digits = puzzle_digits()
+  def part2(_ctx, lines) do
+    digits = puzzle_digits(lines)
     half_len = div(length(digits), 2)
     sum_mid_matchers(Enum.take(digits, half_len), Enum.drop(digits, half_len), 0)
   end
 
-  defp puzzle_digits do
-    input_lines()
+  defp puzzle_digits(lines) do
+    lines
     |> hd
     |> String.to_integer()
     |> Integer.digits()

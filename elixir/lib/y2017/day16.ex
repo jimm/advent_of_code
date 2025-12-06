@@ -1,17 +1,15 @@
 # Permutation Promenade
 
 defmodule Y2017.Day16 do
-  use Common.File
-
-  def part1 do
+  def part1(_ctx, lines) do
     line = Enum.to_list(?a..?p)
-    instructions = read_instructions()
+    instructions = read_instructions(lines)
     dance(line, instructions)
   end
 
-  def part2 do
+  def part2(_ctx, lines) do
     line = Enum.to_list(?a..?p)
-    instructions = read_instructions()
+    instructions = read_instructions(lines)
 
     cycle = generate_dance_cycle(line, instructions)
     cycle_len = length(cycle)
@@ -95,8 +93,8 @@ defmodule Y2017.Day16 do
 
   # ================ helpers ================
 
-  defp read_instructions do
-    input_lines()
+  defp read_instructions(lines) do
+    lines
     |> hd()
     |> String.split(",")
     |> Enum.map(&parse_instruction/1)

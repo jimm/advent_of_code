@@ -1,16 +1,13 @@
 defmodule Y2015.Day09 do
-  use Common.File
-
   # shortest
-  def run1, do: run(&Enum.min/1)
+  def part1(_ctx, lines), do: run(lines, &Enum.min/1)
 
   # longest
-  def run2, do: run(&Enum.max/1)
+  def part2(_ctx, lines), do: run(lines, &Enum.max/1)
 
-  defp run(f) do
+  defp run(lines, f) do
     distances =
-      default_input_path()
-      |> File.stream!()
+      lines
       |> Enum.reduce(%{}, fn line, acc ->
         [src, "to", dest, "=", num_str] = String.split(line)
         dist = String.to_integer(num_str)

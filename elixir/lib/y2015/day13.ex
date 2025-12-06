@@ -1,14 +1,11 @@
 # Knights of the Dinner Table
 
 defmodule Y2015.Day13 do
-  use Common.File
-
-  @input_file default_input_path()
   @parse_regex ~r{(\w+) would (\w+) (\d+) happiness units by sitting next to (\w+)\.}
 
   # happiest
-  def run1 do
-    File.stream!(@input_file)
+  def part1(_ctx, lines) do
+    lines
     |> Enum.reduce(%{}, fn line, acc ->
       [src, dest, dist] = parse(line)
       acc |> add_distance(src, dest, dist)
@@ -17,8 +14,8 @@ defmodule Y2015.Day13 do
   end
 
   # happiest including me
-  def run2 do
-    File.stream!(@input_file)
+  def part2(_ctx, lines) do
+    lines
     |> Enum.reduce(%{}, fn line, acc ->
       [src, dest, dist] = parse(line)
 

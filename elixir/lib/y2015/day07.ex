@@ -1,17 +1,15 @@
 # Some Assembly Required
 
 defmodule Y2015.Day07 do
-  use Common.File
   import Bitwise
 
-  def run1, do: run(& &1)
+  def part1(_ctx, lines), do: run(lines, & &1)
 
-  def run2, do: run(&reset_and_rerun/1)
+  def part2(_ctx, lines), do: run(lines, &reset_and_rerun/1)
 
-  defp run(modify) do
-    default_input_path()
-    |> File.stream!()
-    |> tokenize
+  defp run(lines, modify) do
+    lines
+    |> Enum.map(&tokenize_statement/1)
     |> reorder
     |> modify.()
     |> execute
@@ -19,10 +17,6 @@ defmodule Y2015.Day07 do
   end
 
   # ================ tokenization ================
-
-  defp tokenize(statements) do
-    statements |> Enum.map(&tokenize_statement/1)
-  end
 
   # Given "foo bar -> target" returns ["target", "foo", "bar"]
   defp tokenize_statement(s) do

@@ -1,17 +1,16 @@
 # Corruption Checksum
 
 defmodule Y2017.Day02 do
-  use Common.File
   alias Common.Set
 
-  def part1 do
-    input_lines()
+  def part1(_ctx, lines) do
+    lines
     |> Enum.map(&minmax_diff_line/1)
     |> Enum.sum()
   end
 
-  def part2 do
-    input_lines()
+  def part2(_ctx, lines) do
+    lines
     |> Enum.map(&find_integer_divisor_line/1)
     |> Enum.sum()
   end

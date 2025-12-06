@@ -1,13 +1,9 @@
 # Medicine for Rudolph
 
 defmodule Y2015.Day19 do
-  use Common.File
-
-  @input_file default_input_path()
-
   # single sub unique count
-  def run1(input_file \\ @input_file) do
-    {replacements, start} = parse(input_file)
+  def part1(_ctx, lines) do
+    {replacements, start} = parse(lines)
 
     replacements
     |> Enum.map(fn [key, val] -> start |> String.split(key) |> make_subs(key, val) end)
@@ -18,16 +14,16 @@ defmodule Y2015.Day19 do
 
   # "e" to medicine
   # Will it help to work backwards? Start with longest substitutions?
-  def run2(input_file \\ @input_file) do
-    {replacements, medicine} = parse(input_file)
+  def part2(_ctx, lines) do
+    {replacements, medicine} = parse(lines)
     reverse_replacements = replacements |> Enum.map(fn [k, v] -> [v, k] end)
     by_length = reverse_replacements |> Enum.group_by(fn [k, _] -> String.length(k) end)
     reduce_to_e(medicine, by_length, by_length |> Map.keys() |> Enum.max(), 0)
   end
 
-  def parse(input_file) do
-    lines = File.read!(input_file) |> String.split("\n")
+  def parse(lines) do
     {replacement_lines, end_lines} = lines |> Enum.split(length(lines) - 2)
+
     {
       replacement_lines
       |> Enum.reject(&(&1 == ""))

@@ -1,16 +1,13 @@
 # Science for Hungry People
 
 defmodule Y2015.Day15 do
-  use Common.File
-
-  @input_file default_input_path()
   @parse_regex ~r{(\w+): capacity (-?\d+), durability (-?\d+), flavor (-?\d+), texture (-?\d+), calories (-?\d+)}
 
   defstruct [:name, :capacity, :durability, :flavor, :texture, :calories]
 
   # max attributes
-  def run1 do
-    ingredients = read_ingredients()
+  def part1(_ctx, lines) do
+    ingredients = read_ingredients(lines)
 
     all_possible_measures(length(ingredients), 100)
     |> Enum.map(&scores(ingredients, &1))
@@ -19,8 +16,8 @@ defmodule Y2015.Day15 do
   end
 
   # best 500 calorie
-  def run2 do
-    ingredients = read_ingredients()
+  def part2(_ctx, lines) do
+    ingredients = read_ingredients(lines)
 
     all_possible_measures(length(ingredients), 100)
     |> Enum.map(&scores(ingredients, &1))
@@ -29,8 +26,8 @@ defmodule Y2015.Day15 do
     |> Enum.max()
   end
 
-  defp read_ingredients do
-    File.stream!(@input_file)
+  defp read_ingredients(lines) do
+    lines
     |> Enum.reduce([], fn line, acc ->
       [name, capacity, durability, flavor, texture, calories] = parse(line)
 

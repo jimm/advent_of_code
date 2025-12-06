@@ -2,22 +2,21 @@
 
 # Rooms stored as {name, sector, checksum}
 defmodule Y2016.Day04 do
-  use Common.File
-
-  @input_file default_input_path()
   @room_regex ~r/^(([a-z]+-)+)(\d+)\[([a-z]+)\]$/
 
-  def run1(file \\ @input_file) do
-    read_file(file)
+  def part1(_ctx, lines) do
+    lines
+    |> Enum.map(&parse_room/1)
     |> Enum.filter(&real?/1)
     |> Enum.map(fn {_, sector, _} -> sector end)
     |> Enum.sum()
     |> IO.puts()
   end
 
-  def run2(file \\ @input_file) do
+  def part2(_ctx, lines) do
     {_, sector, _} =
-      read_file(file)
+      lines
+      |> Enum.map(&parse_room/1)
       |> Enum.map(fn {_, sector, checksum} = room ->
         {decrypt_name(room), sector, checksum}
       end)
@@ -25,11 +24,6 @@ defmodule Y2016.Day04 do
       |> hd
 
     IO.puts(sector)
-  end
-
-  defp read_file(file) do
-    input_lines(file)
-    |> Enum.map(&parse_room/1)
   end
 
   defp parse_room(s) do

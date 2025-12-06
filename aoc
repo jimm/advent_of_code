@@ -8,7 +8,8 @@ usage() {
     cat <<EOS
 usage: $(basename "$0") [OPTIONS] part_num
 
-  -D       Sets environment variable DEBUG=true
+  -D       Sets environment variable DEBUG=true and in some languages passes an
+             additional flag like \`--debug\`
   -L       List languages available for a year (current by default) year
              and exit
   -Y       List years and exits
@@ -297,12 +298,12 @@ case $lang in
         day=$(printf '%02d' $day)
         test=""
         if [ -n "$testing" ] ; then
-            test="_test"
+            test="--test"
         fi
-        $run_or_echo $time iex -S mix <<EOS
-Y$year.Day$day.part$part_num$test
-System.halt(0)
-EOS
+        if [ -n "$DEBUG" ] ; then
+            $debug="--debug"
+        fi
+        $run_or_echo $time mix run -e "Common.AoC.run" -- $debug --year $year --day $day $test $part_num
     ;;
     janet)
         cd y$year > /dev/null 2>&1 || ( echo "error: dir y$year missing" ; exit 1 )

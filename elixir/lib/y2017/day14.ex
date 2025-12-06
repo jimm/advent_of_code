@@ -5,19 +5,19 @@ defmodule Y2017.Day14 do
   import Bitwise
 
   @puzzle_input "ugkiagan"
-  @test_puzzle_input "flqrgnkx"
+  # @test_puzzle_input "flqrgnkx"
 
   # Number of used sectors
-  def part1(input \\ @puzzle_input) do
-    input
+  def part1(_ctx, _lines) do
+    @puzzle_input
     |> input_as_mapset()
     |> MapSet.size()
   end
 
   # Number of contiguous sector groups, where connection is horizontal and
   # vertical but not diagonal.
-  def part2(input \\ @puzzle_input) do
-    input
+  def part2(_ctx, _lines) do
+    @puzzle_input
     |> input_as_mapset()
     |> count_groups
   end
@@ -72,25 +72,25 @@ defmodule Y2017.Day14 do
     |> Enum.filter(& &1)
   end
 
-  # ================ testing ================
+  # # ================ testing ================
 
-  def test_puzzle_input, do: @test_puzzle_input
+  # def test_puzzle_input, do: @test_puzzle_input
 
-  def test_print do
-    @test_puzzle_input
-    |> input_as_mapset()
-    |> debug_print_memory()
+  # def test_print do
+  #   @test_puzzle_input
+  #   |> input_as_mapset()
+  #   |> debug_print_memory()
 
-    :ok
-  end
+  #   :ok
+  # end
 
-  def test_part1 do
-    part1(@test_puzzle_input)
-  end
+  # def test_part1 do
+  #   part1(@test_puzzle_input)
+  # end
 
-  def test_part2 do
-    part2(@test_puzzle_input)
-  end
+  # def test_part2 do
+  #   part2(@test_puzzle_input)
+  # end
 
   # ================ helpers ================
 
@@ -136,15 +136,15 @@ defmodule Y2017.Day14 do
   defp hex_char_to_int(ch) when ch >= ?0 and ch <= ?9, do: ch - ?0
   defp hex_char_to_int(ch) when ch >= ?a and ch <= ?f, do: ch - ?a + 10
 
-  defp debug_print_memory(ones, size \\ 16) do
-    0..(size - 1)
-    |> Enum.map(fn row ->
-      0..(size - 1)
-      |> Enum.map(fn col ->
-        IO.write(if MapSet.member?(ones, {row, col}), do: "#", else: ".")
-      end)
+  # defp debug_print_memory(ones, size \\ 16) do
+  #   0..(size - 1)
+  #   |> Enum.map(fn row ->
+  #     0..(size - 1)
+  #     |> Enum.map(fn col ->
+  #       IO.write(if MapSet.member?(ones, {row, col}), do: "#", else: ".")
+  #     end)
 
-      IO.puts("")
-    end)
-  end
+  #     IO.puts("")
+  #   end)
+  # end
 end

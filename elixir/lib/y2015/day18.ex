@@ -1,9 +1,6 @@
 # Like a GIF For Your Yard
 
 defmodule Y2015.Day18 do
-  use Common.File
-
-  @input_file default_input_path()
   @on ?#
   @off ?.
 
@@ -25,8 +22,9 @@ defmodule Y2015.Day18 do
   A board is a list of char lists.
   """
 
-  def run1(steps \\ 100, input_file \\ @input_file) do
-    cells = read_board(input_file)
+  def part1(_ctx, lines) do
+    steps = 100
+    cells = read_board(lines)
     life(cells, steps, &life_rules/5)
   end
 
@@ -37,9 +35,11 @@ defmodule Y2015.Day18 do
       17
   """
   # stuck lights
-  def run2(steps \\ 100, input_file \\ @input_file) do
+  def part2(_ctx, lines) do
+    steps = 100
+
     cells =
-      read_board(input_file)
+      read_board(lines)
       |> turn_on_corner_lights
 
     life(cells, steps, &stuck_life_rules/5)
@@ -58,8 +58,8 @@ defmodule Y2015.Day18 do
     |> length
   end
 
-  defp read_board(input_file) do
-    File.stream!(input_file)
+  defp read_board(lines) do
+    lines
     |> Enum.map(&read_board_line/1)
   end
 

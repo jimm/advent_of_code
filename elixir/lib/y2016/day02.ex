@@ -1,7 +1,4 @@
 defmodule Y2016.Day02 do
-  use Common.File
-
-  @input_file default_input_path()
   @keypad1 %{
     1 => %{"U" => nil, "D" => 4, "L" => nil, "R" => 2},
     2 => %{"U" => nil, "D" => 5, "L" => 1, "R" => 3},
@@ -29,13 +26,17 @@ defmodule Y2016.Day02 do
     "D" => %{"U" => "B", "D" => nil, "L" => nil, "R" => nil}
   }
 
-  def run1(keypad, file \\ @input_file)
-  def run1(1, file), do: run1(@keypad1, file)
-  def run1(2, file), do: run1(@keypad2, file)
+  def part1(_ctx, lines) do
+    run(@keypad1, lines)
+  end
 
-  def run1(keypad, file) do
+  def part2(_ctx, lines) do
+    run(@keypad2, lines)
+  end
+
+  def run(keypad, lines) do
     {_, digits} =
-      read_dirs(file)
+      read_dirs(lines)
       |> Enum.reduce({5, []}, fn dirs, {start, digits} ->
         new_digit =
           dirs
@@ -51,8 +52,8 @@ defmodule Y2016.Day02 do
     |> IO.puts()
   end
 
-  defp read_dirs(file) do
-    input_lines(file)
+  defp read_dirs(lines) do
+    lines
     |> Enum.map(&String.split(&1, "", trim: true))
   end
 
@@ -61,6 +62,3 @@ defmodule Y2016.Day02 do
     new_digit || digit
   end
 end
-
-# Y2016.Day02.run1(1)
-# Y2016.Day02.run1(2)

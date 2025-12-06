@@ -1,9 +1,6 @@
 # Aunt Sue
 
 defmodule Y2015.Day16 do
-  use Common.File
-
-  @input_file default_input_path()
   @parse_regex ~r{Sue (\d+): (\w+): (\d+), (\w+): (\d+), (\w+): (\d+)}
   @analysis %{
     children: 3,
@@ -18,11 +15,11 @@ defmodule Y2015.Day16 do
     perfumes: 1
   }
 
-  def run1, do: run(&match1/1)
-  def run2, do: run(&updated_retroencabulator_match/1)
+  def part1(_ctx, lines), do: run(lines, &match1/1)
+  def part2(_ctx, lines), do: run(lines, &updated_retroencabulator_match/1)
 
-  def run(matcher) do
-    File.stream!(@input_file)
+  def run(lines, matcher) do
+    lines
     |> Enum.map(&parse/1)
     |> Enum.drop_while(&(!matcher.(&1)))
     |> Enum.take(1)
@@ -33,7 +30,8 @@ defmodule Y2015.Day16 do
   defp parse(line) do
     [nstr | attrs] = Regex.run(@parse_regex, line) |> tl
 
-    Enum.reduce(attrs |> Enum.chunk_every(2), %{num: String.to_integer(nstr)}, fn [attr, nstr], acc ->
+    Enum.reduce(attrs |> Enum.chunk_every(2), %{num: String.to_integer(nstr)}, fn [attr, nstr],
+                                                                                  acc ->
       Map.put(acc, String.to_atom(attr), String.to_integer(nstr))
     end)
   end

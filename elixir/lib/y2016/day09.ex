@@ -1,17 +1,16 @@
 defmodule Y2016.Day09 do
-  use Common.File
-
-  def run1(file \\ nil) do
-    run(file, &uncomp_len_alg1/1)
+  def part1(_ctx, lines) do
+    run(lines, &uncomp_len_alg1/1)
   end
 
-  def run2(file \\ nil) do
-    run(file, &uncomp_len_alg2/1)
+  def part2(_ctx, lines) do
+    run(lines, &uncomp_len_alg2/1)
   end
 
-  defp run(file, f) do
+  defp run(lines, f) do
     input =
-      (file || default_input_path())
+      lines
+      |> hd
       |> File.read!()
       |> String.replace(~r/[ \t\n]/, "")
 

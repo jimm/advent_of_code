@@ -1,15 +1,11 @@
 defmodule Y2016.Day03 do
-  use Common.File
-
-  @input_file default_input_path()
-
-  def run1(file \\ @input_file) do
-    read_file(file) |> do_run
+  def run1(_ctx, lines) do
+    read_data(lines) |> do_run
   end
 
-  def run2(file \\ @input_file) do
+  def run2(_ctx, lines) do
     # DEBUG
-    read_file2(file)
+    read_data2(lines)
     |> IO.inspect(label: "file2 output")
     |> do_run
   end
@@ -21,18 +17,16 @@ defmodule Y2016.Day03 do
     |> IO.puts()
   end
 
-  defp read_file(file) do
-    file
-    |> File.read!()
-    |> String.split("\n", trim: true)
+  defp read_data(lines) do
+    lines
     |> Enum.map(fn line ->
       [a, b, c] = line |> String.split() |> Enum.map(&String.to_integer/1)
       {a, b, c}
     end)
   end
 
-  defp read_file2(file) do
-    input_lines(file)
+  defp read_data2(lines) do
+    lines
     |> Enum.chunk_every(3)
     |> Enum.map(fn three ->
       [{a0, a1, a2}, {b0, b1, b2}, {c0, c1, c2}] =

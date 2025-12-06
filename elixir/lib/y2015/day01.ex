@@ -1,20 +1,18 @@
 # Not Quite Lisp
 
 defmodule Y2015.Day01 do
-  use Common.File
-
   # destination floor
-  def run1 do
-    default_input_path()
-    |> File.read!()
+  def part1(_ctx, lines) do
+    lines
+    |> hd
     |> String.split("", trim: true)
     |> Enum.reduce(0, fn c, acc -> acc + move(c) end)
   end
 
   # first basement index
-  def run2 do
-    default_input_path()
-    |> File.read!()
+  def part2(_ctx, lines) do
+    lines
+    |> hd
     |> String.codepoints()
     |> first_negative_one(0, 0)
   end

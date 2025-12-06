@@ -44,7 +44,7 @@ defmodule Y2017.Day17 do
 
   alias CircularBuffer, as: CB
 
-  def part1 do
+  def part1(_ctx, _lines) do
     spinlock(@input, @last_insert)
     |> value_after(@last_insert)
   end
@@ -54,7 +54,7 @@ defmodule Y2017.Day17 do
     |> value_after(@last_insert)
   end
 
-  def part2 do
+  def part2(_ctx, _lines) do
     part2_spinlock(@input, 50_000_000)
   end
 

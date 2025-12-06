@@ -1,8 +1,6 @@
 defmodule Y2016.Day10 do
   @empty_bot {nil, nil, nil, nil}
 
-  use Common.File
-
   defmodule Factory do
     defstruct bots: %{}, outputs: %{}
   end
@@ -10,15 +8,18 @@ defmodule Y2016.Day10 do
   # Factory is a map from bot number => bot
   # Bot is {low instruction, high instruction, val1, val2}
   # Instruction is either {:give, botnum} or {:output, binnum}
-  def run1(file \\ nil, comp1 \\ 17, comp2 \\ 61) do
-    init_factory(file)
+  def part1(_ctx, lines) do
+    comp1 = 17
+    comp2 = 61
+
+    init_factory(lines)
     |> run_bots_until(fn factory -> any_bot_holding?(factory, comp1, comp2) end)
     |> bot_holding(comp1, comp2)
   end
 
-  def run2(file \\ nil) do
+  def part2(_ctx, lines) do
     factory =
-      init_factory(file)
+      init_factory(lines)
       |> run_bots
 
     os = factory.outputs
@@ -103,10 +104,9 @@ defmodule Y2016.Day10 do
 
   # ================ initialization ================
 
-  defp init_factory(file) do
+  defp init_factory(lines) do
     bots =
-      (file || default_input_path())
-      |> input_lines
+      lines
       |> Enum.map(&String.split/1)
       |> Enum.reduce(%{}, fn cmd, factory -> init_bot(factory, cmd) end)
 

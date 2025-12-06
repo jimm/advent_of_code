@@ -1,21 +1,17 @@
 # Format of addr: {words-outside-brackets, words-inside-brackets}
 defmodule Y2016.Day07 do
-  use Common.File
-
-  @input_file default_input_path()
-
-  def run1(file \\ @input_file) do
-    count_addrs(file, &supports_tls?/1)
+  def part1(_ctx, lines) do
+    count_addrs(lines, &supports_tls?/1)
     |> IO.puts()
   end
 
-  def run2(file \\ @input_file) do
-    count_addrs(file, &supports_ssl?/1)
+  def part2(_ctx, lines) do
+    count_addrs(lines, &supports_ssl?/1)
     |> IO.puts()
   end
 
-  def count_addrs(file, f) do
-    input_lines(file)
+  def count_addrs(lines, f) do
+    lines
     |> Enum.map(&parse_addrs/1)
     |> Enum.filter(f)
     |> Enum.count()

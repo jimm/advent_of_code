@@ -5,11 +5,11 @@ defmodule Y2017.Day03 do
 
   @start_location 368_078
 
-  def part1 do
+  def part1(_ctx, _lines) do
     manhattan_distance_to_start()
   end
 
-  def part2 do
+  def part2(_ctx, _lines) do
     stress_test_value(2, Map.put(%{}, {0, 0}, 1))
   end
 

@@ -1,22 +1,20 @@
 # I Was Told There Would Be No Math
 
 defmodule Y2015.Day02 do
-  use Common.File
-
   # total_paper_area_needed
-  def run1 do
-    calculate_need(&paper_area_needed/1)
+  def part1(_ctx, lines) do
+    calculate_need(lines, &paper_area_needed/1)
   end
 
   # total_ribbon_length_needed
-  def run2 do
-    calculate_need(&ribbon_length_needed/1)
+  def part2(_ctx, lines) do
+    calculate_need(lines, &ribbon_length_needed/1)
   end
 
   # ================ helpers ================
 
-  defp calculate_need(f) do
-    input_lines()
+  defp calculate_need(lines, f) do
+    lines
     |> Enum.map(&parse/1)
     |> Enum.map(f)
     |> Enum.sum()

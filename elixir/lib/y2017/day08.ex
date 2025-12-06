@@ -1,8 +1,6 @@
 # I Heard You Like Registers
 
 defmodule Y2017.Day08 do
-  use Common.File
-
   defmodule Registers do
     defstruct regs: %{}, max_seen: -0x7FFFFFFF
   end
@@ -11,18 +9,18 @@ defmodule Y2017.Day08 do
     defstruct [:reg, :op, :const, :if]
   end
 
-  def part1 do
-    regs = run()
+  def part1(_ctx, lines) do
+    regs = run(lines)
     regs.regs |> Map.values() |> Enum.max()
   end
 
-  def part2 do
-    regs = run()
+  def part2(_ctx, lines) do
+    regs = run(lines)
     regs.max_seen
   end
 
-  defp run do
-    input_lines()
+  defp run(lines) do
+    lines
     |> Enum.map(&parse_line/1)
     |> Enum.reduce(%Registers{}, fn instr, regs -> run_instruction(instr, regs) end)
   end

@@ -1,14 +1,12 @@
 # High-Entropy Passphrases
 
 defmodule Y2017.Day04 do
-  use Common.File
-
-  def part1 do
-    count_valid(&words_valid?/1)
+  def part1(_ctx, lines) do
+    count_valid(lines, &words_valid?/1)
   end
 
-  def part2 do
-    count_valid(&sorted_words_valid?/1)
+  def part2(_ctx, lines) do
+    count_valid(lines, &sorted_words_valid?/1)
   end
 
   # ================ part 1 ================
@@ -45,8 +43,8 @@ defmodule Y2017.Day04 do
 
   # ================ helpers ================
 
-  defp count_valid(f) do
-    input_lines()
+  defp count_valid(lines, f) do
+    lines
     |> Enum.count(f)
   end
 end

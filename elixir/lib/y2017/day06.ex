@@ -1,16 +1,14 @@
 # Memory Reallocation
 
 defmodule Y2017.Day06 do
-  use Common.File
-
-  def part1 do
-    banks = read_banks()
+  def part1(_ctx, lines) do
+    banks = read_banks(lines)
     {num_cycles, _} = cycle_until_repeat(banks)
     num_cycles
   end
 
-  def part2 do
-    banks = read_banks()
+  def part2(_ctx, lines) do
+    banks = read_banks(lines)
     {_, cycle_length} = cycle_until_repeat(banks)
     cycle_length
   end
@@ -34,11 +32,11 @@ defmodule Y2017.Day06 do
 
   defp seen_before?(banks, state), do: Map.get(state, banks) != nil
 
-  defp read_banks do
+  defp read_banks(lines) do
     # DEBUG test data
     # [0, 2, 7, 0]
 
-    input_lines()
+    lines
     |> hd
     |> String.split()
     |> Enum.map(&String.to_integer/1)

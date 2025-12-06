@@ -1,8 +1,6 @@
 # Reindeer Olympics
 
 defmodule Y2015.Day14 do
-  use Common.File
-
   @race_duration 2503
   @parse_regex ~r{(\w+) can fly (\d+) km/s for (\d+) seconds, but then must rest for (\d+) seconds\.}
 
@@ -18,33 +16,26 @@ defmodule Y2015.Day14 do
   ]
 
   # max dist
-  def run1 do
-    read_reindeer()
-    |> Enum.map(&distance_at(&1, @race_duration))
-    |> Enum.max()
-  end
+  def part1(ctx, lines) do
+    duration = if ctx.test, do: 1000, else: @race_duration
 
-  def run1_test do
-    read_reindeer(true)
-    |> Enum.map(&distance_at(&1, 1000))
+    read_reindeer(lines)
+    |> Enum.map(&distance_at(&1, duration))
     |> Enum.max()
   end
 
   # wining points
-  def run2 do
-    read_reindeer()
+  def part2(_ctx, lines) do
+    read_reindeer(lines)
     |> race(@race_duration - 1)
     |> Enum.map(& &1.points)
+    # DEBUG
     |> IO.inspect()
     |> Enum.max()
   end
 
-  defp read_reindeer(test \\ false) do
-    if test do
-      input_lines(default_input_path(__MODULE__, "_test"))
-    else
-      input_lines()
-    end
+  defp read_reindeer(lines) do
+    lines
     |> Enum.reduce([], fn line, acc ->
       [name, speed, dur, rest_duration] = parse(line)
 

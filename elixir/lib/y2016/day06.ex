@@ -1,18 +1,13 @@
 defmodule Y2016.Day06 do
-  use Common.File
-
-  @input_file default_input_path()
-
-  def run1(file \\ @input_file) do
-    run(file, fn {_, freq} -> freq end)
+  def part1(_ctx, lines) do
+    run(lines, fn {_, freq} -> freq end)
   end
 
-  def run2(file \\ @input_file) do
-    run(file, fn {_, freq} -> -freq end)
+  def part2(_ctx, lines) do
+    run(lines, fn {_, freq} -> -freq end)
   end
 
-  defp run(file, f) do
-    lines = input_lines(file)
+  defp run(lines, f) do
     len = lines |> hd |> String.length()
 
     0..(len - 1)

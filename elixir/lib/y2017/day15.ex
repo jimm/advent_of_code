@@ -17,7 +17,9 @@ defmodule Y2017.Day15 do
   @test_start_a 65
   @test_start_b 8921
 
-  def part1(start_a \\ @start_a, start_b \\ @start_b) do
+  def part1(_ctx, _lines) do
+    start_a = @start_a
+    start_b = @start_b
     a = generator(start_a, @factor_a)
     b = generator(start_b, @factor_b)
 
@@ -27,7 +29,10 @@ defmodule Y2017.Day15 do
     |> Enum.count()
   end
 
-  def part2(start_a \\ @start_a, start_b \\ @start_b) do
+  def part2(_ctx, _lines) do
+    start_a = @start_a
+    start_b = @start_b
+
     a =
       generator(start_a, @factor_a)
       |> Stream.filter(fn i -> (i &&& 3) == 0 end)

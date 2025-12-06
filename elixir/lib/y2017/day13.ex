@@ -1,8 +1,6 @@
 # Packet Scanners
 
 defmodule Y2017.Day13 do
-  use Common.File
-
   @moduledoc """
   Assumes all ranges are either nil or > 1, which is true for my input
   data. Were it false, I'd have to be more careful about checking range
@@ -80,8 +78,8 @@ defmodule Y2017.Day13 do
 
   # ================ main ================
 
-  def part1 do
-    firewall = read_firewall()
+  def part1(_ctx, lines) do
+    firewall = read_firewall(lines)
     len = length(Map.keys(firewall))
 
     {_, cost} =
@@ -96,8 +94,8 @@ defmodule Y2017.Day13 do
 
   # Don't have to simulate. Simply find out if on step (N + delay), the Nth
   # level is at the top.
-  def part2 do
-    firewall = read_firewall()
+  def part2(_ctx, lines) do
+    firewall = read_firewall(lines)
     len = length(Map.keys(firewall))
 
     # integer delay starts
@@ -129,8 +127,8 @@ defmodule Y2017.Day13 do
     end)
   end
 
-  defp read_firewall() do
-    input_lines()
+  defp read_firewall(lines) do
+    lines
     |> Enum.map(&parse_line/1)
     |> Enum.reduce(%{}, fn layer, m -> Map.put(m, layer.depth, layer) end)
     |> fill_in_missing_depths

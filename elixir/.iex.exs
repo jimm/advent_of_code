@@ -1,7 +1,7 @@
 global_settings = "~/.iex.exs"
 if File.exists?(global_settings), do: Code.require_file(global_settings)
 
-alias Common.File, as: CF
+alias Common.Data, as: CD
 alias Y2017.Day01, as: D01
 alias Y2017.Day02, as: D02
 alias Y2017.Day03, as: D03

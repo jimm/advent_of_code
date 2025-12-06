@@ -1,12 +1,9 @@
 # Matchsticks
 
 defmodule Y2015.Day08 do
-  use Common.File
-
-  def run1 do
+  def part1(_ctx, lines) do
     {code_rep_len, char_count} =
-      default_input_path()
-      |> File.stream!()
+      lines
       |> Enum.map(&String.trim/1)
       |> Enum.reduce({0, 0}, fn s, {crl, cc} ->
         {evalled_s, _} = Code.eval_string(s)
@@ -16,10 +13,9 @@ defmodule Y2015.Day08 do
     code_rep_len - char_count
   end
 
-  def run2 do
+  def part2(_ctx, lines) do
     {code_rep_len, encoded_rep_len} =
-      default_input_path()
-      |> File.stream!()
+      lines
       |> Enum.map(&String.trim/1)
       |> Enum.reduce({0, 0}, fn s, {crl, ecl} ->
         len = String.length(s)

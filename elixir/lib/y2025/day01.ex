@@ -1,40 +1,24 @@
 # ================ Secret Entrance ================
 
 defmodule Y2025.Day01 do
-  use Common.File
-
-  # @tests [
-  #   {"input", "expected_result"}
-  # ]
-
-  def part1 do
+  def part1(_ctx, lines) do
     [_, num_zeroes] =
-      Enum.reduce(input_lines(default_input_path(__MODULE__, 1)), [50, 0], fn line,
-                                                                              [pos, num_zeroes] ->
+      Enum.reduce(lines, [50, 0], fn line, [pos, num_zeroes] ->
         [pos, _] = move(pos, line)
         [pos, num_zeroes + if(pos == 0, do: 1, else: 0)]
       end)
 
-    IO.puts(num_zeroes)
+    num_zeroes
   end
 
-  def part2 do
+  def part2(_ctx, lines) do
     [_, num_zeroes] =
-      Enum.reduce(input_lines(default_input_path(__MODULE__, 1)), [50, 0], fn line,
-                                                                              [pos, num_zeroes] ->
+      Enum.reduce(lines, [50, 0], fn line, [pos, num_zeroes] ->
         [pos, num_zeroes_seen] = move(pos, line)
         [pos, num_zeroes + num_zeroes_seen]
       end)
 
-    IO.puts(num_zeroes)
-  end
-
-  # ================ testing ================
-
-  def part1_test do
-  end
-
-  def part2_test do
+    num_zeroes
   end
 
   # ================ helpers ================

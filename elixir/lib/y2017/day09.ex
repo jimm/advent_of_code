@@ -1,8 +1,6 @@
 # Stream Processing
 
 defmodule Y2017.Day09 do
-  use Common.File
-
   defmodule State do
     defstruct state: :group, score: 0, scores: [], comment_char_count: 0
   end
@@ -18,16 +16,16 @@ defmodule Y2017.Day09 do
     {"{{<a!>},{<a!>},{<a!>},{<ab>}}", 3}
   ]
 
-  def part1 do
+  def part1(_ctx, lines) do
     state =
-      read_stream()
+      read_stream(lines)
       |> Enum.reduce(%State{}, fn ch, s -> process(ch, s) end)
 
     Enum.sum(state.scores)
   end
 
-  def part2 do
-    chars = read_stream()
+  def part2(_ctx, lines) do
+    chars = read_stream(lines)
     state = chars |> Enum.reduce(%State{}, fn ch, s -> process(ch, s) end)
     state.comment_char_count
   end
@@ -43,9 +41,9 @@ defmodule Y2017.Day09 do
     end)
   end
 
-  defp read_stream() do
-    default_input_path()
-    |> File.read!()
+  defp read_stream(lines) do
+    lines
+    |> hd
     |> String.to_charlist()
   end
 

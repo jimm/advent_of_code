@@ -1,6 +1,5 @@
 # Duet
 defmodule Y2017.Day18 do
-
   defmodule CoreCPU do
     @moduledoc """
     For inclusion by CPU modules. Implements core CPU behavior.
@@ -34,6 +33,7 @@ defmodule Y2017.Day18 do
     def execute({:add, reg, ref}, memory) do
       v1 = value_of(memory, reg)
       v2 = value_of(memory, ref)
+
       store(memory, reg, v1 + v2)
       |> incr_pc()
     end
@@ -41,6 +41,7 @@ defmodule Y2017.Day18 do
     def execute({:mul, reg, ref}, memory) do
       v1 = value_of(memory, reg)
       v2 = value_of(memory, ref)
+
       store(memory, reg, v1 * v2)
       |> incr_pc()
     end
@@ -48,6 +49,7 @@ defmodule Y2017.Day18 do
     def execute({:mod, reg, ref}, memory) do
       v1 = value_of(memory, reg)
       v2 = value_of(memory, ref)
+
       store(memory, reg, Integer.mod(v1, v2))
       |> incr_pc()
     end
@@ -126,32 +128,46 @@ defmodule Y2017.Day18 do
     end
 
     def loop(program, memory) do
-      IO.puts "started loop, pid #{inspect(self())}" # DEBUG
+      # DEBUG
+      IO.puts("started loop, pid #{inspect(self())}")
+
       case run_until_receive_or_error(program, memory) do
         {:error, new_memory} ->
           new_memory
+
         {:receive, _new_memory} ->
           receive do
             {:other_cpu_pid, other_pid} ->
-              IO.puts "pid #{inspect(self())} received :other_cpu_pid, other pid = #{inspect(other_pid)}" # DEBUG
+              # DEBUG
+              IO.puts(
+                "pid #{inspect(self())} received :other_cpu_pid, other pid = #{inspect(other_pid)}"
+              )
+
               Map.put(memory, :other_cpu_pid, other_pid)
+
               case run_until_receive_or_error(program, memory) do
                 {:error, new_memory} ->
                   new_memory
+
                 {:receive, new_memory} ->
                   loop(program, new_memory)
               end
+
             {:get_other_cpu_pid, response_pid} ->
               send(response_pid, {:other_cpu_pid, value_of(memory, :other_cpu_pid)})
               loop(program, memory)
+
             {:run, new_program} ->
               loop(new_program, memory)
+
             {:sent_from_other, val} ->
               {:rcv, reg} = Enum.at(program, pc(memory))
               received = store(memory, reg, val) |> incr_pc()
+
               case run_until_receive_or_error(program, received) do
                 {:error, new_memory} ->
                   new_memory
+
                 {:receive, new_memory} ->
                   loop(program, new_memory)
               end
@@ -160,55 +176,65 @@ defmodule Y2017.Day18 do
     end
 
     def run_until_receive_or_error(program, %{pc: pc} = memory)
-    when pc < 0 or pc >= length(program) do
-      IO.puts "#{value_of(memory, :p)} run_until_receive_or_error out of bounds" # DEBUG
+        when pc < 0 or pc >= length(program) do
+      # DEBUG
+      IO.puts("#{value_of(memory, :p)} run_until_receive_or_error out of bounds")
       {:error, memory}
     end
 
     def run_until_receive_or_error(program, memory) do
-      IO.puts "#{value_of(memory, :p)} run_until_receive_or_error pc #{value_of(memory, :pc)}" # DEBUG
+      # DEBUG
+      IO.puts("#{value_of(memory, :p)} run_until_receive_or_error pc #{value_of(memory, :pc)}")
       instruction = Enum.at(program, pc(memory))
+
       case instruction do
         {:rcv, _ref} ->
           {:receive, memory}
-        inst -> run_until_receive_or_error(program, execute(inst, memory))
+
+        inst ->
+          run_until_receive_or_error(program, execute(inst, memory))
       end
     end
 
     defp do_snd({:snd, ref}, memory) do
-      IO.puts "#{value_of(memory, :p)} sending to other" # DEBUG
+      # DEBUG
+      IO.puts("#{value_of(memory, :p)} sending to other")
       send(value_of(memory, :loop_pid), {:get_other_cpu_pid, self()})
-      IO.puts "waiting for response" # DEBUG
-      other_cpu_pid = receive do
-        {:other_cpu_pid, pid} ->
-          pid |> IO.inspect(label: "#{value_of(memory, :p)} received other pid #{inspect(pid)}") # DEBUG
-      end
+      # DEBUG
+      IO.puts("waiting for response")
+
+      other_cpu_pid =
+        receive do
+          {:other_cpu_pid, pid} ->
+            # DEBUG
+            pid |> IO.inspect(label: "#{value_of(memory, :p)} received other pid #{inspect(pid)}")
+        end
+
       send(other_cpu_pid, {:sent_from_other, value_of(memory, ref)})
+
       memory
       |> incr(:send_count)
       |> incr_pc()
     end
 
     defp do_rcv({:rcv, _ref}, memory) do
-      IO.puts "#{value_of(memory, :p)} do_rcv" # DEBUG
+      # DEBUG
+      IO.puts("#{value_of(memory, :p)} do_rcv")
       memory
     end
   end
 
   # ================ end CPU GenServer ================
 
-  use Common.File
+  def part1(_ctx, lines) do
+    program = read_program(lines)
 
-  def part1(program \\ read_program()) do
     CPU1.run_until_recovery(program)
     |> Map.get(:recover)
   end
 
-  def test_part1 do
-    part1(read_test1_program())
-  end
-
-  def part2(program \\ read_program()) do
+  def part2(_ctx, lines) do
+    program = read_program(lines)
     cpu1 = CPU2.new(0)
     cpu2 = CPU2.new(1)
     cpu1 = CPU2.register_other(cpu1, CoreCPU.value_of(cpu2, :loop_pid))
@@ -219,45 +245,43 @@ defmodule Y2017.Day18 do
     CoreCPU.value_of(cpu2, :send_count)
   end
 
-  def test_part2 do
-    part2(read_test2_program())
-  end
-
   # ================ helpers ================
 
-  defp read_program() do
-    input_lines()
+  defp read_program(lines) do
+    lines
     |> Enum.map(&parse_instruction/1)
   end
 
-  defp read_test1_program() do
-    [
-      "set a 1",
-      "add a 2",
-      "mul a a",
-      "mod a 5",
-      "snd a",
-      "set a 0",
-      "rcv a",
-      "jgz a -1",
-      "set a 1",
-      "jgz a -2"
-    ]
-    |> Enum.map(&parse_instruction/1)
-  end
+  # FIXME
 
-  defp read_test2_program() do
-    [
-      "snd 1",
-      "snd 2",
-      "snd p",
-      "rcv a",
-      "rcv b",
-      "rcv c",
-      "rcv d"
-    ]
-    |> Enum.map(&parse_instruction/1)
-  end
+  # defp read_test1_program() do
+  #   [
+  #     "set a 1",
+  #     "add a 2",
+  #     "mul a a",
+  #     "mod a 5",
+  #     "snd a",
+  #     "set a 0",
+  #     "rcv a",
+  #     "jgz a -1",
+  #     "set a 1",
+  #     "jgz a -2"
+  #   ]
+  #   |> Enum.map(&parse_instruction/1)
+  # end
+
+  # defp read_test2_program() do
+  #   [
+  #     "snd 1",
+  #     "snd 2",
+  #     "snd p",
+  #     "rcv a",
+  #     "rcv b",
+  #     "rcv c",
+  #     "rcv d"
+  #   ]
+  #   |> Enum.map(&parse_instruction/1)
+  # end
 
   defp parse_instruction(line) do
     tokens = String.split(line)

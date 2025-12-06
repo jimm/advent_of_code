@@ -1,15 +1,13 @@
 # Probably a Fire Hazard
 
 defmodule Y2015.Day06 do
-  use Common.File
-
   @line_nums ~r{(turn on|turn off|toggle) (\d+),(\d+) through (\d+),(\d+)}
   @num_rows 1000
   @row_len 1000
 
   # count lights
-  def run1 do
-    sum_after_applying(%{
+  def part1(_ctx, lines) do
+    sum_after_applying(lines, %{
       "turn on" => fn _ -> 1 end,
       "turn off" => fn _ -> 0 end,
       "toggle" => fn brightness -> 1 - brightness end
@@ -17,8 +15,8 @@ defmodule Y2015.Day06 do
   end
 
   # total brightness
-  def run2 do
-    sum_after_applying(%{
+  def part2(_ctx, lines) do
+    sum_after_applying(lines, %{
       "turn on" => fn brightness -> brightness + 1 end,
       "turn off" => fn
         0 -> 0
@@ -29,11 +27,10 @@ defmodule Y2015.Day06 do
     })
   end
 
-  def sum_after_applying(funcmap) do
+  def sum_after_applying(lines, funcmap) do
     grid = List.duplicate(0, @num_rows * @row_len) |> Enum.chunk_every(@row_len)
 
-    default_input_path()
-    |> File.stream!()
+    lines
     |> Enum.map(&parse(&1, funcmap))
     |> Enum.reduce(grid, fn cmd, lights -> execute(lights, cmd) end)
     |> Enum.map(&Enum.sum/1)

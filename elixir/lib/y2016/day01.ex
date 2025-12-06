@@ -1,23 +1,19 @@
 defmodule Y2016.Day01 do
-  use Common.File
-
-  @input_file default_input_path()
-
-  def run1(file \\ @input_file) do
-    read_dirs(file)
+  def part1(_ctx, lines) do
+    read_dirs(lines)
     |> follow_directions(:north, 0, 0)
     |> grid_distance
   end
 
-  def run2(file \\ @input_file) do
-    read_dirs(file)
+  def run2(_ctx, lines) do
+    read_dirs(lines)
     |> first_loc_visited_twice(:north, {0, 0}, [])
     |> grid_distance
   end
 
-  defp read_dirs(file) do
-    file
-    |> File.read!()
+  defp read_dirs(lines) do
+    lines
+    |> hd
     |> String.split(", ")
   end
 

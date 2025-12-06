@@ -5,16 +5,15 @@ defmodule Y2017.Day07.Node do
 end
 
 defmodule Y2017.Day07 do
-  use Common.File
   alias Y2017.Day07.Node
 
-  def part1 do
-    root = read_tree()
+  def part1(_ctx, lines) do
+    root = read_tree(lines)
     root.name
   end
 
-  def part2 do
-    root = read_tree() |> set_subtree_weights
+  def part2(_ctx, lines) do
+    root = read_tree(lines) |> set_subtree_weights
     misfit = find_misfit(root)
     correct_weight_for(misfit, root)
   end
@@ -98,9 +97,9 @@ defmodule Y2017.Day07 do
   # ================ helpers ================
 
   # Returns root node
-  defp read_tree do
+  defp read_tree(lines) do
     node_map =
-      input_lines()
+      lines
       |> Enum.map(&parse_line/1)
       |> Enum.reduce(%{}, fn n, m -> Map.put(m, n.name, n) end)
 

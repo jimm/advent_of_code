@@ -1,18 +1,15 @@
 defmodule Y2016.Day12 do
-  use Common.File
-
-  def run1(file \\ nil) do
-    run(file, [0, 0, 0, 0])
+  def part1(_ctx, lines) do
+    run(lines, [0, 0, 0, 0])
   end
 
-  def run2(file \\ nil) do
-    run(file, [0, 0, 1, 0])
+  def part2(_ctx, lines) do
+    run(lines, [0, 0, 1, 0])
   end
 
-  defp run(file, registers) do
-    instructions = (file || default_input_path()) |> input_lines
+  defp run(lines, registers) do
     # register 1
-    run_simulator(instructions, 0, registers)
+    run_simulator(lines, 0, registers)
     |> hd
   end
 

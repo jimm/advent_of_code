@@ -1,19 +1,16 @@
 defmodule Y2016.Day15 do
-  use Common.File
-
-  @input_file default_input_path()
   @input_regex ~r{Disc #\d+ has (\d+) positions; at time=0, it is at position (\d+)\.}
 
-  def run1(file \\ @input_file) do
-    run(file, [])
+  def part1(_ctx, lines) do
+    run(lines, [])
   end
 
-  def run2(file \\ @input_file) do
-    run(file, [{11, 0}])
+  def part2(_ctx, lines) do
+    run(lines, [{11, 0}])
   end
 
-  def run(file, additional_discs) do
-    discs = read_file(file) ++ additional_discs
+  def run(lines, additional_discs) do
+    discs = read_data(lines) ++ additional_discs
 
     Stream.iterate(0, &(&1 + 1))
     |> Stream.drop_while(&(!lines_up(discs, &1)))
@@ -23,8 +20,8 @@ defmodule Y2016.Day15 do
 
   # Assumes discs are in order in the file, starting at number 1.
   # Returns a list of {num_positions, start_positions} tuples.
-  defp read_file(file) do
-    input_lines(file)
+  defp read_data(lines) do
+    lines
     |> Enum.map(fn line ->
       [_, num_pos, start_pos] = Regex.run(@input_regex, line)
       {String.to_integer(num_pos), String.to_integer(start_pos)}

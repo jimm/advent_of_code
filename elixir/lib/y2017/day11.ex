@@ -3,21 +3,19 @@
 # http://keekerdc.com/2011/03/hexagon-grids-coordinate-systems-and-distance-calculations/
 
 defmodule Y2017.Day11 do
-  use Common.File
-
-  def part1 do
-    {dest, _} = travel()
+  def part1(_ctx, lines) do
+    {dest, _} = travel(lines)
     astar_distance(dest)
   end
 
-  def part2 do
-    {_, max_dist} = travel()
+  def part2(_ctx, lines) do
+    {_, max_dist} = travel(lines)
     max_dist
   end
 
   # Returns {destination, max_dist}
-  defp travel do
-    read_steps()
+  defp travel(lines) do
+    read_steps(lines)
     |> Enum.reduce({{0, 0, 0}, 0}, fn step, {{x, y, z}, max_dist} ->
       loc = move({x, y, z}, step)
       dist = astar_distance(loc)
@@ -60,8 +58,8 @@ defmodule Y2017.Day11 do
     (abs(ax - bx) + abs(ay - by) + abs(az - bz)) / 2
   end
 
-  defp read_steps do
-    input_lines()
+  defp read_steps(lines) do
+    lines
     |> hd
     |> String.split(",")
     |> Enum.map(&String.to_atom/1)

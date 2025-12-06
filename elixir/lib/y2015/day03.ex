@@ -1,13 +1,12 @@
 # Perfectly Spherical Houses in a Vacuum
 
 defmodule Y2015.Day03 do
-  use Common.File
   require Integer
 
   # received_present_count
-  def run1 do
-    default_input_path()
-    |> File.read!()
+  def part1(_ctx, lines) do
+    lines
+    |> hd
     |> String.codepoints()
     |> locs_and_counts
     |> Map.keys()
@@ -15,10 +14,10 @@ defmodule Y2015.Day03 do
   end
 
   # santa_plus_robo_present_count
-  def run2 do
+  def part2(_ctx, lines) do
     directions_with_indexes =
-      default_input_path()
-      |> File.read!()
+      lines
+      |> hd
       |> String.codepoints()
       |> Enum.with_index()
 

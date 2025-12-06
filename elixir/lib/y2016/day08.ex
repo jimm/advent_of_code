@@ -4,23 +4,19 @@ defmodule Y2016.Day08 do
   @off " "
   @on "#"
 
-  use Common.File
-
-  def run1(file \\ nil) do
-    generate_display(file)
+  def part1(_ctx, lines) do
+    generate_display(lines)
     |> count_on_pixels
   end
 
-  def run2(file \\ nil) do
-    generate_display(file)
+  def part2(_ctx, lines) do
+    generate_display(lines)
     |> print_display
 
     nil
   end
 
-  defp generate_display(file) do
-    lines = (file || default_input_path()) |> input_lines
-
+  defp generate_display(lines) do
     lines
     |> Enum.reduce(init_display(), fn command, display ->
       run_command(command, display)

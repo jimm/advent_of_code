@@ -1,7 +1,6 @@
 # Knot Hash
 
 defmodule Y2017.Day10 do
-  use Common.File
   import Bitwise
 
   @rope_len 256
@@ -10,9 +9,9 @@ defmodule Y2017.Day10 do
 
   @part2_input_suffix [17, 31, 73, 47, 23]
 
-  def part1 do
+  def part1(_ctx, lines) do
     rope = init_rope(@rope_len)
-    {[first, second | _], _, _} = knot(rope, length(rope), read_input_lengths(), 0, 0)
+    {[first, second | _], _, _} = knot(rope, length(rope), read_input_lengths(lines), 0, 0)
     first * second
   end
 
@@ -22,14 +21,10 @@ defmodule Y2017.Day10 do
     first * second
   end
 
-  def part2 do
-    part2(@rope_len, read_input_chars())
-  end
-
-  # For use by the external world.
-  def part2(rope_len, input_charlist) do
+  def part2(_ctx, lines) do
+    rope_len = @rope_len
     rope = init_rope(rope_len)
-    chars = input_charlist ++ @part2_input_suffix
+    chars = read_input_chars(lines) ++ @part2_input_suffix
 
     {sparse_hash, _, _, _} =
       0..63
@@ -44,8 +39,8 @@ defmodule Y2017.Day10 do
 
   # ================ part 1 ================
 
-  defp read_input_lengths do
-    input_lines()
+  defp read_input_lengths(lines) do
+    lines
     |> hd
     |> String.split(",")
     |> Enum.map(&String.to_integer/1)
@@ -53,8 +48,8 @@ defmodule Y2017.Day10 do
 
   # ================ part 2 ================
 
-  defp read_input_chars do
-    input_lines()
+  defp read_input_chars(lines) do
+    lines
     |> hd
     |> String.to_charlist()
   end
