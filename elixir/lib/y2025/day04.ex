@@ -1,56 +1,77 @@
 # ================ Printing Department ================
 
 defmodule Y2025.Day04 do
+  @roll "@"
+
   def part1(_ctx, lines) do
     map = parse_2d(lines)
-    num_cols = length(Enum.at(map, 0))
 
-    0..(length(map) - 1)
-    |> Enum.reduce(0, fn row, row_acc ->
-      0..(num_cols - 1)
-      |> Enum.reduce(row_acc, fn col, col_acc ->
-        col_acc + if(accessable_roll?(map, row, col), do: 1, else: 0)
-      end)
+    map
+    |> Map.keys()
+    |> Enum.reduce(0, fn pos, acc ->
+      acc + if(accessable_roll?(map, pos), do: 1, else: 0)
     end)
   end
 
   def part2(_ctx, lines) do
-    IO.puts(lines)
+    map = parse_2d(lines)
+    count_removables(map)
   end
 
   # ================ helpers ================
 
+  # Returns a map acting as a set. Keys are {row, col} locations of @roll
+  # characters. Values are all 1 but they are ignored.
   defp parse_2d(lines) do
-    Enum.map(lines, &String.codepoints/1)
-  end
-
-  def at(map, row, col) do
-    Enum.at(Enum.at(map, row), col)
-  end
-
-  defp accessable_roll?(map, row, col) do
-    cell = at(map, row, col)
-    cell == "@" and neighbor_count(map, row, col) < 4
-  end
-
-  defp neighbor_count(map, row, col) do
-    num_cols = length(Enum.at(map, 0))
-
-    (row - 1)..(row + 1)
-    |> Enum.reduce(0, fn r, row_acc ->
-      (col - 1)..(col + 1)
-      |> Enum.reduce(row_acc, fn c, col_acc ->
-        if r == row and col == c do
-          col_acc
-        else
-          ok_coords = in_bounds?(length(map), num_cols, r, c)
-          if ok_coords and at(map, r, c) == "@", do: col_acc + 1, else: col_acc
-        end
+    lines
+    |> Enum.with_index()
+    |> Enum.reduce(%{}, fn {line, r}, roll_locs ->
+      line
+      |> String.codepoints()
+      |> Enum.with_index()
+      |> Enum.reduce(roll_locs, fn {cell, c}, acc ->
+        if(cell == @roll, do: Map.put(acc, {r, c}, 1), else: acc)
       end)
     end)
   end
 
-  defp in_bounds?(num_rows, num_cols, r, c) do
-    r >= 0 and c >= 0 and r < num_rows and c < num_cols
+  defp accessable_roll?(map, pos) do
+    neighbor_count(map, pos) < 4
+  end
+
+  defp neighbor_count(map, {row, col}) do
+    (row - 1)..(row + 1)
+    |> Enum.reduce(0, fn r, row_acc ->
+      (col - 1)..(col + 1)
+      |> Enum.reduce(row_acc, fn c, col_acc ->
+        if not (r == row and c == col) and Map.has_key?(map, {r, c}),
+          do: col_acc + 1,
+          else: col_acc
+      end)
+    end)
+  end
+
+  defp count_removables(map) do
+    count_removables(map, find_removables(map), 0)
+  end
+
+  defp count_removables(_, [], total), do: total
+
+  defp count_removables(map, removables, total) do
+    new_map = remove(map, removables)
+    new_movables = find_removables(new_map)
+    count_removables(new_map, new_movables, total + length(removables))
+  end
+
+  def find_removables(map) do
+    map
+    |> Map.keys()
+    |> Enum.reduce([], fn roll_pos, acc ->
+      if accessable_roll?(map, roll_pos), do: [roll_pos | acc], else: acc
+    end)
+  end
+
+  def remove(map, removables) do
+    Map.reject(map, fn {pos, _} -> pos in removables end)
   end
 end

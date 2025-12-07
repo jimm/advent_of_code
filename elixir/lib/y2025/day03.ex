@@ -25,6 +25,8 @@ defmodule Y2025.Day03 do
     end)
   end
 
+  # FIXME this is not implemented properly yet
+
   defp max_joltage_12(line) do
     charges = line |> String.codepoints() |> Enum.map(&String.to_integer/1)
     len = length(charges)
