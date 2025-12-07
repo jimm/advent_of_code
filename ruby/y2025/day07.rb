@@ -41,20 +41,21 @@ class Day07 < Day
 
   def count_timelines(m)
     _, start_col = m.find(START)
-    beam_curr_cols = [start_col]
+    # each entry is {column, number of beams that got here}
+    beam_curr_cols = { start_col => 1 }
     (1..m.height - 1).each do |row|
-      new_curr_cols = []
-      beam_curr_cols.each do |beam_col|
+      new_curr_cols = Hash.new { |h, k| h[k] = 0 }
+      beam_curr_cols.each_pair do |beam_col, num_beams|
         if m.at(row, beam_col) == SPLITTER
-          new_curr_cols << beam_col - 1
-          new_curr_cols << beam_col + 1
+          new_curr_cols[beam_col - 1] += num_beams
+          new_curr_cols[beam_col + 1] += num_beams
         else
-          new_curr_cols << beam_col
+          new_curr_cols[beam_col] += num_beams
         end
       end
       beam_curr_cols = new_curr_cols
     end
-    beam_curr_cols.length
+    beam_curr_cols.map(&:last).sum
   end
 end
 
