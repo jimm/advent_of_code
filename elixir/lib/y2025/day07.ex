@@ -23,7 +23,7 @@ defmodule Y2025.Day07 do
   end
 
   defp count_splits_from_start(manifold) do
-    beam_cols = [start_column(manifold)]
+    beam_cols = MapSet.new([start_column(manifold)])
     count_splits_from_start(tl(manifold), beam_cols, 0)
   end
 
@@ -32,18 +32,18 @@ defmodule Y2025.Day07 do
   defp count_splits_from_start([row | manifold], beam_cols, total_splits) do
     {new_beam_cols, new_total_splits} =
       beam_cols
-      |> Enum.reduce({%{}, total_splits}, fn beam_col, {cols_map, tsplits} ->
+      |> Enum.reduce({MapSet.new(), total_splits}, fn beam_col, {cols_set, tsplits} ->
         if Enum.at(row, beam_col) == @splitter do
           {
-            cols_map |> Map.put(beam_col - 1, true) |> Map.put(beam_col + 1, true),
+            cols_set |> MapSet.put(beam_col - 1) |> MapSet.put(beam_col + 1),
             tsplits + 1
           }
         else
-          {Map.put(cols_map, beam_col, true), tsplits}
+          {MapSet.put(cols_set, beam_col), tsplits}
         end
       end)
 
-    count_splits_from_start(manifold, Map.keys(new_beam_cols), new_total_splits)
+    count_splits_from_start(manifold, new_beam_cols, new_total_splits)
   end
 
   defp count_timelines(manifold) do
@@ -60,12 +60,14 @@ defmodule Y2025.Day07 do
     new_beam_cols =
       beam_cols
       |> Enum.reduce(%{}, fn {col, num_beams}, new_cols ->
+        add_other_beams = fn curr -> curr + num_beams end
+
         if Enum.at(row, col) == @splitter do
           new_cols
-          |> Map.put(col - 1, Map.get(new_cols, col - 1, 0) + num_beams)
-          |> Map.put(col + 1, Map.get(new_cols, col + 1, 0) + num_beams)
+          |> Map.update(col - 1, num_beams, add_other_beams)
+          |> Map.update(col + 1, num_beams, add_other_beams)
         else
-          Map.put(new_cols, col, Map.get(new_cols, col, 0) + num_beams)
+          Map.update(new_cols, col, num_beams, add_other_beams)
         end
       end)
 
