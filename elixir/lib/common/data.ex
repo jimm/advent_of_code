@@ -1,21 +1,39 @@
 defmodule Common.Data do
   @doc """
-
   Returns the path to the data file, using `part_number` instead of
   `ctx.part`. If `part_number` is nil, the file name won't contain the part
   number.
+
+  ## Examples
+
+  iex> Common.Data.data_file_path(%{year: 2025, day: 1, test: false}, 1)
+  "../data/y2025/day01_1.txt"
+
+  iex> Common.Data.data_file_path(%{year: 2025, day: 1, test: true}, 2)
+  "../data/y2025/day01_2_test.txt"
+
+  iex> Common.Data.data_file_path(%{year: 2025, day: 15, test: false}, 1)
+  "../data/y2025/day15_1.txt"
+
+  iex> Common.Data.data_file_path(%{year: 2025, day: 1, test: false}, nil)
+  "../data/y2025/day01.txt"
+
+  iex> Common.Data.data_file_path(%{year: 2025, day: 1, test: true}, nil)
+  "../data/y2025/day01_test.txt"
   """
   def data_file_path(ctx, part_number) do
-    fname = [
-      "day",
-      if(ctx.day < 10, do: "0"),
-      ctx.day,
-      if(part_number, do: "_#{part_number}"),
-      if(ctx.test, do: "_test"),
-      ".txt"
-    ]
+    fname =
+      [
+        "day",
+        if(ctx.day < 10, do: "0"),
+        ctx.day,
+        if(part_number, do: "_#{part_number}"),
+        if(ctx.test, do: "_test"),
+        ".txt"
+      ]
+      |> Enum.join()
 
-    ~s{../data/y#{ctx.year}/#{Enum.join(fname)}}
+    "../data/y#{ctx.year}/#{fname}"
   end
 
   @doc """
@@ -41,8 +59,8 @@ defmodule Common.Data do
   end
 
   @doc """
-  Returns non-empty lines from the data file for year, day, and part_number.
-  If there is no data file, returns nil.
+  Returns lines from the data file for year, day, and part_number. If there
+  is no data file, returns nil.
 
   Normally, empty lines are skipped but if `skip_empty_lines` is false
   then they're returned as well.

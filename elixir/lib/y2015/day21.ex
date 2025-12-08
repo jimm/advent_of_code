@@ -1,7 +1,7 @@
 # RPG Simulator 20XX
 
 defmodule Y2015.Day21 do
-  import Common.Set
+  alias Common.Enum, as: CE
 
   @run1_player_data %{
     hp: 100,
@@ -55,13 +55,14 @@ defmodule Y2015.Day21 do
       fight(equip(@run1_player_data, equipment), @run1_boss_data) == :player
     end)
     |> Enum.map(fn equipment ->
-      equipment |> Enum.map(&(&1.cost)) |> Enum.sum
+      equipment |> Enum.map(& &1.cost) |> Enum.sum()
     end)
-    |> Enum.min
+    |> Enum.min()
   end
 
   def run1_test do
     winner = fight(@run1_player_test_data, @run1_boss_test_data)
+
     if winner == :player do
       IO.puts("ok")
     else
@@ -75,48 +76,59 @@ defmodule Y2015.Day21 do
       fight(equip(@run1_player_data, equipment), @run1_boss_data) == :boss
     end)
     |> Enum.map(fn equipment ->
-      equipment |> Enum.map(&(&1.cost)) |> Enum.sum
+      equipment |> Enum.map(& &1.cost) |> Enum.sum()
     end)
-    |> Enum.max
+    |> Enum.max()
   end
 
   defp equipment_combinations do
-    item_to_list = &([&1])
+    item_to_list = &[&1]
     weapon_combinations = Enum.map(@weapons, item_to_list)
     armor_combinations = [[]] ++ Enum.map(@armor_sets, item_to_list)
-    ring_combinations = [[]] ++ Enum.map(@rings, item_to_list) ++ combinations(@rings, 2)
-    weapon_combinations |> Enum.map(fn ws ->
-      armor_combinations |> Enum.map(fn as ->
-        ring_combinations |> Enum.map(fn rs ->
-          {(ws ++ as ++ rs) |> List.flatten}
+    ring_combinations = [[]] ++ Enum.map(@rings, item_to_list) ++ CE.combinations(@rings, 2)
+
+    weapon_combinations
+    |> Enum.map(fn ws ->
+      armor_combinations
+      |> Enum.map(fn as ->
+        ring_combinations
+        |> Enum.map(fn rs ->
+          {(ws ++ as ++ rs) |> List.flatten()}
         end)
       end)
     end)
-    |> List.flatten
-    |> Enum.map(&(elem(&1, 0)))
+    |> List.flatten()
+    |> Enum.map(&elem(&1, 0))
   end
 
   defp equip(player_data, equipment) do
-    total_damage = equipment |> Enum.map(&(&1.damage)) |> Enum.sum
-    total_armor = equipment |> Enum.map(&(&1.armor)) |> Enum.sum
-    %{player_data |
-      damage: player_data.damage + total_damage,
-      armor: player_data.damage + total_armor}
+    total_damage = equipment |> Enum.map(& &1.damage) |> Enum.sum()
+    total_armor = equipment |> Enum.map(& &1.armor) |> Enum.sum()
+
+    %{
+      player_data
+      | damage: player_data.damage + total_damage,
+        armor: player_data.damage + total_armor
+    }
   end
 
   defp fight(player, boss) do
     fight(:player, player, boss)
   end
+
   defp fight(_, %{hp: player_hp}, _) when player_hp <= 0 do
     :boss
   end
+
   defp fight(_, _, %{hp: boss_hp}) when boss_hp <= 0 do
     :player
   end
+
   defp fight(:player, player, boss) do
     damage = Enum.max([1, player.damage - boss.armor])
     fight(:boss, player, %{boss | hp: boss.hp - damage})
   end
+
   defp fight(:boss, player, boss) do
     damage = Enum.max([1, boss.damage - player.armor])
     fight(:player, %{player | hp: player.hp - damage}, boss)

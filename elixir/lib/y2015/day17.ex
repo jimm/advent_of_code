@@ -3,7 +3,7 @@
 defmodule Y2015.Day17 do
   @liters 150
 
-  alias Common.Set
+  alias Common.Enum, as: CE
 
   def part1(_ctx, lines) do
     liters = @liters
@@ -38,7 +38,7 @@ defmodule Y2015.Day17 do
 
   def fit_count(containers, k, liters, count) do
     matches =
-      Set.combinations(containers, k)
+      CE.combinations(containers, k)
       |> Enum.filter(fn perm -> liters == Enum.sum(perm) end)
       |> length
 
@@ -52,7 +52,7 @@ defmodule Y2015.Day17 do
   def min_fit_count(containers, _, k) when k > length(containers), do: 0
 
   def min_fit_count(containers, liters, k) do
-    combis = Set.combinations(containers, k)
+    combis = CE.combinations(containers, k)
 
     matches =
       combis

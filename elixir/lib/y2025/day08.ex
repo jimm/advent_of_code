@@ -1,7 +1,7 @@
 # ================ Playground ================
 
 defmodule Y2025.Day08 do
-  import Common.Set
+  alias Common.Enum, as: CE
 
   def part1(ctx, lines) do
     coords = parse_3d(lines)
@@ -16,7 +16,7 @@ defmodule Y2025.Day08 do
     |> Enum.sort_by(&MapSet.size/1, :desc)
     |> Enum.take(3)
     |> Enum.map(&MapSet.size/1)
-    |> Enum.reduce(&(&1 * &2))
+    |> Enum.product()
   end
 
   def part2(_ctx, lines) do
@@ -58,25 +58,33 @@ defmodule Y2025.Day08 do
     end
   end
 
-  def add_coords_to_circuits(c0, c1, circuits) do
+  # Given two coordinates and a list of all existing circuits, "connects"
+  # the two coordinates by placing them in the proper circuits, possibly
+  # creating a new circuit. Returns the new list of circuits.
+  defp add_coords_to_circuits(c0, c1, circuits) do
     c0_circuit = Enum.find(circuits, fn circuit -> MapSet.member?(circuit, c0) end)
     c1_circuit = Enum.find(circuits, fn circuit -> MapSet.member?(circuit, c1) end)
 
     case {c0_circuit, c1_circuit} do
+      # create a new circuit
       {nil, nil} ->
         circuits |> MapSet.put(MapSet.new([c0, c1]))
 
+      # add c0 to c1's circuit
       {nil, c1c} ->
         c1c = MapSet.put(c1c, c0)
         circuits |> MapSet.put(c1c) |> MapSet.delete(c1_circuit)
 
+      # add c1 to c0's circuit
       {c0c, nil} ->
         c0c = MapSet.put(c0c, c1)
         circuits |> MapSet.put(c0c) |> MapSet.delete(c0_circuit)
 
+      # both already in a circuit together
       {cc, cc} ->
         circuits
 
+      # merge the two circuits into one
       {c0c, c1c} ->
         circuits
         |> MapSet.put(MapSet.union(c0c, c1c))
@@ -85,12 +93,15 @@ defmodule Y2025.Day08 do
     end
   end
 
+  # Returns a list of all combinations of coords as {coord, coord,
+  # squared_distance} tuples.
   defp pairs_and_distances_between(coords) do
     coords
-    |> combinations(2)
+    |> CE.combinations(2)
     |> Enum.map(fn [c0, c1] -> {c0, c1, squared_dist(c0, c1)} end)
   end
 
+  # Returns the squared distance between two coords.
   defp squared_dist({x0, y0, z0}, {x1, y1, z1}) do
     dx = abs(x1 - x0)
     dy = abs(y1 - y0)
@@ -98,11 +109,12 @@ defmodule Y2025.Day08 do
     dx * dx + dy * dy + dz * dz
   end
 
-  # Returns a list of {x, y, z} tuples
+  # Returns a list of {x, y, z} tuples.
   defp parse_3d(lines) do
     lines |> Enum.map(&line_to_coords_tuple/1)
   end
 
+  # Converts a single line into an {x, y, z} tuple.
   defp line_to_coords_tuple(line) do
     line
     |> String.split(",")

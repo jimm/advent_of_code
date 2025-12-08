@@ -1,6 +1,19 @@
 defmodule Common.AoC do
+  @moduledoc """
+  Functions for running an AoC solution and its tests. See
+  [README.md](README.md) and [../README.md](../README.md) and run `../aoc
+  --help` for more information.
+  """
+
   import Common.{Context, Data}
 
+  @doc """
+  Parses options, creates a context, and calls the proper `part<N>` module
+  function.
+
+  If the `--test` switch is given, runs `run_test_chunks/2` which in turn
+  runs the part function for each test.
+  """
   def run do
     OptionParser.parse_head(System.argv(),
       strict: [
@@ -45,6 +58,9 @@ defmodule Common.AoC do
     end
   end
 
+  @doc """
+  Runs each test chunk and outputs any failure messages.
+  """
   def run_test_chunks(ctx, func) do
     results =
       for chunk <- read_test_chunks(ctx) do
@@ -77,23 +93,21 @@ defmodule Common.AoC do
   # is the expected line, minus the delimter and any leading whitespace, and
   # the second element is the array of strings contains the data lines for
   # that test.
-  def read_test_chunks(ctx) do
+  defp read_test_chunks(ctx) do
     data = data_lines(ctx, false)
     expected_line_char = data |> hd |> :binary.at(0)
     chunkify(data, expected_line_char, nil, [])
   end
 
-  @doc """
-  Breaks up data lines into {expected, [lines]} chunks
-  """
-  def chunkify([], _, curr_chunk, chunks) do
+  # Breaks up data lines into {expected, [lines]} chunks.
+  defp chunkify([], _, curr_chunk, chunks) do
     # Both the chunks and the lines within them are reversed. Undo that.
     [curr_chunk | chunks]
     |> Enum.reverse()
     |> Enum.map(fn {expected_vals, lines} -> {expected_vals, Enum.reverse(lines)} end)
   end
 
-  def chunkify([line | rest], expected_line_char, curr_chunk, chunks) do
+  defp chunkify([line | rest], expected_line_char, curr_chunk, chunks) do
     {new_curr_chunk, new_chunks} =
       if line != "" and :binary.at(line, 0) == expected_line_char do
         # expected values line, start of a new chunk
@@ -114,8 +128,10 @@ defmodule Common.AoC do
     chunkify(rest, expected_line_char, new_curr_chunk, new_chunks)
   end
 
-  # Returns :ok if all is well, else returns an {expected, answer} tuple.
-  def run_chunk_test(ctx, {expected_values, data_lines}, func) do
+  # Runs a single chunk test by calling `func` with `data_lines`. Outputs
+  # "." and returns :ok if all is well, else outputs "f" and returns an
+  # {expected, answer} tuple.
+  defp run_chunk_test(ctx, {expected_values, data_lines}, func) do
     expected = Enum.at(expected_values, ctx.part - 1)
     answer = "#{func.(ctx, data_lines)}"
 

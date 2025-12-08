@@ -1,7 +1,7 @@
 # Corruption Checksum
 
 defmodule Y2017.Day02 do
-  alias Common.Set
+  alias Common.Enum, as: CE
 
   def part1(_ctx, lines) do
     lines
@@ -35,7 +35,7 @@ defmodule Y2017.Day02 do
   def find_integer_divisor(nums) do
     pair =
       nums
-      |> Set.combinations(2)
+      |> CE.combinations(2)
       |> Enum.find(fn pair ->
         {min, max} = Enum.min_max(pair)
         rem(max, min) == 0

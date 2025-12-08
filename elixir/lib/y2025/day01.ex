@@ -31,7 +31,6 @@ defmodule Y2025.Day01 do
       case direction do
         "R" -> 1
         "L" -> -1
-        _ -> raise "bad direction"
       end
 
     [pos, num_zeroes] =

@@ -1,5 +1,5 @@
 defmodule Y2016.Day11 do
-  alias Common.Set, as: CS
+  alias Common.Enum, as: CE
 
   @too_many_steps 999_999_999
 
@@ -64,7 +64,7 @@ defmodule Y2016.Day11 do
     floor = floor_contents(floors, elevator_floor)
     # DEBUG
     loadings =
-      (CS.combinations(floor, 2) ++ CS.combinations(floor, 1))
+      (CE.combinations(floor, 2) ++ CE.combinations(floor, 1))
       |> IO.inspect(label: "loadings elev floor #{elevator_floor}")
 
     next_floors = adjacent_floors(elevator_floor)

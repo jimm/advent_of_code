@@ -1,12 +1,14 @@
-defmodule Common.Set do
+defmodule Common.Enum do
   @moduledoc """
-  Set permutation and combination.
+  Enumerable permutation and combination.
   """
 
   @doc """
-  N things taken N at a time.
+  N things taken N at a time. See also `permutations/2`.
 
-      iex> Set.permutations([1, 2, 3]) |> Enum.sort
+  ## Examples
+
+      iex> Common.Enum.permutations([1, 2, 3]) |> Enum.sort
       [[1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]]
   """
   def permutations(xs), do: permutations(xs, length(xs))
@@ -14,18 +16,21 @@ defmodule Common.Set do
   @doc """
   N things taken K at a time.
 
-      iex> Set.permutations([1, 2, 3], 3) |> Enum.sort
+  ## Examples
+
+      iex> Common.Enum.permutations([1, 2, 3], 3) |> Enum.sort
       [[1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]]
 
-      iex> Set.permutations([1, 2, 3], 2) |> Enum.sort
+      iex> Common.Enum.permutations([1, 2, 3], 2) |> Enum.sort
       [[1, 2], [1, 3], [2, 1], [2, 3], [3, 1], [3, 2]]
 
-      iex> (0..5) |> Enum.map(fn k -> Set.permutations([1, 2, 3, 4, 5], k) |> length end)
+      iex> alias Common.Enum, as: CE
+      iex> (0..5) |> Enum.map(&(CE.permutations([1, 2, 3, 4, 5], &1) |> length))
       [1, 5, 20, 60, 120, 120]
 
-  Equal values are treated as distinct. 
+  Equal values are treated as distinct.
 
-      iex> Set.permutations([1, 2, 3, 4, 3], 2)
+      iex> Common.Enum.permutations([1, 2, 3, 4, 3], 2)
       [[1, 2], [1, 3], [1, 4], [1, 3],
        [2, 1], [2, 3], [2, 4], [2, 3],
        [3, 1], [3, 2], [3, 4], [3, 3],
@@ -45,20 +50,21 @@ defmodule Common.Set do
   @doc """
   All combinations of K elements of the given list.
 
-      iex> Set.combinations([1, 2, 3], 3) |> Enum.sort
+      iex> Common.Enum.combinations([1, 2, 3], 3) |> Enum.sort
       [[1, 2, 3]]
 
-      iex> Set.combinations([1, 2, 3, 4], 2) |> Enum.sort
+      iex> Common.Enum.combinations([1, 2, 3, 4], 2) |> Enum.sort
       [[1, 2], [1, 3], [1, 4],
        [2, 3], [2, 4],
        [3, 4]]
 
-      iex> (0..5) |> Enum.map(fn k -> Set.combinations([1, 2, 3, 4, 5], k) |> length end)
+      iex> alias Common.Enum, as: CE
+      iex> (0..5) |> Enum.map(fn k -> CE.combinations([1, 2, 3, 4, 5], k) |> length end)
       [1, 5, 10, 10, 5, 1]
 
   Equal values are treated as distinct. 
 
-      iex> Set.combinations([1, 3, 3, 4], 2) |> Enum.sort
+      iex> Common.Enum.combinations([1, 3, 3, 4], 2) |> Enum.sort
       [[1, 3], [1, 3], [1, 4],
        [3, 3], [3, 4],
        [3, 4]]
