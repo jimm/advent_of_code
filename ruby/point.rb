@@ -29,9 +29,9 @@ class Point
   # When other == nil, this returns the distance squared from the origin.
   def distance_squared(other = nil)
     other ||= ORIGIN
-    dx = (other.x - @x)
-    dy = (other.y - @y)
-    dz = (other.z - @z)
+    dx = (other.x - @x).abs
+    dy = (other.y - @y).abs
+    dz = (other.z - @z).abs
     (dx * dx) + (dy * dy) + (dz * dz)
   end
 
