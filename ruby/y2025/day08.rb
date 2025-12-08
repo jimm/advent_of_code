@@ -28,7 +28,7 @@ class Day08 < Day
   private
 
   # Recursively connects coords and add to the proper circuits, creating and
-  # merging circuits when necessary. Returnss the resulting circuits after
+  # merging circuits when necessary. Returns the resulting circuits after
   # `num_iters`.
   def create_circuits(coords_and_dists, num_iters, circuits)
     return circuits if num_iters == 0
