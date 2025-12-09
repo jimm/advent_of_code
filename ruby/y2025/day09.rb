@@ -13,7 +13,7 @@ class Day09 < Day
       .max
   end
 
-  # A rectangle is an array of [x_min, x_max, y_min, y_max].
+  # A rectangle is an array of [x_min, y_min, x_max, y_max].
   # An edge is an array of [p0_x, p0_y, p1_x, p1_y].
   def do_part2(lines)
     red_tiles = parse_2d(lines)
@@ -28,7 +28,6 @@ class Day09 < Day
     red_tiles
       .combination(2)                     # two-corner pairs of rect corners
       .map { |p0, p1| rect_from(p0, p1) } # produce array of [x_min, y_min, x_max, y_max]
-      # .select { |rect| rect == [2, 1, 11, 5] }
       .each do |rect| # calc area, if > max and in-bounds save area else reject
         area = rect_area(rect)
         max_area = area if (area > max_area) && !crosses_any_edge?(rect, edges)
