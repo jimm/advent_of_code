@@ -17,9 +17,6 @@ class Day09 < Day
   # An edge is an array of [p0_x, p0_y, p1_x, p1_y].
   def do_part2(lines)
     red_tiles = parse_2d(lines)
-    # edges = red_tiles.each_cons(2).to_a + [[red_tiles[-1], red_tiles[0]]]
-    # horiz_edges, vert_edges = edges.partition { |edge| edge[0].y == edge[1].y }
-
     edges = (red_tiles.each_cons(2).to_a + [[red_tiles[-1], red_tiles[0]]])
             .map do |p0, p1|
       x_min, x_max = [p0, p1].map(&:x).minmax

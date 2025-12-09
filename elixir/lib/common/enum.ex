@@ -48,7 +48,7 @@ defmodule Common.Enum do
   end
 
   @doc """
-  All combinations of K elements of the given list.
+  All combinations of K elements of the given `Enumerable`.
 
       iex> Common.Enum.combinations([1, 2, 3], 3) |> Enum.sort
       [[1, 2, 3]]
@@ -80,5 +80,29 @@ defmodule Common.Enum do
       end
 
     with_h ++ combinations(t, k)
+  end
+
+  @doc """
+  Returns "windows" of values from an `Enumerable` of length `n`.
+
+  ## Examples
+
+      iex> Common.Enum.window([1, 2, 3, 4, 5], 2)
+      [[1, 2], [2, 3], [3, 4], [4, 5]]
+
+      iex> Common.Enum.window([1], 4)
+      []
+
+      iex> Common.Enum.window([], 4)
+      []
+  """
+  def window(xs, n), do: window(xs, n, [])
+
+  def window([], _, _), do: []
+
+  def window(xs, n, results) when length(xs) < n, do: Enum.reverse(results)
+
+  def window(xs, n, results) do
+    window(tl(xs), n, [Enum.take(xs, n) | results])
   end
 end
