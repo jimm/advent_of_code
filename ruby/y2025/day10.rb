@@ -29,6 +29,10 @@ class Day10 < Day
       0 # will never reach
     end
 
+    def to_s
+      "Machine(l=#{@lights.inspect}, w=#{@wiring.inspect}, j=#{@joltage.inspect})"
+    end
+
     # ================ configuration ================
 
     def configurable_with_n_presses?(n)
@@ -46,25 +50,35 @@ class Day10 < Day
     # ================ joltage settings ================
 
     def joltage_set_with_n_presses?(n)
-      @wiring.combination(n).any? { |schematic| sets_joltage?(schematic) }
+      max_presses = @wiring.map do |buttons|
+        buttons.map { |button| @joltage[button] }.min
+      end
+      @wiring.combination(n).any? { |schematic| sets_joltage?(max_schematic, max_presses) }
     end
 
     # Returns true of the button presses in `schematic` can result in our
     # desired @joltages.
-    def sets_joltage?(schematic)
-      # FIXME: doesn't account for number of button presses; always presses each button once
+    #
+    # `max_presses` is an optimization: a pre-calculated map from wiring
+    # (e.g. [3, 5]) to max number of times it can be pressed before one of
+    # the joltages will be exceeded.
+    def sets_joltage?(schematic, max_presses)
       after_joltages = schematic.flatten.tally
-      return false if after_joltages.length != @joltage.length
+
+      # Find out max number of times each button can be pressed
+      schematic.map { |buttons| max_presses(buttons) }
+
+      # We can drop early if there is some desired joltage but no
+      # corresponding button
+      return false if after_joltages.keys.length != @joltage.length
+
+      # FIXME: doesn't account for number of button presses; always presses each button once
 
       @joltage.each_with_index { |j, i| return false if after_joltages[i] != j }
       true
     end
 
     # ================ misc ================
-
-    def to_s
-      "Machine(l=#{@lights.inspect}, w=#{@wiring.inspect}, j=#{@joltage.inspect})"
-    end
   end
 
   def do_part1(lines)
