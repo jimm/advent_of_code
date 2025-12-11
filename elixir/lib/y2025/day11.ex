@@ -1,6 +1,8 @@
 # ================ Reactor ================
 
 defmodule Y2025.Day11 do
+  alias Common.MapCache, as: Cache
+
   def part1(_ctx, lines) do
     conns = parse_connections(lines)
     num_paths_you_to_out(conns)
@@ -47,9 +49,9 @@ defmodule Y2025.Day11 do
   # Returns number of paths from `from` to :out. Uses `cache`. Assumes no
   # cycles.
   defp num_paths_from_to(from, to, conns) do
-    {:ok, cache} = Agent.start_link(fn -> %{} end, name: __MODULE__)
+    {:ok, cache} = Cache.start_link()
     num = num_paths_from_to(from, to, conns, cache)
-    Agent.stop(cache)
+    Cache.stop(cache)
     num
   end
 
@@ -65,16 +67,7 @@ defmodule Y2025.Day11 do
     else
       children
       |> Enum.map(fn child ->
-        cache_key = [child, to]
-        cached = Agent.get(cache, fn state -> Map.get(state, cache_key) end)
-
-        if cached == nil do
-          cached = num_paths_from_to(child, to, conns, cache)
-          Agent.update(cache, fn state -> Map.put(state, cache_key, cached) end)
-          cached
-        else
-          cached
-        end
+        Cache.get_lazy(cache, [child, to], fn -> num_paths_from_to(child, to, conns, cache) end)
       end)
       |> Enum.sum()
     end
