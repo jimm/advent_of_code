@@ -7,37 +7,67 @@ require_relative '../day'
 class Day11 < Day
   def do_part1(lines)
     conns = parse_connections(lines)
-    num_paths_from(:you, conns)
+    num_paths_you_to_out(conns)
   end
 
   def do_part2(lines)
     conns = parse_connections(lines)
-    paths_from(:svr, conns, [], [])
-      .select { |path| path.include?(:dac) && path.include?(:fft) }
-      .length
+    num_paths_through_dac_and_fft(:svr, conns)
   end
 
   private
 
-  # Returns number of paths from node to :out. Assumes no cycles.
-  def num_paths_from(node, conns)
-    return 1 if node == :out
-
-    children = conns[node]
-    children.map { |child| num_paths_from(child, conns) }.sum
+  def num_paths_you_to_out(conns)
+    clear_cache
+    num_paths_from_to(:you, :out, conns)
   end
 
-  # Returns all paths from node to :out. Assumes no cycles.
-  def paths_from(node, conns, curr_path, paths)
-    curr_path << node
-    if node == :out
-      paths << curr_path
-      return
+  # We first count the number of paths from dac->fft or fft->dac (one of
+  # those will be zero). That tells us which needs to come first. Then we
+  # count the paths from :svr (the start) to that, and from the other to
+  # :out. We have three path counts. Multiply them, and that's our answer.
+  def num_paths_through_dac_and_fft(from, conns)
+    clear_cache
+    # one of these two, dac->fft or fft->dac, will be zero
+    dac_to_fft = num_paths_from_to(:dac, :fft, conns)
+    fft_to_dac = if dac_to_fft == 0
+                   clear_cache
+                   num_paths_from_to(:fft, :dac, conns)
+                 else
+                   0
+                 end
+    if dac_to_fft > 0
+      clear_cache
+      before = num_paths_from_to(:svr, :dac, conns)
+      clear_cache
+      after = num_paths_from_to(:fft, :out, conns)
+      before * dac_to_fft * after
+    else
+      clear_cache
+      before = num_paths_from_to(:svr, :fft, conns)
+      clear_cache
+      after = num_paths_from_to(:dac, :out, conns)
+      before * fft_to_dac * after
     end
+  end
 
-    children = conns[node]
-    children.each { |child| paths_from(child, conns, curr_path.dup, paths) }
-    paths
+  # Returns number of paths from `from` to :out. Uses `@cache`. Assumes no
+  # cycles.
+  def num_paths_from_to(from, to, conns)
+    return 1 if from == to
+    return 0 if from == :out && to != :out
+
+    children = conns[from]
+    return 1 if children.nil?
+
+    children.map do |child|
+      cached = @cache[[child, to]]
+      if cached.nil?
+        cached = num_paths_from_to(child, to, conns)
+        @cache[[child, to]] = cached
+      end
+      cached
+    end.sum
   end
 
   def parse_connections(lines)
@@ -48,6 +78,10 @@ class Day11 < Day
       conns[node.to_sym] = outputs.map(&:to_sym)
     end
     conns
+  end
+
+  def clear_cache
+    @cache = {}
   end
 end
 
