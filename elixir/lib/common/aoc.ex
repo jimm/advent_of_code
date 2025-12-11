@@ -132,7 +132,13 @@ defmodule Common.AoC do
   # "." and returns :ok if all is well, else outputs "f" and returns an
   # {expected, answer} tuple.
   defp run_chunk_test(ctx, {expected_values, data_lines}, func) do
-    expected = Enum.at(expected_values, ctx.part - 1)
+    expected_idx =
+      case ctx.part do
+        1 -> 0
+        2 -> if length(expected_values) > 1, do: 1, else: 0
+      end
+
+    expected = Enum.at(expected_values, expected_idx)
     answer = "#{func.(ctx, data_lines)}"
 
     if expected == answer do

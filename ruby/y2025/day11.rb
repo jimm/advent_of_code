@@ -12,7 +12,7 @@ class Day11 < Day
 
   def do_part2(lines)
     conns = parse_connections(lines)
-    num_paths_through_dac_and_fft(:svr, conns)
+    num_paths_through_dac_and_fft(conns)
   end
 
   private
@@ -26,7 +26,7 @@ class Day11 < Day
   # those will be zero). That tells us which needs to come first. Then we
   # count the paths from :svr (the start) to that, and from the other to
   # :out. We have three path counts. Multiply them, and that's our answer.
-  def num_paths_through_dac_and_fft(from, conns)
+  def num_paths_through_dac_and_fft(conns)
     clear_cache
     # one of these two, dac->fft or fft->dac, will be zero
     dac_to_fft = num_paths_from_to(:dac, :fft, conns)
