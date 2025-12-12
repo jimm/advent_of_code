@@ -116,11 +116,13 @@ class Day
     # data file for part 1.
     chunks = begin
       test_chunks(part_number)
-    rescue StandardError
+    rescue StandardError => e
+      puts e
       if part_number == 2
         begin
           test_chunks(1)
-        rescue StandardError
+        rescue StandardError => e
+          puts e
           no_tests
         end
       else

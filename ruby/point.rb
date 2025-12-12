@@ -26,6 +26,9 @@ class Point
 
   def eql?(other) = self == other
 
+  # Returns a new point whose coordinates are the sum of ours and `other`'s.
+  def +(other) = Point.new(@x + other.x, @y + other.y, @z + other.z)
+
   # When other == nil, this returns the distance squared from the origin.
   def distance_squared(other = nil)
     other ||= ORIGIN
