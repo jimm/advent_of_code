@@ -22,11 +22,11 @@ class Day10 < Day
     end
 
     def min_joltage_press_count
-      pdebug
-      (0..nil).each do |n|
-        return n if joltage_set_with_n_presses?(n)
-        return 0 if $DEBUG && n >= 13
+      @max_presses = {}
+      @wiring.each do |buttons|
+        @max_presses[buttons] = buttons.map { |button| @joltage[button] || 0 }.min
       end
+      min_presses_to_joltage
     end
 
     def to_s
@@ -49,57 +49,55 @@ class Day10 < Day
 
     # ================ joltage settings ================
 
-    def joltage_set_with_n_presses?(n)
-      max_presses = {}
-      @wiring.each do |buttons|
-        max_presses[buttons] = buttons.map { |button| @joltage[button] || 0 }.min
-      end
-      sets_joltage?(@wiring, max_presses)
-      @wiring.combination(n).any? { |schematic| sets_joltage?(schematic, max_presses) }
+    # Returns the min number of schematics presses needed to achieve
+    # `@joltage`. Returns nil if it's not possible.
+    def min_presses_to_joltage
+      min_presses(@wiring, 0, [0] * @joltage.length)
     end
 
-    # Returns true if the button presses in `schematic` can result in our
-    # desired @joltages.
+    # FIXME: need to compare returned with min so far, and also need to bail
+    # early if reach min so far.
+
+    # Returns the total number of schematics presses needed to achieve
+    # `@joltage`, recursively. Returns nil if it's not possible.
     #
-    # `max_presses` is an optimization: a pre-calculated map from wiring
+    # `@max_presses` is an optimization: a pre-calculated map from wiring
     # schematics (e.g. [3, 5]) to max number of times it can be pressed
     # before one of the joltages will be exceeded.
-    def sets_joltage?(schematic, max_presses, curr_joltage = nil)
-      return false unless covers_joltage_slots?(schematic)
+    def min_presses(schematics, num_presses, curr_joltage)
+      return num_presses if @joltage == curr_joltage
+      return nil if schematics.empty?
+      return nil if (0...@joltage.length).any? { |i| curr_joltage[i] > @joltage[i] }
 
-      do_sets_joltage?(schematic, max_presses, [0] * @joltage.length)
-    end
+      rest = schematics[1..]
 
-    def do_sets_joltage?(schematic, max_presses, curr_joltage)
-      return @joltage == curr_joltage if schematic.empty?
-      return false if (0...@joltage.length).any? { |i| curr_joltage[i] > @joltage[i] }
+      # zero presses of the first set of buttons
+      n = min_presses(rest, num_presses, curr_joltage)
+      return n unless n.nil?
 
-      warn "sets_joltage? schematic = #{schematic.inspect}, curr_joltage = #{curr_joltage.inspect}" # DEBUG
-      return true if curr_joltage == @joltage
+      # Try pressing the first schematic 1..max times and see if the
+      # remaining schematics will get us to our solution.
+      buttons = schematics[0]
+      @max_presses[buttons].times do
+        # build new joltage obtained after pressing buttons
+        new_joltage = press(buttons, curr_joltage)
+        n = min_presses(rest, num_presses + 1, new_joltage)
+        return n unless n.nil?
 
-      # TODO: shortcut: at top level (so need to split this func) return
-      # false if schematic does not include all buttons needed for non-zero
-      # joltage values.
-
-      # make sure we've not exceeded any required @joltage value
-      curr_joltage.each_with_index { |j, i| return false if @joltage[i] < j }
-
-      # For each of the buttons try pressing it 1..max times and applying
-      # the rest of the buttons.
-      schematic.each_with_index do |buttons, schematic_idx|
-        max_for_buttons = max_presses[buttons]
-        0.upto(max_for_buttons).each do |press_num|
-          # build new joltage obtained after pressing buttons
-          new_joltage = press(buttons, curr_joltage)
-          # warn "  new_joltage = #{new_joltage.inspect}" # DEBUG
-          return true if do_sets_joltage?(schematic[schematic_idx + 1..], max_presses, new_joltage)
-
-          curr_joltage = new_joltage
-        end
+        curr_joltage = new_joltage
       end
-      false
+      nil
     end
 
+    # Presses `buttons` with `curr_joltage` and returns a new joltage array
+    def press(buttons, curr_joltage)
+      new_joltage = curr_joltage.dup
+      buttons.each { |button| new_joltage[button] += 1 }
+      new_joltage
+    end
+
+    # Returns true if all of the buttons needed by @joltage are included in
+    # `schematic`.
     def covers_joltage_slots?(schematic)
       buttons_in_schematic = schematic.flatten.uniq.sort
       nonzero_schematic_indexes = []
@@ -107,14 +105,6 @@ class Day10 < Day
       nonzero_schematic_indexes.sort!
       buttons_in_schematic == nonzero_schematic_indexes
     end
-
-    def press(buttons, curr_joltage)
-      new_joltage = curr_joltage.dup
-      buttons.each { |button| new_joltage[button] += 1 }
-      new_joltage
-    end
-
-    # ================ misc ================
   end
 
   def do_part1(lines)

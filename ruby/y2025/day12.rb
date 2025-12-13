@@ -25,61 +25,62 @@ class Day12 < Day
       @coords.length
     end
 
-    # Returns all possible orientations of shape.
-    def orientations
-      @orientations ||= generate_orientations
-    end
+    # ==== This code is all commented out because it's only used by the code
+    # ==== in Tree that's also commented out.
 
-    # Returns the [max_row, max_col] for which this shape can still fit the
-    # given `height` and `width`.
-    def max_row_and_col_for(height, width)
-      [height - @height, width - @width]
-    end
+    # # Returns all possible orientations of shape.
+    # def orientations
+    #   @orientations ||= generate_orientations
+    # end
+
+    # # Returns the [max_row, max_col] for which this shape can still fit the
+    # # given `height` and `width`.
+    # def max_row_and_col_for(height, width)
+    #   [height - @height, width - @width]
+    # end
 
     def to_s
       "#{@width}x#{@height}: #{@coords.inspect}"
     end
 
-    private
+    # # Returns an array of all possible orientations of our coords.
+    # def generate_orientations
+    #   orientations = Set.new
+    #   coords = @coords.dup
+    #   2.times do
+    #     2.times do
+    #       4.times do
+    #         new_coords = rotate(coords)
+    #         orientations << new_coords
+    #         coords = new_coords
+    #       end
+    #       coords = flip(coords)
+    #     end
+    #     coords = invert(coords)
+    #   end
+    #   orientations
+    # end
 
-    # Returns an array of all possible orientations of our coords.
-    def generate_orientations
-      orientations = Set.new
-      coords = @coords.dup
-      2.times do
-        2.times do
-          4.times do
-            new_coords = rotate(coords)
-            orientations << new_coords
-            coords = new_coords
-          end
-          coords = flip(coords)
-        end
-        coords = invert(coords)
-      end
-      orientations
-    end
+    # # Returns coords rotated 90 degrees clockwise.
+    # def rotate(coords)
+    #   new_coords = Set.new
+    #   coords.each { |coord| new_coords << Point.new(coord.y, @width - coord.x - 1) }
+    #   new_coords
+    # end
 
-    # Returns coords rotated 90 degrees clockwise.
-    def rotate(coords)
-      new_coords = Set.new
-      coords.each { |coord| new_coords << Point.new(coord.y, @width - coord.x - 1) }
-      new_coords
-    end
+    # # Returns coords, left-right flipped.
+    # def flip(coords)
+    #   new_coords = Set.new
+    #   coords.each { |coord| new_coords << Point.new(coord.x, @width - coord.y - 1) }
+    #   new_coords
+    # end
 
-    # Returns coords, left-right flipped.
-    def flip(coords)
-      new_coords = Set.new
-      coords.each { |coord| new_coords << Point.new(coord.x, @width - coord.y - 1) }
-      new_coords
-    end
-
-    # Returns coords, top-bottom inverted.
-    def invert(coords)
-      new_coords = Set.new
-      coords.each { |coord| new_coords << Point.new(@width - coord.x - 1, coord.y) }
-      new_coords
-    end
+    # # Returns coords, top-bottom inverted.
+    # def invert(coords)
+    #   new_coords = Set.new
+    #   coords.each { |coord| new_coords << Point.new(@width - coord.x - 1, coord.y) }
+    #   new_coords
+    # end
   end
 
   class Tree
@@ -98,8 +99,6 @@ class Day12 < Day
     # possible orientations that fit N times, then move on to the next shape
     # for each orientation.
     def can_fit_presents?(shapes)
-      puts('**** can_fit_presents?')
-
       _, _, total_shape_cells = @present_quantities
                                 .reduce([0, 0, 0]) do |acc, quantity|
         idx, shape_area, covered_count = acc
@@ -124,12 +123,10 @@ class Day12 < Day
     def can_all_fit_naively?
       num_across = @width.div(3)
       num_down = @height.div(3)
-      puts "naively: num_across = #{num_across}, num_down = #{num_down}, sum = #{@present_quantities.sum}" if $DEBUG
       @present_quantities.sum <= num_across * num_down
     end
 
-    # This is the code I wrote to try to fit together the shapes. Takes
-    # forever on the second test tree.
+    # This is the code I wrote to try to fit together the shapes. Takes forever on the second test tree.
 
     # def do_can_fit_presents?(shapes, desired_quantities, occupied_coords)
     #   return true if desired_quantities.all?(&:zero?)
@@ -179,11 +176,12 @@ class Day12 < Day
 
   def do_part1(lines)
     if @testing
-      puts <<EOS
-Warning: tests will fail because the test data actually requires fitting
-the shapes together. The real data doesn't --- each tree fits one of two
-trivial cases that returns an answer quickly.
-EOS
+      puts <<~EOS
+        Warning: tests will fail because the test data actually requires fitting
+        the shapes together. The real data doesn't --- each tree fits one of two
+        trivial cases that returns an answer quickly.
+      EOS
+    end
     shapes, trees = parse(lines)
     trees
       .select { |t| t.can_fit_presents?(shapes) }

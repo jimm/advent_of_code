@@ -301,7 +301,7 @@ case $lang in
             test="--test"
         fi
         if [ -n "$DEBUG" ] ; then
-            $debug="--debug"
+            debug="--debug"
         fi
         $run_or_echo $time mix run -e "Common.AoC.run" -- $debug --year $year --day $day $test $part_num
     ;;
