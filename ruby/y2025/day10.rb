@@ -70,10 +70,11 @@ class Day10 < Day
       return nil if (0...@joltage.length).any? { |i| curr_joltage[i] > @joltage[i] }
 
       rest = schematics[1..]
+      num_presses_needed = []
 
       # zero presses of the first set of buttons
       n = min_presses(rest, num_presses, curr_joltage)
-      return n unless n.nil?
+      num_presses_needed << n unless n.nil?
 
       # Try pressing the first schematic 1..max times and see if the
       # remaining schematics will get us to our solution.
@@ -81,12 +82,13 @@ class Day10 < Day
       @max_presses[buttons].times do
         # build new joltage obtained after pressing buttons
         new_joltage = press(buttons, curr_joltage)
-        n = min_presses(rest, num_presses + 1, new_joltage)
-        return n unless n.nil?
+        num_presses += 1
+        n = min_presses(rest, num_presses, new_joltage)
+        num_presses_needed << n unless n.nil?
 
         curr_joltage = new_joltage
       end
-      nil
+      num_presses_needed.min
     end
 
     # Presses `buttons` with `curr_joltage` and returns a new joltage array
