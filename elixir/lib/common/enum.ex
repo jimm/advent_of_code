@@ -1,7 +1,16 @@
 defmodule Common.Enum do
   @moduledoc """
-  Enumerable permutation and combination.
+  Enumerable utilities, permutation, and combination.
   """
+
+  @doc """
+  Parallel map.
+  """
+  def pmap(coll, fun) do
+    coll
+    |> Enum.map(&Task.async(fn -> fun.(&1) end))
+    |> Enum.map(&Task.await/1)
+  end
 
   @doc """
   N things taken N at a time. See also `permutations/2`.

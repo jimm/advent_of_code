@@ -14,6 +14,7 @@ class Day10 < Day
       @joltage = joltage        # array of numbers
     end
 
+    # Returns the min number of presses needed to configure the lights.
     def min_config_press_count
       (0..nil).each do |n|
         return n if configurable_with_n_presses?(n)
@@ -21,12 +22,17 @@ class Day10 < Day
       0 # will never reach
     end
 
+    # Returns the min number of schematics presses needed to achieve
+    # `@joltage`. Returns nil if it's not possible.
     def min_joltage_press_count
+      # Calculate the max number of times each schematic can be pressed
+      # before it surpasses the desired joltage for any position.
       @max_presses = {}
       @wiring.each do |buttons|
         @max_presses[buttons] = buttons.map { |button| @joltage[button] || 0 }.min
       end
-      min_presses_to_joltage
+
+      min_presses(@wiring, 0, [0] * @joltage.length)
     end
 
     def to_s
@@ -49,15 +55,6 @@ class Day10 < Day
 
     # ================ joltage settings ================
 
-    # Returns the min number of schematics presses needed to achieve
-    # `@joltage`. Returns nil if it's not possible.
-    def min_presses_to_joltage
-      min_presses(@wiring, 0, [0] * @joltage.length)
-    end
-
-    # FIXME: need to compare returned with min so far, and also need to bail
-    # early if reach min so far.
-
     # Returns the total number of schematics presses needed to achieve
     # `@joltage`, recursively. Returns nil if it's not possible.
     #
@@ -68,6 +65,12 @@ class Day10 < Day
       return num_presses if @joltage == curr_joltage
       return nil if schematics.empty?
       return nil if (0...@joltage.length).any? { |i| curr_joltage[i] > @joltage[i] }
+
+      # If we can simply multiply each value in curr_joltage by the same
+      # value to get @joltage, we win!
+      mult = find_common_mult(num_presses, curr_joltage)
+      puts 'OMG IT WORKED!' if mult
+      return mult * num_presses if mult
 
       rest = schematics[1..]
       num_presses_needed = []
@@ -96,6 +99,22 @@ class Day10 < Day
       new_joltage = curr_joltage.dup
       buttons.each { |button| new_joltage[button] += 1 }
       new_joltage
+    end
+
+    # If each of curr_joltage's values can be multipled by the same value to
+    # get @joltage, return that multiplier. Else return nil.
+    def find_common_mult(num_presses, curr_joltage)
+      mults =
+        @joltage
+        .zip(curr_joltage)
+        .map { |vals| vals[1] == 0 ? 0 : vals[0].to_f / vals[1].to_f }
+        .uniq
+      return nil unless mults.length == 1
+
+      mult = mults[0] * num_presses
+      return nil if mult == 0
+
+      mult.to_int == mult ? mult.to_int : nil
     end
 
     # Returns true if all of the buttons needed by @joltage are included in
