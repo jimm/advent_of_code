@@ -3,7 +3,7 @@
 http://adventofcode.com/
 
 I like solving these in multiple languages. For the first few years it was
-Elixir. Now it's Ruby, Python, Elixir, Common Lisp, or whatever other
+Elixir. Now it's Ruby, Python, Elixir, Common Lisp, Janet, or whatever other
 language I choose.
 
 ## The `aoc` Script
@@ -19,7 +19,7 @@ corresponding make tool. The `-m` flag runs `makeup` before running the
 solution.
 
 Warning: over the years I've improved the support code for some of the
-languages in ways thar are not always backwards compatible. So some of the
+languages in ways that are not always backwards compatible. So some of the
 older solutions might not run out of the box.
 
 ## The Data
