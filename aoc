@@ -29,7 +29,7 @@ usage: $(basename "$0") [OPTIONS] part_num
   -n       Print the run command but does not run it. Other commands are run
   -o       Open the day's puzzle page in a browser and exit (run after init)
   -r       Reuse (don't re-fetch) HTML file /tmp/dayDD.html
-  -T       Use `time` to output the solution execution time after it has run
+  -T       Use \`time\` to output the solution execution time after it has run
   -t       Testing
   -y year  Default is current year or, if negative, offset from current year
            (-1 == last year)
