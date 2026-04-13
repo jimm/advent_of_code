@@ -55,7 +55,7 @@ class Day10 < Day
 
     # ================ joltage settings ================
 
-    # Returns the total number of schematics presses needed to achieve
+    # Returns the minimum number of schematics presses needed to achieve
     # `@joltage`, recursively. Returns nil if it's not possible.
     #
     # `@max_presses` is an optimization: a pre-calculated map from wiring
@@ -69,7 +69,7 @@ class Day10 < Day
       # If we can simply multiply each value in curr_joltage by the same
       # value to get @joltage, we win!
       mult = find_common_mult(num_presses, curr_joltage)
-      puts 'OMG IT WORKED!' if mult
+      puts 'OMG IT WORKED!' if $DEBUG && mult
       return mult * num_presses if mult
 
       rest = schematics[1..]
